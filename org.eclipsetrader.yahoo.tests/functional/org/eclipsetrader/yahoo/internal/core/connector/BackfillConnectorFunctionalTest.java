@@ -110,4 +110,31 @@ public class BackfillConnectorFunctionalTest extends TestCase {
 
 		assertFalse(result.length == 0);
 	}
+
+	public void testBackfill1MinDataForAustralianStocks() throws Exception {
+		FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
+
+		BackfillConnector connector = new BackfillConnector();
+		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(1));
+
+		assertFalse(result.length == 0);
+	}
+
+	public void testBackfill5MinDataForAustralianStocks() throws Exception {
+		FeedIdentifier identifier = new FeedIdentifier("LYC.AX", null);
+
+		BackfillConnector connector = new BackfillConnector();
+		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+
+		assertFalse(result.length == 0);
+	}
+
+	public void testBackfill5MinDataForUKStocks() throws Exception {
+		FeedIdentifier identifier = new FeedIdentifier("BAY.L", null);
+
+		BackfillConnector connector = new BackfillConnector();
+		IOHLC[] result = connector.backfillHistory(identifier, new Date(), new Date(), TimeSpan.minutes(5));
+
+		assertFalse("No data for " + identifier.toString(), result.length == 0);
+	}
 }
