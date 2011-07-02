@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 Marco Maccaferri and others.
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,6 +42,7 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryService;
@@ -65,16 +66,24 @@ import org.osgi.framework.ServiceReference;
 public class PaperBroker implements IBroker, IExecutableExtension {
 	private String id;
 	private String name;
+	private IMarketService marketService;
 	private MarketPricingEnvironment pricingEnvironment;
 
 	private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
 	private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
+	private BundleContext context;
+	private ServiceReference marketServiceReference;
+
 	private IPricingListener pricingListener = new IPricingListener() {
 		public void pricingUpdate(PricingEvent event) {
 			for (PricingDelta delta : event.getDelta()) {
-				if (delta.getNewValue() instanceof ITrade)
-					processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
+				if (delta.getNewValue() instanceof ITrade) {
+					IMarket market = marketService.getMarketForSecurity(event.getSecurity());
+					if (market == null || market.isOpen()) {
+						processTrade(event.getSecurity(), (ITrade) delta.getNewValue());
+					}
+				}
 			}
 		}
 	};
@@ -106,20 +115,21 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
 		id = config.getAttribute("id");
 		name = config.getAttribute("name");
+		context = Activator.getDefault().getBundle().getBundleContext();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
 	 */
 	public void connect() {
-		if (pricingEnvironment == null) {
-			BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-			ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-			if (serviceReference != null) {
-				IMarketService marketService = (IMarketService) context.getService(serviceReference);
-				pricingEnvironment = new MarketPricingEnvironment(marketService);
-				context.ungetService(serviceReference);
+		if (marketService == null) {
+			marketServiceReference = context.getServiceReference(IMarketService.class.getName());
+			if (marketServiceReference != null) {
+				marketService = (IMarketService) context.getService(marketServiceReference);
 			}
+		}
+		if (pricingEnvironment == null) {
+			pricingEnvironment = new MarketPricingEnvironment(marketService);
 		}
 
 		List<OrderDelta> list = new ArrayList<OrderDelta>();
@@ -129,16 +139,25 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 		}
 		fireUpdateNotifications(list.toArray(new OrderDelta[list.size()]));
 
-		if (pricingEnvironment != null)
+		if (pricingEnvironment != null) {
 			pricingEnvironment.addPricingListener(pricingListener);
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipsetrader.core.trading.IBrokerConnector#disconnect()
 	 */
 	public void disconnect() {
-		if (pricingEnvironment != null)
+		if (pricingEnvironment != null) {
 			pricingEnvironment.removePricingListener(pricingListener);
+			pricingEnvironment = null;
+		}
+
+		if (marketServiceReference != null) {
+			marketService = null;
+			context.ungetService(marketServiceReference);
+			marketServiceReference = null;
+		}
 	}
 
 	/* (non-Javadoc)
