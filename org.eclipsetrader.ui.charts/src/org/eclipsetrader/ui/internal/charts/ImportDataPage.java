@@ -106,9 +106,11 @@ public class ImportDataPage extends WizardPage {
         gridLayout.verticalSpacing = 0;
         group.setLayout(gridLayout);
         from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        from.setLayoutData(new GridData(convertHorizontalDLUsToPixels(62), SWT.DEFAULT));
         label = new Label(group, SWT.NONE);
         label.setText(Messages.ImportDataPage_ToLabel);
         to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        to.setLayoutData(new GridData(convertHorizontalDLUsToPixels(62), SWT.DEFAULT));
 
         Calendar today = Calendar.getInstance();
         to.setSelection(today.getTime());
