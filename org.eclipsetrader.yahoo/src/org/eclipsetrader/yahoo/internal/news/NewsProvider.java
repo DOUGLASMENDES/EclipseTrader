@@ -367,7 +367,8 @@ public class NewsProvider implements INewsProvider {
 							}
 						}
 					} catch (Exception e) {
-						Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, "Error fetching news", e);
+					    String msg = "Error fetching news from " + feedUrl.toString();
+						Status status = new Status(Status.ERROR, YahooActivator.PLUGIN_ID, 0, msg, e);
 						YahooActivator.log(status);
 					}
 

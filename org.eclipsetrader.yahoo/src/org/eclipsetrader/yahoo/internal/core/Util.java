@@ -220,12 +220,6 @@ public class Util {
 		String symbol = getSymbol(identifier);
 
 		URI feedUrl = new URI("http://finance.yahoo.com/rss/headline?s=" + symbol, false);
-		if (symbol.toLowerCase().endsWith(".mi"))
-			feedUrl = new URI("http://it.finance.yahoo.com/rss/headline?s=" + symbol, false);
-		else if (symbol.toLowerCase().endsWith(".pa"))
-			feedUrl = new URI("http://fr.finance.yahoo.com/rss/headline?s=" + symbol, false);
-		else if (symbol.toLowerCase().endsWith(".de"))
-			feedUrl = new URI("http://de.finance.yahoo.com/rss/headline?s=" + symbol, false);
 
 		return new URL(feedUrl.toString());
 	}
