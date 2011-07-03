@@ -96,9 +96,8 @@ public class HolidayDialog extends Dialog {
 
         Label label = new Label(content, SWT.NONE);
         label.setText("Date");
-        date = new CDateTime(content, CDT.BORDER | CDT.TAB_FIELDS | CDT.SPINNER);
+        date = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
         date.setPattern(Util.getDateFormatPattern());
-        date.setLayoutData(new GridData(convertHorizontalDLUsToPixels(75), SWT.DEFAULT));
 
         label = new Label(content, SWT.NONE);
         label.setText("Description");

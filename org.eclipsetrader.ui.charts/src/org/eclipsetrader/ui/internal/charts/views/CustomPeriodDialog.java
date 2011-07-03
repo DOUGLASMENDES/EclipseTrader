@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.core.feed.TimeSpan;
+import org.eclipsetrader.ui.Util;
 
 public class CustomPeriodDialog extends Dialog {
 
@@ -71,11 +72,13 @@ public class CustomPeriodDialog extends Dialog {
 
         Label label = new Label(content, SWT.NONE);
         label.setText(Messages.CustomPeriodDialog_BeginDateLabel);
-        from = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        from = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        from.setPattern(Util.getDateFormatPattern());
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.CustomPeriodDialog_EndDateLabel);
-        to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        to = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        to.setPattern(Util.getDateFormatPattern());
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.CustomPeriodDialog_ResolutionLabel);

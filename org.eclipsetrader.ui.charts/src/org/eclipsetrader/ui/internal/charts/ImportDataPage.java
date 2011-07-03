@@ -42,6 +42,7 @@ import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.ui.Util;
 
 public class ImportDataPage extends WizardPage {
 
@@ -106,11 +107,11 @@ public class ImportDataPage extends WizardPage {
         gridLayout.verticalSpacing = 0;
         group.setLayout(gridLayout);
         from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-        from.setLayoutData(new GridData(convertHorizontalDLUsToPixels(62), SWT.DEFAULT));
+        from.setPattern(Util.getDateFormatPattern());
         label = new Label(group, SWT.NONE);
         label.setText(Messages.ImportDataPage_ToLabel);
         to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-        to.setLayoutData(new GridData(convertHorizontalDLUsToPixels(62), SWT.DEFAULT));
+        to.setPattern(Util.getDateFormatPattern());
 
         Calendar today = Calendar.getInstance();
         to.setSelection(today.getTime());

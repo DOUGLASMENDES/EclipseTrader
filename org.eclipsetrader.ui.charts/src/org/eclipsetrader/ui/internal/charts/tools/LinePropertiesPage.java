@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipsetrader.ui.Util;
 
 public class LinePropertiesPage extends PropertyPage {
 
@@ -99,8 +100,8 @@ public class LinePropertiesPage extends PropertyPage {
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.LinePropertiesPage_FirstPointLabel);
-        date1 = new CDateTime(content, CDT.BORDER | CDT.DATE_MEDIUM | CDT.DROP_DOWN);
-        date1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
+        date1 = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        date1.setPattern(Util.getDateFormatPattern());
         value1 = new Text(content, SWT.BORDER);
         value1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(65), SWT.DEFAULT));
         value1.addFocusListener(numberFocusListener);
@@ -112,8 +113,8 @@ public class LinePropertiesPage extends PropertyPage {
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.LinePropertiesPage_SecondPointLabel);
-        date2 = new CDateTime(content, CDT.BORDER | CDT.DATE_MEDIUM | CDT.DROP_DOWN);
-        date2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(90), SWT.DEFAULT));
+        date2 = new CDateTime(content, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        date2.setPattern(Util.getDateFormatPattern());
         value2 = new Text(content, SWT.BORDER);
         value2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(65), SWT.DEFAULT));
         value2.addFocusListener(numberFocusListener);

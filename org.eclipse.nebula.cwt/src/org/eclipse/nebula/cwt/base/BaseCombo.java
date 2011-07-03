@@ -61,6 +61,9 @@ public abstract class BaseCombo extends Canvas {
 			}
 
 			size.y += textMarginHeight;
+			if (win32) {
+				size.x += 8;
+			}
 
 			if(wHint != SWT.DEFAULT) {
 				size.x = Math.min(size.x, wHint);
@@ -76,6 +79,9 @@ public abstract class BaseCombo extends Canvas {
 
 			Point tSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			tSize.y += textMarginHeight;
+			if (win32) {
+				tSize.x += 8;
+			}
 
 			Point bSize = button.getVisible() ? new Point(tSize.y, tSize.y) : new Point(0, 0);
 

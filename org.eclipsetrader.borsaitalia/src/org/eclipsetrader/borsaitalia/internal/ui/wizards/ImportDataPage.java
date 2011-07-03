@@ -43,6 +43,7 @@ import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.ui.Util;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -106,10 +107,12 @@ public class ImportDataPage extends WizardPage {
         gridLayout.marginWidth = gridLayout.marginHeight = 0;
         gridLayout.verticalSpacing = 0;
         group.setLayout(gridLayout);
-        from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        from = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        from.setPattern(Util.getDateFormatPattern());
         label = new Label(group, SWT.NONE);
         label.setText("to");
-        to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN);
+        to = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        to.setPattern(Util.getDateFormatPattern());
 
         Calendar today = Calendar.getInstance();
         to.setSelection(today.getTime());

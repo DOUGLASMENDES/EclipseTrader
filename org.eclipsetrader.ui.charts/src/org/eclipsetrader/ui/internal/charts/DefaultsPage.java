@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipsetrader.ui.Util;
 
 public class DefaultsPage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -72,9 +73,9 @@ public class DefaultsPage extends PreferencePage implements IWorkbenchPreference
 
         useStartDate = new Button(group, SWT.RADIO);
         useStartDate.setText("Start Date");
-        startDate = new CDateTime(group, CDT.DATE_SHORT | CDT.BORDER);
+        startDate = new CDateTime(group, CDT.BORDER | CDT.DATE_SHORT | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+        startDate.setPattern(Util.getDateFormatPattern());
         startDate.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-        ((GridData) startDate.getLayoutData()).widthHint = convertHorizontalDLUsToPixels(62);
 
         useYears = new Button(group, SWT.RADIO);
         useYears.setText("Last");
