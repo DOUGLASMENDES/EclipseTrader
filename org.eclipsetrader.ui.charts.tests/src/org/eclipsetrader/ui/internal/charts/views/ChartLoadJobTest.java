@@ -23,20 +23,25 @@ public class ChartLoadJobTest extends TestCase {
 
     public void testLoadDailyHistory() throws Exception {
         final History originalHistory = new History(null, Helper.dailyHistory(30));
-        ChartLoadJob job = new ChartLoadJob(null, null) {
+
+        ChartLoadJob job = new ChartLoadJob(null) {
 
             @Override
             IHistory getHistoryFor(ISecurity security) {
                 return originalHistory;
             }
         };
+
         job.buildHistory();
+
         assertSame(originalHistory, job.history);
+        assertSame(originalHistory, job.subsetHistory);
     }
 
     public void testLoadDailySubsetHistory() throws Exception {
         final History originalHistory = new History(null, Helper.dailyHistory(60));
-        ChartLoadJob job = new ChartLoadJob(null, null) {
+
+        ChartLoadJob job = new ChartLoadJob(null) {
 
             @Override
             IHistory getHistoryFor(ISecurity security) {
@@ -45,8 +50,11 @@ public class ChartLoadJobTest extends TestCase {
         };
         job.setTimeSpan(TimeSpan.days(30));
         job.setResolutionTimeSpan(TimeSpan.days(1));
+
         job.buildHistory();
-        assertNotSame(originalHistory, job.history);
-        assertEquals(30, job.history.getOHLC().length);
+
+        assertSame(originalHistory, job.history);
+        assertNotSame(originalHistory, job.subsetHistory);
+        assertEquals(30, job.subsetHistory.getOHLC().length);
     }
 }

@@ -18,30 +18,26 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.feed.IHistory;
-import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.ui.charts.ChartView;
 import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class ChartLoadJob extends Job {
 
     ISecurity security;
-    ChartView view;
     TimeSpan timeSpan;
     TimeSpan resolutionTimeSpan;
 
     IHistory history;
+    IHistory subsetHistory;
 
-    public ChartLoadJob(ISecurity security, ChartView view) {
+    public ChartLoadJob(ISecurity security) {
         super(""); //$NON-NLS-1$
 
         this.security = security;
-        this.view = view;
     }
 
     public void setTimeSpan(TimeSpan timeSpan) {
@@ -60,9 +56,6 @@ public class ChartLoadJob extends Job {
         monitor.beginTask(getName(), IProgressMonitor.UNKNOWN);
         try {
             buildHistory();
-
-            IOHLC[] values = history.getAdjustedOHLC();
-            view.setRootDataSeries(new OHLCDataSeries(security.getName(), values, resolutionTimeSpan));
         } catch (Exception e) {
             Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.ChartLoadJob_ExceptionMessage + security.getName(), e);
             ChartsUIActivator.log(status);
@@ -73,7 +66,7 @@ public class ChartLoadJob extends Job {
     }
 
     void buildHistory() {
-        history = getHistoryFor(security);
+        history = subsetHistory = getHistoryFor(security);
 
         if (timeSpan != null) {
             Calendar c = Calendar.getInstance();
@@ -89,7 +82,7 @@ public class ChartLoadJob extends Job {
                     index = 0;
                 }
                 Date firstDate = history.getOHLC()[index].getDate();
-                history = history.getSubset(firstDate, lastDate, resolutionTimeSpan);
+                subsetHistory = history.getSubset(firstDate, lastDate, resolutionTimeSpan);
             }
             else {
                 c = Calendar.getInstance();
@@ -106,15 +99,15 @@ public class ChartLoadJob extends Job {
                     case Months:
                         c.add(Calendar.MONTH, -timeSpan.getLength());
                         if (resolutionTimeSpan != null) {
-                            history = history.getSubset(c.getTime(), lastDate, resolutionTimeSpan);
+                            subsetHistory = history.getSubset(c.getTime(), lastDate, resolutionTimeSpan);
                         }
                         else {
-                            history = history.getSubset(c.getTime(), lastDate);
+                            subsetHistory = history.getSubset(c.getTime(), lastDate);
                         }
                         break;
                     case Years:
                         c.add(Calendar.YEAR, -timeSpan.getLength());
-                        history = history.getSubset(c.getTime(), lastDate);
+                        subsetHistory = history.getSubset(c.getTime(), lastDate);
                         break;
                 }
             }
@@ -126,11 +119,15 @@ public class ChartLoadJob extends Job {
         return repository.getHistoryFor(security);
     }
 
-    public ChartView getView() {
-        return view;
-    }
-
     public IHistory getHistory() {
         return history;
+    }
+
+    public IHistory getSubsetHistory() {
+        return subsetHistory;
+    }
+
+    public TimeSpan getResolutionTimeSpan() {
+        return resolutionTimeSpan;
     }
 }

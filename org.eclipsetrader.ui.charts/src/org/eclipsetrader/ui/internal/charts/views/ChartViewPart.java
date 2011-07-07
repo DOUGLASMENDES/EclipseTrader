@@ -72,6 +72,7 @@ import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipsetrader.core.charts.OHLCDataSeries;
 import org.eclipsetrader.core.charts.repository.IChartTemplate;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.TimeSpan;
@@ -116,6 +117,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     private BaseChartViewer viewer;
     private ChartView view;
     private IHistory history;
+    private IHistory subsetHistory;
     private ChartViewDropTarget dropListener;
     private boolean dirty;
 
@@ -145,7 +147,17 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if (IPropertyConstants.BARS.equals(evt.getPropertyName())) {
-                scheduleLoadJob();
+                TimeSpan resolution = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+                view.setRootDataSeries(new OHLCDataSeries(security.getName(), subsetHistory.getAdjustedOHLC(), resolution));
+                Display.getDefault().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (!viewer.getControl().isDisposed()) {
+                            refreshChart();
+                        }
+                    }
+                });
             }
         }
     };
@@ -608,19 +620,24 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     void scheduleLoadJob() {
         final Display display = viewer.getControl().getDisplay();
 
-        if (history != null) {
-            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+        if (subsetHistory != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subsetHistory.getAdapter(PropertyChangeSupport.class);
             if (propertyChangeSupport != null) {
                 propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
             }
         }
 
-        ChartLoadJob job = new ChartLoadJob(security, view);
+        ChartLoadJob job = new ChartLoadJob(security);
         job.addJobChangeListener(new JobChangeAdapter() {
 
             @Override
             public void done(IJobChangeEvent event) {
                 final ChartLoadJob job = (ChartLoadJob) event.getJob();
+
+                history = job.getHistory();
+                subsetHistory = job.getSubsetHistory();
+                view.setRootDataSeries(new OHLCDataSeries(security.getName(), subsetHistory.getAdjustedOHLC(), job.getResolutionTimeSpan()));
+
                 display.asyncExec(new Runnable() {
 
                     @Override
@@ -634,8 +651,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
                         }
                         saveState(memento);
 
-                        view = job.getView();
-
                         TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
                         if (resolutionTimeSpan == null) {
                             resolutionTimeSpan = TimeSpan.days(1);
@@ -644,8 +659,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
                         dropListener.setView(view);
 
-                        history = job.getHistory();
-                        PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+                        PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subsetHistory.getAdapter(PropertyChangeSupport.class);
                         if (propertyChangeSupport != null) {
                             propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
                         }
@@ -677,8 +691,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     public void dispose() {
         view.removeViewChangeListener(viewChangeListener);
 
-        if (history != null) {
-            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+        if (subsetHistory != null) {
+            PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) subsetHistory.getAdapter(PropertyChangeSupport.class);
             if (propertyChangeSupport != null) {
                 propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
             }
