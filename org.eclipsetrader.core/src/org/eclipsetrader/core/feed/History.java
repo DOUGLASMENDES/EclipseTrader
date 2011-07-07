@@ -182,6 +182,7 @@ public class History implements IHistory, IStoreObject {
         this.bars = l.toArray(new IOHLC[l.size()]);
 
         updateRange();
+        updateSubsets();
 
         propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
     }
@@ -191,13 +192,30 @@ public class History implements IHistory, IStoreObject {
      */
     @Override
     public IHistory getSubset(Date first, Date last) {
+        Key key = new Key(first, last, timeSpan);
+
+        WeakReference<HistoryDay> reference = historyMap.get(key);
+        HistoryDay history = reference != null ? reference.get() : null;
+        if (history != null) {
+            return history;
+        }
+
+        IOHLC[] subset = getOHLCSubset(first, last);
+        history = new HistoryDay(security, timeSpan, subset);
+
+        historyMap.put(key, new WeakReference<HistoryDay>(history));
+
+        return history;
+    }
+
+    private IOHLC[] getOHLCSubset(Date first, Date last) {
         List<IOHLC> l = new ArrayList<IOHLC>();
         for (IOHLC b : bars) {
             if ((first == null || !b.getDate().before(first)) && (last == null || !b.getDate().after(last))) {
                 l.add(b);
             }
         }
-        return new History(security, l.toArray(new IOHLC[l.size()]), timeSpan);
+        return l.toArray(new IOHLC[l.size()]);
     }
 
     /* (non-Javadoc)
@@ -255,7 +273,8 @@ public class History implements IHistory, IStoreObject {
             }
         }
 
-        history = new HistoryDay(security, timeSpan, storeList.toArray(new IStore[storeList.size()]), propertyList.toArray(new IStoreProperties[propertyList.size()])) {
+        IStoreProperties[] properties = propertyList.toArray(new IStoreProperties[propertyList.size()]);
+        history = new HistoryDay(security, timeSpan, storeList.toArray(new IStore[storeList.size()]), properties) {
 
             @Override
             protected IStoreObject[] updateStoreObjects() {
@@ -482,6 +501,20 @@ public class History implements IHistory, IStoreObject {
             }
             if (lowest == null || b.getLow() < lowest.getLow()) {
                 lowest = b;
+            }
+        }
+    }
+
+    protected void updateSubsets() {
+        for (Key key : historyMap.keySet()) {
+            WeakReference<HistoryDay> reference = historyMap.get(key);
+            HistoryDay history = reference.get();
+            if (history == null) {
+                continue;
+            }
+            if (history.getTimeSpan().equals(timeSpan)) {
+                IOHLC[] subset = getOHLCSubset(key.getFirst(), key.getLast());
+                history.setOHLC(subset);
             }
         }
     }

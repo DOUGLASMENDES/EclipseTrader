@@ -23,6 +23,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.instruments.Security;
@@ -301,6 +302,75 @@ public class HistoryTest extends TestCase {
         assertEquals(2, updates.size());
         assertTrue(updates.contains(subset1));
         assertTrue(updates.contains(subset2));
+    }
+
+    public void testNotifyOHLCUpdates() throws Exception {
+        PropertyChangeListener listener = EasyMock.createMock(PropertyChangeListener.class);
+        listener.propertyChange(EasyMock.isA(PropertyChangeEvent.class));
+        EasyMock.replay(listener);
+
+        IOHLC[] bars = new IOHLC[] {
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 12), 100.0, 110.0, 90.0, 95.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 11), 400.0, 410.0, 390.0, 395.0, 100000L),
+        };
+        History history = new History(new Security("Test", null), bars);
+
+        PropertyChangeSupport changeSupport = (PropertyChangeSupport) history.getAdapter(PropertyChangeSupport.class);
+        changeSupport.addPropertyChangeListener(listener);
+
+        IOHLC[] newBars = new IOHLC[] {
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 13), 200.0, 210.0, 190.0, 195.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 12), 100.0, 110.0, 90.0, 95.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 11), 400.0, 410.0, 390.0, 395.0, 100000L),
+        };
+        history.setOHLC(newBars);
+
+        EasyMock.verify(listener);
+    }
+
+    public void testNotifyOHLCSubsetUpdates() throws Exception {
+        PropertyChangeListener listener = EasyMock.createMock(PropertyChangeListener.class);
+        listener.propertyChange(EasyMock.isA(PropertyChangeEvent.class));
+        EasyMock.replay(listener);
+
+        IOHLC[] bars = new IOHLC[] {
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 12), 100.0, 110.0, 90.0, 95.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 11), 400.0, 410.0, 390.0, 395.0, 100000L),
+        };
+        History history = new History(new Security("Test", null), bars);
+
+        IHistory subsetHistory = history.getSubset(getTime(2007, Calendar.NOVEMBER, 12), getTime(2007, Calendar.NOVEMBER, 13));
+
+        assertEquals(1, subsetHistory.getOHLC().length);
+
+        PropertyChangeSupport changeSupport = (PropertyChangeSupport) subsetHistory.getAdapter(PropertyChangeSupport.class);
+        changeSupport.addPropertyChangeListener(listener);
+
+        IOHLC[] newBars = new IOHLC[] {
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 13), 200.0, 210.0, 190.0, 195.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 12), 100.0, 110.0, 90.0, 95.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 11), 400.0, 410.0, 390.0, 395.0, 100000L),
+        };
+        history.setOHLC(newBars);
+
+        assertEquals(2, subsetHistory.getOHLC().length);
+
+        EasyMock.verify(listener);
+    }
+
+    public void testGetSameSubsetInstance() throws Exception {
+        IOHLC[] bars = new IOHLC[] {
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 13), 200.0, 210.0, 190.0, 195.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 12), 100.0, 110.0, 90.0, 95.0, 100000L),
+                new OHLC(getTime(2007, Calendar.NOVEMBER, 11), 400.0, 410.0, 390.0, 395.0, 100000L),
+        };
+        History history = new History(new Security("Test", null), bars);
+
+        IHistory subsetHistory = history.getSubset(getTime(2007, Calendar.NOVEMBER, 12), getTime(2007, Calendar.NOVEMBER, 13));
+
+        IHistory subsetHistory2 = history.getSubset(getTime(2007, Calendar.NOVEMBER, 12), getTime(2007, Calendar.NOVEMBER, 13));
+
+        assertSame(subsetHistory, subsetHistory2);
     }
 
     private Date getTime(int year, int month, int day) {
