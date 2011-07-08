@@ -160,4 +160,28 @@ public class BackfillConnectorTest extends TestCase {
         assertFalse(connector.canBackfill(new FeedIdentifier("^IXIC", new FeedProperties()), TimeSpan.minutes(1)));
         assertFalse(connector.canBackfill(new FeedIdentifier("^IXIC", new FeedProperties()), TimeSpan.minutes(5)));
     }
+
+    public void testIgnoreZeroTradesData() throws Exception {
+        BackfillConnector connector = new BackfillConnector();
+
+        Calendar date = Calendar.getInstance();
+        date.set(2011, Calendar.JANUARY, 3, 0, 0, 0);
+        date.set(Calendar.MILLISECOND, 0);
+
+        OHLC ohlc = connector.parseResponseLine("20110103,1.5840,1.6190,1.5660,1.5750,0");
+
+        assertNull(ohlc);
+    }
+
+    public void testIgnore1DayZeroTradesResponseLine() throws Exception {
+        BackfillConnector connector = new BackfillConnector();
+
+        Calendar date = Calendar.getInstance(TimeZone.getTimeZone("America/New_York"));
+        date.set(2009, Calendar.JUNE, 19, 9, 30, 0);
+        date.set(Calendar.MILLISECOND, 0);
+
+        OHLC ohlc = connector.parse1DayResponseLine("1245418200,29.0600,29.0700,28.9400,28.9900,0");
+
+        assertNull(ohlc);
+    }
 }

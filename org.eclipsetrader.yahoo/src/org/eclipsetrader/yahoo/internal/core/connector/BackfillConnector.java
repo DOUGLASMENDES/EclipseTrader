@@ -298,6 +298,10 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
         double open = pf.parse(item[4].replace(',', '.')).doubleValue();
         long volume = nf.parse(item[5]).longValue();
 
+        if (volume == 0) {
+            return null;
+        }
+
         OHLC bar = new OHLC(day.getTime(), open, high, low, close, volume);
 
         return bar;
@@ -315,6 +319,10 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
         double low = pf.parse(item[3].replace(',', '.')).doubleValue();
         double open = pf.parse(item[4].replace(',', '.')).doubleValue();
         long volume = nf.parse(item[5]).longValue();
+
+        if (volume == 0) {
+            return null;
+        }
 
         OHLC bar = new OHLC(date, open, high, low, close, volume);
 
