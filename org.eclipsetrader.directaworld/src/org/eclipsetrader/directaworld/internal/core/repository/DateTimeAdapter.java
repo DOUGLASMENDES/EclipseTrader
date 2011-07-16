@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateTimeAdapter extends XmlAdapter<String, Date> {
 
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //$NON-NLS-1$
 
     /* (non-Javadoc)
      * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)

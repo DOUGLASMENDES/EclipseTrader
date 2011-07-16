@@ -263,10 +263,10 @@ public class FeedSubscription implements IFeedSubscription2 {
             try {
                 ((ISubscriptionListener) l[i]).quoteUpdate(event);
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e); //$NON-NLS-1$
                 Activator.log(status);
             } catch (LinkageError e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying a quote update", e); //$NON-NLS-1$
                 Activator.log(status);
             }
         }

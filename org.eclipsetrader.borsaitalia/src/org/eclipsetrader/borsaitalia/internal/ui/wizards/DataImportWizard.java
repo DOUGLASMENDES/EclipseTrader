@@ -23,8 +23,8 @@ public class DataImportWizard extends Wizard implements IImportWizard {
     private ImportDataPage dataPage;
 
     public DataImportWizard() {
-        setWindowTitle("Import Data from Borsa Italiana");
-        setDefaultPageImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/import_wiz.png"));
+        setWindowTitle(Messages.DataImportWizard_WindowTitle);
+        setDefaultPageImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/import_wiz.png")); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

@@ -67,17 +67,17 @@ public class Book extends DataMessage {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < LEVELS; i++) {
             sb.append(n_pdn_c[i]);
-            sb.append(":");
+            sb.append(":"); //$NON-NLS-1$
             sb.append(q_pdn_c[i]);
-            sb.append(":");
+            sb.append(":"); //$NON-NLS-1$
             sb.append(val_c[i]);
-            sb.append(" - ");
+            sb.append(" - "); //$NON-NLS-1$
             sb.append(n_pdn_v[i]);
-            sb.append(":");
+            sb.append(":"); //$NON-NLS-1$
             sb.append(q_pdn_v[i]);
-            sb.append(":");
+            sb.append(":"); //$NON-NLS-1$
             sb.append(val_v[i]);
-            sb.append("\r\n");
+            sb.append("\r\n"); //$NON-NLS-1$
         }
         return sb.toString();
     }

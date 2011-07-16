@@ -45,7 +45,7 @@ public class PropertyTester extends org.eclipse.core.expressions.PropertyTester 
             return false;
         }
 
-        if ("canTrade".equals(property)) {
+        if ("canTrade".equals(property)) { //$NON-NLS-1$
             IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
             if (identifier != null) {
                 String code = null;

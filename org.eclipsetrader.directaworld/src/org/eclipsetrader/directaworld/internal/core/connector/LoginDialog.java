@@ -63,7 +63,7 @@ public class LoginDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Login");
+        newShell.setText(Messages.LoginDialog_ShellTitle);
         newShell.addDisposeListener(disposeListener);
     }
 
@@ -77,7 +77,7 @@ public class LoginDialog extends TitleAreaDialog {
         composite.setLayout(new GridLayout(2, false));
 
         Label label = new Label(composite, SWT.NONE);
-        label.setText("User Code");
+        label.setText(Messages.LoginDialog_UserCode);
         text1 = new Text(composite, SWT.BORDER);
         if (userName != null) {
             text1.setText(userName);
@@ -85,15 +85,15 @@ public class LoginDialog extends TitleAreaDialog {
         text1.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
 
         label = new Label(composite, SWT.NONE);
-        label.setText("Password");
+        label.setText(Messages.LoginDialog_Password);
         text2 = new Text(composite, SWT.BORDER | SWT.PASSWORD);
         text2.setLayoutData(new GridData(convertHorizontalDLUsToPixels(140), SWT.DEFAULT));
 
         label = new Label(composite, SWT.NONE);
         button = new Button(composite, SWT.CHECK);
-        button.setText("Save Password");
+        button.setText(Messages.LoginDialog_SavePassword);
 
-        if (text1.getText().equals("")) {
+        if (text1.getText().equals("")) { //$NON-NLS-1$
             text1.setFocus();
         }
         else {
@@ -110,8 +110,8 @@ public class LoginDialog extends TitleAreaDialog {
     public int open() {
         create();
 
-        setTitle("DirectaWorld Login");
-        setMessage("Please enter your user code and password");
+        setTitle(Messages.LoginDialog_Title);
+        setMessage(Messages.LoginDialog_Message);
         setTitleImage(image);
 
         return super.open();

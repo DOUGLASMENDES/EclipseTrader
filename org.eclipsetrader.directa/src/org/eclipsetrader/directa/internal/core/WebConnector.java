@@ -70,12 +70,12 @@ import org.osgi.framework.ServiceReference;
 public class WebConnector {
 
     private static WebConnector instance;
-    private static final String HOST = "www1.directatrading.com";
+    private static final String HOST = "www1.directatrading.com"; //$NON-NLS-1$
 
     public static final String[] PROPERTIES = new String[] {
-            "org.eclipsetrader.directa.symbol",
-            "org.eclipsetrader.directaworld.symbol",
-            "org.eclipsetrader.borsaitalia.code",
+            "org.eclipsetrader.directa.symbol", //$NON-NLS-1$
+            "org.eclipsetrader.directaworld.symbol", //$NON-NLS-1$
+            "org.eclipsetrader.borsaitalia.code", //$NON-NLS-1$
     };
 
     private HttpClient client;
@@ -84,9 +84,9 @@ public class WebConnector {
 
     private Account account;
 
-    private String prt = "";
-    private String urt = "";
-    private String user = "";
+    private String prt = ""; //$NON-NLS-1$
+    private String urt = ""; //$NON-NLS-1$
+    private String user = ""; //$NON-NLS-1$
 
     private NumberFormat numberFormatter = NumberFormat.getInstance(Locale.ITALY);
 
@@ -97,9 +97,9 @@ public class WebConnector {
 
         File file = null;
         if (Activator.getDefault() != null) {
-            file = Activator.getDefault().getStateLocation().append("positions.xml").toFile();
+            file = Activator.getDefault().getStateLocation().append("positions.xml").toFile(); //$NON-NLS-1$
         }
-        account = new Account("Default", file);
+        account = new Account(Messages.WebConnector_DefaultAccount, file);
         account.load();
     }
 
@@ -111,20 +111,20 @@ public class WebConnector {
     }
 
     public boolean isLoggedIn() {
-        return user != null && !"".equals(user);
+        return user != null && !"".equals(user); //$NON-NLS-1$
     }
 
     public synchronized void login() {
         final ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
         try {
             if (userName == null) {
-                userName = securePreferences.get(Activator.PREFS_USERNAME, "");
+                userName = securePreferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
             }
             if (password == null) {
-                password = securePreferences.get(Activator.PREFS_PASSWORD, "");
+                password = securePreferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
             }
         } catch (Exception e) {
-            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
             Display.getDefault().syncExec(new Runnable() {
 
                 @Override
@@ -135,12 +135,12 @@ public class WebConnector {
             });
         }
 
-        prt = "";
-        urt = "";
-        user = "";
+        prt = ""; //$NON-NLS-1$
+        urt = ""; //$NON-NLS-1$
+        user = ""; //$NON-NLS-1$
 
         do {
-            if (userName == null || password == null || "".equals(userName) || "".equals(password)) {
+            if (userName == null || password == null || "".equals(userName) || "".equals(password)) { //$NON-NLS-1$ //$NON-NLS-2$
                 Display.getDefault().syncExec(new Runnable() {
 
                     @Override
@@ -152,9 +152,9 @@ public class WebConnector {
                             if (dlg.isSavePassword()) {
                                 try {
                                     securePreferences.put(Activator.PREFS_USERNAME, userName, true);
-                                    securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
+                                    securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
                                 } catch (Exception e) {
-                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
                                     Activator.log(status);
                                     ErrorDialog.openError(null, null, null, status);
                                 }
@@ -177,7 +177,7 @@ public class WebConnector {
                 try {
                     setupProxy(client, HOST);
                 } catch (URISyntaxException e) {
-                    final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error setting proxy", e);
+                    final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error setting proxy", e); //$NON-NLS-1$
                     Display.getDefault().syncExec(new Runnable() {
 
                         @Override
@@ -190,43 +190,43 @@ public class WebConnector {
             }
 
             try {
-                HttpMethod method = new GetMethod("https://" + HOST + "/trading/collegc_3");
+                HttpMethod method = new GetMethod("https://" + HOST + "/trading/collegc_3"); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setFollowRedirects(true);
                 method.setQueryString(new NameValuePair[] {
-                        new NameValuePair("USER", userName),
-                        new NameValuePair("PASSW", password),
-                        new NameValuePair("PAG", "VT4.4.0.6"),
-                        new NameValuePair("TAPPO", "X"),
+                        new NameValuePair("USER", userName), //$NON-NLS-1$
+                        new NameValuePair("PASSW", password), //$NON-NLS-1$
+                        new NameValuePair("PAG", "VT4.4.0.6"), //$NON-NLS-1$ //$NON-NLS-2$
+                        new NameValuePair("TAPPO", "X"), //$NON-NLS-1$ //$NON-NLS-2$
                 });
 
                 client.executeMethod(method);
 
-                Parser parser = Parser.createParser(method.getResponseBodyAsString(), "");
+                Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$
                 NodeList list = parser.extractAllNodesThatMatch(new NodeClassFilter(RemarkNode.class));
                 for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();) {
                     RemarkNode node = (RemarkNode) iter.nextNode();
                     String text = node.getText();
-                    if (text.startsWith("USER")) {
+                    if (text.startsWith("USER")) { //$NON-NLS-1$
                         user = text.substring(4);
                     }
-                    if (text.startsWith("URT")) {
+                    if (text.startsWith("URT")) { //$NON-NLS-1$
                         urt = text.substring(3);
                     }
-                    else if (text.startsWith("PRT")) {
+                    else if (text.startsWith("PRT")) { //$NON-NLS-1$
                         prt = text.substring(3);
                     }
                 }
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to login server", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to login server", e); //$NON-NLS-1$
                 Activator.log(status);
                 return;
             }
 
-            if (user.equals("") || prt.equals("") || urt.equals("")) {
-                password = "";
+            if (user.equals("") || prt.equals("") || urt.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                password = ""; //$NON-NLS-1$
             }
 
-        } while (user.equals("") || prt.equals("") || urt.equals(""));
+        } while (user.equals("") || prt.equals("") || urt.equals("")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
         preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
@@ -239,7 +239,7 @@ public class WebConnector {
             IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
             userName = preferenceStore.getString(Activator.PREFS_USERNAME);
 
-            if (!"".equals(userName)) {
+            if (!"".equals(userName)) { //$NON-NLS-1$
                 account.setId(userName);
             }
         }
@@ -343,24 +343,24 @@ public class WebConnector {
         IOrder order = tracker.getOrder();
 
         List<NameValuePair> query = new ArrayList<NameValuePair>();
-        query.add(new NameValuePair("ACQAZ", order.getSide() == IOrderSide.Buy ? String.valueOf(order.getQuantity()) : ""));
-        query.add(new NameValuePair("VENAZ", order.getSide() == IOrderSide.Sell ? String.valueOf(order.getQuantity()) : ""));
-        query.add(new NameValuePair("PRZACQ", order.getType() != IOrderType.Market ? numberFormatter.format(order.getPrice()) : ""));
-        query.add(new NameValuePair("SCTLX", "immetti Borsa Ita"));
-        query.add(new NameValuePair("USER", user));
-        query.add(new NameValuePair("GEST", "AZIONARIO"));
-        query.add(new NameValuePair("TITO", getSecurityFeedSymbol(order.getSecurity())));
-        query.add(new NameValuePair("QPAR", ""));
+        query.add(new NameValuePair("ACQAZ", order.getSide() == IOrderSide.Buy ? String.valueOf(order.getQuantity()) : "")); //$NON-NLS-1$ //$NON-NLS-2$
+        query.add(new NameValuePair("VENAZ", order.getSide() == IOrderSide.Sell ? String.valueOf(order.getQuantity()) : "")); //$NON-NLS-1$ //$NON-NLS-2$
+        query.add(new NameValuePair("PRZACQ", order.getType() != IOrderType.Market ? numberFormatter.format(order.getPrice()) : "")); //$NON-NLS-1$ //$NON-NLS-2$
+        query.add(new NameValuePair("SCTLX", "immetti Borsa Ita")); //$NON-NLS-1$ //$NON-NLS-2$
+        query.add(new NameValuePair("USER", user)); //$NON-NLS-1$
+        query.add(new NameValuePair("GEST", "AZIONARIO")); //$NON-NLS-1$ //$NON-NLS-2$
+        query.add(new NameValuePair("TITO", getSecurityFeedSymbol(order.getSecurity()))); //$NON-NLS-1$
+        query.add(new NameValuePair("QPAR", "")); //$NON-NLS-1$ //$NON-NLS-2$
         if (order.getValidity() == IOrderValidity.GoodTillCancel || order.getValidity() == BrokerConnector.Valid30Days) {
-            query.add(new NameValuePair("VALID", "M"));
+            query.add(new NameValuePair("VALID", "M")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        query.add(new NameValuePair("FAS5", order.getRoute() != null ? order.getRoute().getId() : BrokerConnector.Immediate.getId()));
+        query.add(new NameValuePair("FAS5", order.getRoute() != null ? order.getRoute().getId() : BrokerConnector.Immediate.getId())); //$NON-NLS-1$
 
         // Inserisce l'ordine di acquisto
         try {
-            GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c");
+            GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setFollowRedirects(true);
-            query.add(new NameValuePair("MODO", "C"));
+            query.add(new NameValuePair("MODO", "C")); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
             logger.info(method.getURI().toString());
@@ -369,26 +369,26 @@ public class WebConnector {
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
                 logger.trace(inputLine);
-                if (inputLine.indexOf("VI TRASMETTO L'ORDINE DI") != -1) {
+                if (inputLine.indexOf("VI TRASMETTO L'ORDINE DI") != -1) { //$NON-NLS-1$
                     ok = true;
                     confirm = true;
                 }
-                if (inputLine.indexOf("ORDINE IMMESSO") != -1) {
+                if (inputLine.indexOf("ORDINE IMMESSO") != -1) { //$NON-NLS-1$
                     ok = true;
                     confirm = false;
                 }
                 if (!confirm && tracker.getId() == null) {
-                    int s = inputLine.indexOf("<i>rif.&nbsp;");
+                    int s = inputLine.indexOf("<i>rif.&nbsp;"); //$NON-NLS-1$
                     if (s != -1) {
-                        s = inputLine.indexOf(">", s + 13) + 1;
-                        int e = inputLine.indexOf("<", s);
+                        s = inputLine.indexOf(">", s + 13) + 1; //$NON-NLS-1$
+                        int e = inputLine.indexOf("<", s); //$NON-NLS-1$
                         tracker.setId(inputLine.substring(s, e));
                     }
                 }
             }
             in.close();
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error sending order [" + order.toString() + "]", e);
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error sending order [" + order.toString() + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
             Activator.log(status);
         }
 
@@ -401,10 +401,10 @@ public class WebConnector {
             ok = false;
 
             try {
-                GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c");
+                GetMethod method = new GetMethod("https://" + HOST + "/trading/ordimm5c"); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setFollowRedirects(true);
-                query.remove(new NameValuePair("MODO", "C"));
-                query.add(new NameValuePair("MODO", "V"));
+                query.remove(new NameValuePair("MODO", "C")); //$NON-NLS-1$ //$NON-NLS-2$
+                query.add(new NameValuePair("MODO", "V")); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
                 logger.info(method.getURI().toString());
@@ -413,22 +413,22 @@ public class WebConnector {
                 BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
                 while ((inputLine = in.readLine()) != null) {
                     logger.trace(inputLine);
-                    if (inputLine.indexOf("ORDINE IMMESSO") != -1) {
+                    if (inputLine.indexOf("ORDINE IMMESSO") != -1) { //$NON-NLS-1$
                         ok = true;
                     }
 
                     if (ok && tracker.getId() == null) {
-                        int s = inputLine.indexOf("<i>rif.&nbsp;");
+                        int s = inputLine.indexOf("<i>rif.&nbsp;"); //$NON-NLS-1$
                         if (s != -1) {
-                            s = inputLine.indexOf(">", s) + 1;
-                            int e = inputLine.indexOf("<", s);
+                            s = inputLine.indexOf(">", s) + 1; //$NON-NLS-1$
+                            int e = inputLine.indexOf("<", s); //$NON-NLS-1$
                             tracker.setId(inputLine.substring(s, e));
                         }
                     }
                 }
                 in.close();
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() + "]", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
                 Activator.log(status);
             }
 
@@ -447,15 +447,15 @@ public class WebConnector {
         String inputLine;
 
         try {
-            GetMethod method = new GetMethod("https://" + HOST + "/trading/ordmod5c");
+            GetMethod method = new GetMethod("https://" + HOST + "/trading/ordmod5c"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("TAST", "REVOCA"),
-                    new NameValuePair("USER", user),
-                    new NameValuePair("RIF", tracker.getId()),
-                    new NameValuePair("TIPO", "I"),
-                    new NameValuePair("PRZO", ""),
-                    new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())),
-                    new NameValuePair("FILL", "REVOCA"),
+                    new NameValuePair("TAST", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("USER", user), //$NON-NLS-1$
+                    new NameValuePair("RIF", tracker.getId()), //$NON-NLS-1$
+                    new NameValuePair("TIPO", "I"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("PRZO", ""), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())), //$NON-NLS-1$
+                    new NameValuePair("FILL", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
             logger.info(method.getURI().toString());
@@ -464,7 +464,7 @@ public class WebConnector {
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
                 logger.trace(inputLine);
-                if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1 || inputLine.indexOf("RICH.ANN.") != -1) {
+                if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1 || inputLine.indexOf("RICH.ANN.") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
                     ok = true;
                 }
             }
@@ -482,27 +482,27 @@ public class WebConnector {
 
     public void importWatchlists() {
         try {
-            GetMethod method = new GetMethod("https://" + HOST + "/trading/select");
+            GetMethod method = new GetMethod("https://" + HOST + "/trading/select"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setFollowRedirects(true);
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("USER", user),
-                    new NameValuePair("INCR", "N"),
+                    new NameValuePair("USER", user), //$NON-NLS-1$
+                    new NameValuePair("INCR", "N"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
             logger.info(method.getURI().toString());
             client.executeMethod(method);
 
-            Parser parser = Parser.createParser(method.getResponseBodyAsString(), "");
-            NodeList list = parser.extractAllNodesThatMatch(new HasAttributeFilter("name", "DEVAR"));
+            Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$
+            NodeList list = parser.extractAllNodesThatMatch(new HasAttributeFilter("name", "DEVAR")); //$NON-NLS-1$ //$NON-NLS-2$
             for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();) {
                 Object o = iter.nextNode();
                 if (o instanceof SelectTag) {
                     OptionTag[] options = ((SelectTag) o).getOptionTags();
                     for (int i = 0; i < options.length; i++) {
-                        if (options[i].getValue().equals("A0") || options[i].getValue().equals("AX")) {
+                        if (options[i].getValue().equals("A0") || options[i].getValue().equals("AX")) { //$NON-NLS-1$ //$NON-NLS-2$
                             continue;
                         }
-                        System.out.println(options[i].getValue() + " -> " + options[i].getOptionText());
+                        System.out.println(options[i].getValue() + " -> " + options[i].getOptionText()); //$NON-NLS-1$
                         getWatchlist(options[i].getValue(), options[i].getOptionText());
                     }
                 }
@@ -514,17 +514,17 @@ public class WebConnector {
 
     protected void getWatchlist(String id, String title) {
         try {
-            HttpMethod method = new GetMethod("https://" + HOST + "/trading/tabelc_4");
+            HttpMethod method = new GetMethod("https://" + HOST + "/trading/tabelc_4"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setFollowRedirects(true);
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("USER", user),
-                    new NameValuePair("DEVAR", id),
+                    new NameValuePair("USER", user), //$NON-NLS-1$
+                    new NameValuePair("DEVAR", id), //$NON-NLS-1$
             });
 
             logger.info(method.getURI().toString());
             client.executeMethod(method);
 
-            Parser parser = Parser.createParser(method.getResponseBodyAsString(), "");
+            Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$
             NodeList list = parser.extractAllNodesThatMatch(new NodeClassFilter(TableRow.class));
             for (SimpleNodeIterator iter = list.elements(); iter.hasMoreNodes();) {
                 TableRow row = (TableRow) iter.nextNode();
@@ -533,35 +533,35 @@ public class WebConnector {
                         continue;
                     }
 
-                    String symbol = "";
-                    String isin = "";
-                    String description = "";
+                    String symbol = ""; //$NON-NLS-1$
+                    String isin = ""; //$NON-NLS-1$
+                    String description = ""; //$NON-NLS-1$
 
                     LinkTag link = (LinkTag) ((TableColumn) row.getChild(1)).getChild(1);
-                    int s = link.getText().indexOf("TITO=");
+                    int s = link.getText().indexOf("TITO="); //$NON-NLS-1$
                     if (s != -1) {
                         s += 5;
-                        int e = link.getText().indexOf("&", s);
+                        int e = link.getText().indexOf("&", s); //$NON-NLS-1$
                         if (e == -1) {
                             e = link.getText().length();
                         }
                         symbol = link.getText().substring(s, e);
                     }
                     description = link.getFirstChild().getText();
-                    description = description.replaceAll("[\r\n]", " ").trim();
+                    description = description.replaceAll("[\r\n]", " ").trim(); //$NON-NLS-1$ //$NON-NLS-2$
 
                     link = (LinkTag) ((TableColumn) row.getChild(5)).getChild(0);
-                    s = link.getText().indexOf("tlv=");
+                    s = link.getText().indexOf("tlv="); //$NON-NLS-1$
                     if (s != -1) {
                         s += 4;
-                        int e = link.getText().indexOf("&", s);
+                        int e = link.getText().indexOf("&", s); //$NON-NLS-1$
                         if (e == -1) {
                             e = link.getText().length();
                         }
                         isin = link.getText().substring(s, e);
                     }
 
-                    System.out.println(symbol + " " + isin + " (" + description + ")");
+                    System.out.println(symbol + " " + isin + " (" + description + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
         } catch (Exception e) {

@@ -39,7 +39,7 @@ import org.eclipsetrader.directa.internal.core.WebConnector;
 
 public class WebBrowserView extends ViewPart {
 
-    public static final String VIEW_ID = "org.eclipsetrader.directa.browser";
+    public static final String VIEW_ID = "org.eclipsetrader.directa.browser"; //$NON-NLS-1$
 
     private Action stopAction;
     private Action refreshAction;
@@ -58,10 +58,10 @@ public class WebBrowserView extends ViewPart {
         super.init(site, memento);
 
         if (memento != null) {
-            url = memento.getString("url");
+            url = memento.getString("url"); //$NON-NLS-1$
         }
 
-        stopAction = new Action("Stop") {
+        stopAction = new Action(Messages.WebBrowserView_Stop) {
 
             @Override
             public void run() {
@@ -72,7 +72,7 @@ public class WebBrowserView extends ViewPart {
         stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_NAV_STOP));
         stopAction.setEnabled(false);
 
-        refreshAction = new Action("Refresh") {
+        refreshAction = new Action(Messages.WebBrowserView_Refresh) {
 
             @Override
             public void run() {
@@ -88,7 +88,7 @@ public class WebBrowserView extends ViewPart {
         IToolBarManager toolbarManager = site.getActionBars().getToolBarManager();
         toolbarManager.add(refreshAction);
         toolbarManager.add(stopAction);
-        toolbarManager.add(new Separator("additions"));
+        toolbarManager.add(new Separator("additions")); //$NON-NLS-1$
 
         site.getActionBars().updateActionBars();
     }
@@ -98,7 +98,7 @@ public class WebBrowserView extends ViewPart {
      */
     @Override
     public void saveState(IMemento memento) {
-        memento.putString("url", url);
+        memento.putString("url", url); //$NON-NLS-1$
         super.saveState(memento);
     }
 
@@ -180,14 +180,14 @@ public class WebBrowserView extends ViewPart {
 
     public void setUrl(String url) {
         WebConnector connector = WebConnector.getInstance();
-        if ("".equals(connector.getUser())) {
+        if ("".equals(connector.getUser())) { //$NON-NLS-1$
             connector.login();
         }
 
         this.url = url;
 
         String currentUrl = NLS.bind(url, new Object[] {
-                new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime()),
+                new SimpleDateFormat("ddMMyyyy").format(Calendar.getInstance().getTime()), //$NON-NLS-1$
                 connector.getUser(),
         });
 

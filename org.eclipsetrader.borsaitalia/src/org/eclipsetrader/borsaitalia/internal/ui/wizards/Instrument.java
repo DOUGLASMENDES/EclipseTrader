@@ -61,9 +61,9 @@ public class Instrument {
      */
     @Override
     public String toString() {
-        if ("".equals(company)) {
+        if ("".equals(company)) { //$NON-NLS-1$
             return code;
         }
-        return company + " (" + code + ")";
+        return company + " (" + code + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

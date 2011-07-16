@@ -48,7 +48,7 @@ public class Position implements IPosition {
     }
 
     public Position(String line) {
-        String[] item = line.split(";");
+        String[] item = line.split(";"); //$NON-NLS-1$
         security = getSecurityFromSymbol(item[IDX_SYMBOL]);
         quantity = Long.parseLong(item[IDX_PF_QUANTITY]);
         price = Double.parseDouble(item[IDX_AVERAGE_PRICE]);

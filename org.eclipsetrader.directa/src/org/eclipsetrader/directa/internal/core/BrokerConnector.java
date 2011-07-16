@@ -66,19 +66,19 @@ import org.osgi.framework.ServiceReference;
 
 public class BrokerConnector implements IBroker, IExecutableExtension, IExecutableExtensionFactory, Runnable {
 
-    public static final IOrderRoute Immediate = new OrderRoute("1", "immed");
-    public static final IOrderRoute MTA = new OrderRoute("2", "MTA");
-    public static final IOrderRoute CloseMTA = new OrderRoute("4", "clos-MTA");
-    public static final IOrderRoute AfterHours = new OrderRoute("5", "AfterHours");
-    public static final IOrderRoute Open = new OrderRoute("7", "open//");
+    public static final IOrderRoute Immediate = new OrderRoute("1", "immed"); //$NON-NLS-1$ //$NON-NLS-2$
+    public static final IOrderRoute MTA = new OrderRoute("2", "MTA"); //$NON-NLS-1$ //$NON-NLS-2$
+    public static final IOrderRoute CloseMTA = new OrderRoute("4", "clos-MTA"); //$NON-NLS-1$ //$NON-NLS-2$
+    public static final IOrderRoute AfterHours = new OrderRoute("5", "AfterHours"); //$NON-NLS-1$ //$NON-NLS-2$
+    public static final IOrderRoute Open = new OrderRoute("7", "open//"); //$NON-NLS-1$ //$NON-NLS-2$
 
-    public static final IOrderValidity Valid30Days = new OrderValidity("30days", "30 Days");
+    public static final IOrderValidity Valid30Days = new OrderValidity("30days", Messages.BrokerConnector_30Days); //$NON-NLS-1$
 
     private static BrokerConnector instance;
 
     private String id;
     private String name;
-    private String server = "213.92.13.4";
+    private String server = "213.92.13.4"; //$NON-NLS-1$
     private int port = 1080;
 
     Set<OrderMonitor> orders = new HashSet<OrderMonitor>();
@@ -109,8 +109,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
      */
     @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
+        id = config.getAttribute("id"); //$NON-NLS-1$
+        name = config.getAttribute("name"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -145,13 +145,13 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
      */
     @Override
     public void connect() {
-        if ("".equals(WebConnector.getInstance().getUser())) {
+        if ("".equals(WebConnector.getInstance().getUser())) { //$NON-NLS-1$
             WebConnector.getInstance().login();
         }
 
         if (thread == null || !thread.isAlive()) {
-            thread = new Thread(this, getName() + " - Orders Monitor");
-            logger.info("Starting " + thread.getName());
+            thread = new Thread(this, getName() + " - Orders Monitor"); //$NON-NLS-1$
+            logger.info("Starting " + thread.getName()); //$NON-NLS-1$
             thread.start();
         }
     }
@@ -175,7 +175,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
             } catch (InterruptedException e) {
                 // Do nothing
             }
-            logger.info("Stopped " + thread.getName());
+            logger.info("Stopped " + thread.getName()); //$NON-NLS-1$
             thread = null;
         }
     }
@@ -259,13 +259,13 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     @Override
     public IOrderMonitor prepareOrder(IOrder order) throws BrokerException {
         if (order.getType() != IOrderType.Limit && order.getType() != IOrderType.Market) {
-            throw new BrokerException("Invalid order type, must be Limit or Market");
+            throw new BrokerException(Messages.BrokerConnector_InvalidOrderType);
         }
         if (order.getSide() != IOrderSide.Buy && order.getSide() != IOrderSide.Sell) {
-            throw new BrokerException("Invalid order side, must be Buy or Sell");
+            throw new BrokerException(Messages.BrokerConnector_InvalidOrderSide);
         }
         if (order.getValidity() != IOrderValidity.Day && order.getValidity() != Valid30Days) {
-            throw new BrokerException("Invalid order validity, must be Day or 30 Days");
+            throw new BrokerException(Messages.BrokerConnector_InvalidOrderValidity);
         }
 
         return new OrderMonitor(WebConnector.getInstance(), this, order);
@@ -325,10 +325,10 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
         }
     }
 
-    private static final String LOGIN = "21";
-    private static final String UNKNOWN55 = "55";
-    private static final String UNKNOWN70 = "70";
-    private static final String HEARTBEAT = "40";
+    private static final String LOGIN = "21"; //$NON-NLS-1$
+    private static final String UNKNOWN55 = "55"; //$NON-NLS-1$
+    private static final String UNKNOWN70 = "70"; //$NON-NLS-1$
+    private static final String HEARTBEAT = "40"; //$NON-NLS-1$
 
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
@@ -367,8 +367,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
         for (;;) {
             try {
                 if (socketSelector.select(30 * 1000) == 0) {
-                    logger.trace(">" + HEARTBEAT);
-                    socketChannel.write(ByteBuffer.wrap(new String(HEARTBEAT + "\r\n").getBytes()));
+                    logger.trace(">" + HEARTBEAT); //$NON-NLS-1$
+                    socketChannel.write(ByteBuffer.wrap(new String(HEARTBEAT + "\r\n").getBytes())); //$NON-NLS-1$
                 }
             } catch (Exception e) {
                 break;
@@ -401,8 +401,8 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
                     if (key.isWritable()) {
-                        logger.info(">" + LOGIN + WebConnector.getInstance().getUser());
-                        socketChannel.write(ByteBuffer.wrap(new String(LOGIN + WebConnector.getInstance().getUser() + "\r\n").getBytes()));
+                        logger.info(">" + LOGIN + WebConnector.getInstance().getUser()); //$NON-NLS-1$
+                        socketChannel.write(ByteBuffer.wrap(new String(LOGIN + WebConnector.getInstance().getUser() + "\r\n").getBytes())); //$NON-NLS-1$
 
                         // Register an interest in reading on this channel
                         key.interestOps(SelectionKey.OP_READ);
@@ -411,18 +411,18 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                         dst.clear();
                         int readed = socketChannel.read(dst);
                         if (readed > 0) {
-                            String[] s = new String(dst.array(), 0, readed).split("\r\n");
+                            String[] s = new String(dst.array(), 0, readed).split("\r\n"); //$NON-NLS-1$
                             for (int i = 0; i < s.length; i++) {
-                                logger.info("<" + s[i]);
+                                logger.info("<" + s[i]); //$NON-NLS-1$
 
-                                if (s[i].endsWith(";" + WebConnector.getInstance().getUser() + ";")) {
-                                    logger.info(">" + UNKNOWN70);
-                                    socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN70 + "\r\n").getBytes()));
-                                    logger.info(">" + UNKNOWN55);
-                                    socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN55 + "\r\n").getBytes()));
+                                if (s[i].endsWith(";" + WebConnector.getInstance().getUser() + ";")) { //$NON-NLS-1$ //$NON-NLS-2$
+                                    logger.info(">" + UNKNOWN70); //$NON-NLS-1$
+                                    socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN70 + "\r\n").getBytes())); //$NON-NLS-1$
+                                    logger.info(">" + UNKNOWN55); //$NON-NLS-1$
+                                    socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN55 + "\r\n").getBytes())); //$NON-NLS-1$
                                 }
 
-                                if (s[i].indexOf(";6;5;") != -1 || s[i].indexOf(";8;0;") != -1) {
+                                if (s[i].indexOf(";6;5;") != -1 || s[i].indexOf(";8;0;") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
                                     try {
                                         OrderMonitor monitor = parseOrderLine(s[i]);
 
@@ -451,10 +451,10 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                                         Activator.log(status);
                                     }
                                 }
-                                if (s[i].indexOf(";6;0;") != -1) {
+                                if (s[i].indexOf(";6;0;") != -1) { //$NON-NLS-1$
                                     updateStatusLine(s[i]);
                                 }
-                                if (s[i].indexOf(";7;0;") != -1) {
+                                if (s[i].indexOf(";7;0;") != -1) { //$NON-NLS-1$
                                     try {
                                         positions.add(new Position(s[i]));
                                     } catch (Exception e) {
@@ -462,7 +462,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                                         Activator.log(status);
                                     }
                                 }
-                                if (s[i].indexOf(";7;9;") != -1) {
+                                if (s[i].indexOf(";7;9;") != -1) { //$NON-NLS-1$
                                     Account account = WebConnector.getInstance().getAccount();
                                     account.setPositions(positions.toArray(new Position[positions.size()]));
                                     positions.clear();
@@ -490,11 +490,11 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     private static final int IDX_TIME = 20;
     private static final int IDX_FILLED_QUANTITY = 25;
 
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd HHmmss");
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd HHmmss"); //$NON-NLS-1$
     private NumberFormat numberFormatter = NumberFormat.getInstance(Locale.US);
 
     protected OrderMonitor parseOrderLine(String line) throws ParseException {
-        String[] item = line.split(";");
+        String[] item = line.split(";"); //$NON-NLS-1$
 
         OrderMonitor tracker = null;
         synchronized (orders) {
@@ -515,14 +515,14 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
             }
         }
         if (tracker == null) {
-            Long quantity = !item[IDX_QUANTITY].equals("") ? Long.parseLong(item[IDX_QUANTITY]) : null;
-            if (quantity == null && item.length > IDX_FILLED_QUANTITY && !item[IDX_FILLED_QUANTITY].equals("")) {
+            Long quantity = !item[IDX_QUANTITY].equals("") ? Long.parseLong(item[IDX_QUANTITY]) : null; //$NON-NLS-1$
+            if (quantity == null && item.length > IDX_FILLED_QUANTITY && !item[IDX_FILLED_QUANTITY].equals("")) { //$NON-NLS-1$
                 try {
                     quantity = numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue();
                 } catch (Exception e) {
                 }
             }
-            Order order = new Order(null, !item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market, item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy, getSecurityFromSymbol(item[IDX_SYMBOL]), quantity, !item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null);
+            Order order = new Order(null, !item[IDX_PRICE].equals("") ? IOrderType.Limit : IOrderType.Market, item[IDX_SIDE].equalsIgnoreCase("V") ? IOrderSide.Sell : IOrderSide.Buy, getSecurityFromSymbol(item[IDX_SYMBOL]), quantity, !item[IDX_PRICE].equals("") ? numberFormatter.parse(item[IDX_PRICE]).doubleValue() : null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             tracker = new OrderMonitor(WebConnector.getInstance(), BrokerConnector.getInstance(), order);
             tracker.setId(item[IDX_ID]);
         }
@@ -531,18 +531,18 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
         ;
 
         try {
-            Method classMethod = order.getClass().getMethod("setDate", Date.class);
+            Method classMethod = order.getClass().getMethod("setDate", Date.class); //$NON-NLS-1$
             if (classMethod != null) {
                 if (item[IDX_TIME].length() < 6) {
-                    item[IDX_TIME] = "0" + item[IDX_TIME];
+                    item[IDX_TIME] = "0" + item[IDX_TIME]; //$NON-NLS-1$
                 }
-                classMethod.invoke(order, dateFormatter.parse(item[IDX_DATE] + " " + item[IDX_TIME]));
+                classMethod.invoke(order, dateFormatter.parse(item[IDX_DATE] + " " + item[IDX_TIME])); //$NON-NLS-1$
             }
         } catch (Exception e) {
         }
 
-        if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) {
-            if (!item[IDX_AVERAGE_PRICE].equals("")) {
+        if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) { //$NON-NLS-1$ //$NON-NLS-2$
+            if (!item[IDX_AVERAGE_PRICE].equals("")) { //$NON-NLS-1$
                 try {
                     tracker.setAveragePrice(numberFormatter.parse(item[IDX_AVERAGE_PRICE]).doubleValue());
                 } catch (Exception e) {
@@ -552,7 +552,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                 tracker.setAveragePrice(numberFormatter.parse(item[IDX_PRICE]).doubleValue());
             }
 
-            if (!item[IDX_FILLED_QUANTITY].equals("")) {
+            if (!item[IDX_FILLED_QUANTITY].equals("")) { //$NON-NLS-1$
                 try {
                     tracker.setFilledQuantity(numberFormatter.parse(item[IDX_FILLED_QUANTITY]).longValue());
                 } catch (Exception e) {
@@ -561,16 +561,16 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
         }
 
         IOrderStatus status = tracker.getStatus();
-        if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) {
+        if (item[IDX_STATUS].equals("e") || item[IDX_STATUS].equals("e ")) { //$NON-NLS-1$ //$NON-NLS-2$
             status = IOrderStatus.Filled;
         }
-        else if (item[IDX_STATUS].equals("n") || item[IDX_STATUS].equals("n ") || item[IDX_STATUS].equals("j")) {
+        else if (item[IDX_STATUS].equals("n") || item[IDX_STATUS].equals("n ") || item[IDX_STATUS].equals("j")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             status = IOrderStatus.PendingNew;
         }
-        else if (item[IDX_STATUS].equals("zA") || item[IDX_STATUS].equals("z ")) {
+        else if (item[IDX_STATUS].equals("zA") || item[IDX_STATUS].equals("z ")) { //$NON-NLS-1$ //$NON-NLS-2$
             status = IOrderStatus.Canceled;
         }
-        else if (item[IDX_STATUS].equals("na")) {
+        else if (item[IDX_STATUS].equals("na")) { //$NON-NLS-1$
             status = IOrderStatus.PendingCancel;
         }
         else {
@@ -595,7 +595,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     }
 
     protected Position parsePositionLine(String line) {
-        String[] item = line.split(";");
+        String[] item = line.split(";"); //$NON-NLS-1$
 
         ISecurity security = getSecurityFromSymbol(item[IDX_SYMBOL]);
         Long quantity = Long.parseLong(item[IDX_PF_QUANTITY]);
@@ -611,13 +611,13 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
             IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
             final StatusLineContributionItem contributionItem = (StatusLineContributionItem) statusLine.find(Activator.PLUGIN_ID);
             try {
-                String[] item = line.split("\\;");
+                String[] item = line.split("\\;"); //$NON-NLS-1$
                 final double liquidity = amountParser.parse(item[3]).doubleValue();
                 Display.getDefault().asyncExec(new Runnable() {
 
                     @Override
                     public void run() {
-                        contributionItem.setText("Liq: " + amountFormatter.format(liquidity));
+                        contributionItem.setText(Messages.BrokerConnector_Liquidity + amountFormatter.format(liquidity));
                     }
                 });
             } catch (Exception e) {

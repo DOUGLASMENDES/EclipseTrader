@@ -55,7 +55,7 @@ public class DataImportJob extends Job {
     private BackfillConnector connector = new BackfillConnector();
 
     public DataImportJob(ISecurity[] securities, int mode, Date fromDate, Date toDate, TimeSpan[] timeSpan) {
-        super("Import Data");
+        super(Messages.DataImportJob_Name);
         this.securities = securities;
         this.mode = mode;
         this.fromDate = fromDate;
@@ -79,7 +79,7 @@ public class DataImportJob extends Job {
                     return Status.CANCEL_STATUS;
                 }
 
-                monitor.subTask(security.getName().replace("&", "&&"));
+                monitor.subTask(security.getName().replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 
                 try {
                     IStoreObject storeObject = (IStoreObject) security.getAdapter(IStoreObject.class);
@@ -120,7 +120,7 @@ public class DataImportJob extends Job {
                             }
 
                             if (currentTimeSpan.equals(TimeSpan.days(1))) {
-                                monitor.subTask(security.getName().replace("&", "&&"));
+                                monitor.subTask(security.getName().replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
 
                                 IOHLC[] ohlc = connector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
                                 if (ohlc != null && ohlc.length != 0) {
@@ -128,8 +128,8 @@ public class DataImportJob extends Job {
                                 }
                             }
                             else {
-                                monitor.subTask(NLS.bind("{0} ({1})", new Object[] {
-                                        security.getName().replace("&", "&&"),
+                                monitor.subTask(NLS.bind("{0} ({1})", new Object[] { //$NON-NLS-1$
+                                        security.getName().replace("&", "&&"), //$NON-NLS-1$ //$NON-NLS-2$
                                         currentTimeSpan.toString()
                                 }));
 
@@ -178,12 +178,12 @@ public class DataImportJob extends Job {
                             }
                         }
                         else {
-                            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Missing data for " + security.getName(), null);
+                            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, Messages.DataImportJob_MissingDataFor + security.getName(), null);
                             Activator.log(status);
                         }
                     }
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error downloading data for " + security.getName(), e);
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, Messages.DataImportJob_ErrorDownloadingDataFor + security.getName(), e);
                     Activator.log(status);
                 }
             }

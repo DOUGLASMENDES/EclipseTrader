@@ -38,8 +38,8 @@ public class InstrumentsImportWizard extends Wizard implements IImportWizard {
     private MarketsPage marketsPage;
 
     public InstrumentsImportWizard() {
-        setWindowTitle("Import Instruments");
-        setDefaultPageImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/import_wiz.png"));
+        setWindowTitle(Messages.InstrumentsImportWizard_WindowTitle);
+        setDefaultPageImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/wizban/import_wiz.png")); //$NON-NLS-1$
         setNeedsProgressMonitor(false);
     }
 
@@ -76,10 +76,10 @@ public class InstrumentsImportWizard extends Wizard implements IImportWizard {
                     FeedProperties properties = new FeedProperties();
                     properties.setProperty(Activator.PROP_CODE, instruments[i].getCode());
                     properties.setProperty(Activator.PROP_ISIN, instruments[i].getIsin());
-                    properties.setProperty("org.eclipsetrader.yahoo.symbol", instruments[i].getCode() + ".MI");
+                    properties.setProperty("org.eclipsetrader.yahoo.symbol", instruments[i].getCode() + ".MI"); //$NON-NLS-1$ //$NON-NLS-2$
                     FeedIdentifier identifier = new FeedIdentifier(instruments[i].getCode(), properties);
 
-                    security[i] = new Stock(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany() : instruments[i].getCode(), identifier, Currency.getInstance("EUR"));
+                    security[i] = new Stock(!"".equals(instruments[i].getCompany()) ? instruments[i].getCompany() : instruments[i].getCode(), identifier, Currency.getInstance("EUR")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 repository.saveAdaptable(security);
 

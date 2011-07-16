@@ -300,7 +300,7 @@ public class Account implements IAccount {
         marshaller.setProperty(Marshaller.JAXB_ENCODING, System.getProperty("file.encoding")); //$NON-NLS-1$
 
         Position[] elements = positions.toArray(new Position[positions.size()]);
-        JAXBElement<Position[]> element = new JAXBElement<Position[]>(new QName("list"), Position[].class, elements);
+        JAXBElement<Position[]> element = new JAXBElement<Position[]>(new QName("list"), Position[].class, elements); //$NON-NLS-1$
         marshaller.marshal(element, new FileWriter(file));
     }
 }

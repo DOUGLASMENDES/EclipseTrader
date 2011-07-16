@@ -40,8 +40,8 @@ public class CreaMsg {
         System.arraycopy(prt.getBytes(), 0, msg, 14, prt.getBytes().length);
         System.arraycopy(appName.getBytes(), 0, msg, 24, Math.min(appName.getBytes().length, 10));
         System.arraycopy(version.getBytes(), 0, msg, 34, Math.min(version.getBytes().length, 10));
-        System.arraycopy("DIRECTA".getBytes(), 0, msg, 44, Math.min("DIRECTA".getBytes().length, 10));
-        System.arraycopy("141".getBytes(), 0, msg, 54, Math.min("141".getBytes().length, 10));
+        System.arraycopy("DIRECTA".getBytes(), 0, msg, 44, Math.min("DIRECTA".getBytes().length, 10)); //$NON-NLS-1$ //$NON-NLS-2$
+        System.arraycopy("141".getBytes(), 0, msg, 54, Math.min("141".getBytes().length, 10)); //$NON-NLS-1$ //$NON-NLS-2$
         return msg;
     }
 

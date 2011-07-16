@@ -112,7 +112,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     public static final int ASK_QUANTITA = 41;
     public static final int ASK_PREZZO = 42;
     //private static final String DESCRIPTION = "d";
-    private static final String DATI = "t2";
+    private static final String DATI = "t2"; //$NON-NLS-1$
     //private static final String GRAPH = "g";
 
     private String id;
@@ -132,9 +132,9 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     private Timer barTimer;
     private boolean stopping = false;
 
-    private String streamingServer = "213.92.13.41";
+    private String streamingServer = "213.92.13.41"; //$NON-NLS-1$
     private int streamingPort = 8002;
-    private String streamingVersion = "3.0";
+    private String streamingVersion = "3.0"; //$NON-NLS-1$
     private Socket socket;
     private OutputStream os;
     private DataInputStream is;
@@ -172,11 +172,11 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         symbolSubscriptions = new HashMap<String, FeedSubscription>();
         symbolSubscriptions2 = new HashMap<String, FeedSubscription2>();
 
-        timeZone = TimeZone.getTimeZone("Europe/Rome");
+        timeZone = TimeZone.getTimeZone("Europe/Rome"); //$NON-NLS-1$
 
-        df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"); //$NON-NLS-1$
         df.setTimeZone(timeZone);
-        df2 = new SimpleDateFormat("dd.MM.yyyy HHmmss");
+        df2 = new SimpleDateFormat("dd.MM.yyyy HHmmss"); //$NON-NLS-1$
         df2.setTimeZone(timeZone);
     }
 
@@ -192,8 +192,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
      */
     @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
+        id = config.getAttribute("id"); //$NON-NLS-1$
+        name = config.getAttribute("name"); //$NON-NLS-1$
         instance = this;
     }
 
@@ -377,17 +377,17 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         stopping = false;
 
         if (notificationThread == null || !notificationThread.isAlive()) {
-            notificationThread = new Thread(notificationRunnable, name + " - Notification");
+            notificationThread = new Thread(notificationRunnable, name + " - Notification"); //$NON-NLS-1$
             notificationThread.start();
         }
 
         if (thread == null || !thread.isAlive()) {
-            thread = new Thread(this, name + " - Data Reader");
+            thread = new Thread(this, name + " - Data Reader"); //$NON-NLS-1$
             thread.start();
         }
 
         if (barTimer == null) {
-            barTimer = new Timer(name + " - Bar Timer", true);
+            barTimer = new Timer(name + " - Bar Timer", true); //$NON-NLS-1$
             barTimer.scheduleAtFixedRate(new TimerTask() {
 
                 @Override
@@ -424,7 +424,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             try {
                 thread.join(30 * 1000);
             } catch (InterruptedException e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e); //$NON-NLS-1$
                 Activator.log(status);
             }
             thread = null;
@@ -437,7 +437,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 }
                 notificationThread.join(30 * 1000);
             } catch (InterruptedException e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping notification thread", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping notification thread", e); //$NON-NLS-1$
                 Activator.log(status);
             }
             notificationThread = null;
@@ -485,7 +485,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             os = socket.getOutputStream();
             is = new DataInputStream(socket.getInputStream());
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e));
+            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e)); //$NON-NLS-1$
             try {
                 if (socket != null) {
                     socket.close();
@@ -499,7 +499,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
         // Login
         try {
-            os.write(CreaMsg.creaLoginMsg(WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt(), "flashBook", streamingVersion));
+            os.write(CreaMsg.creaLoginMsg(WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt(), "flashBook", streamingVersion)); //$NON-NLS-1$
             os.flush();
 
             byte bHeaderLogin[] = new byte[4];
@@ -513,7 +513,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             is.read(msgResp);
             if (Util.byteToInt(bHeaderLogin[1]) == CreaMsg.ERROR_MSG) {
                 ErrorMessage eMsg = new ErrorMessage(msgResp);
-                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server: " + eMsg.sMessageError, null));
+                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server: " + eMsg.sMessageError, null)); //$NON-NLS-1$
                 return;
             }
             try {
@@ -521,11 +521,11 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 os.flush();
             } catch (Exception e) {
                 thread = null;
-                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error starting data stream", e));
+                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error starting data stream", e)); //$NON-NLS-1$
                 return;
             }
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e));
+            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error connecting to streaming server", e)); //$NON-NLS-1$
             return;
         }
 
@@ -538,7 +538,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                     updateStreamSubscriptions();
                 } catch (Exception e) {
                     thread = null;
-                    Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error updating stream subscriptions", e));
+                    Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error updating stream subscriptions", e)); //$NON-NLS-1$
                     break;
                 }
             }
@@ -553,7 +553,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                     n += r;
                 }
             } catch (Exception e) {
-                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e));
+                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e)); //$NON-NLS-1$
                 break;
             }
 
@@ -575,7 +575,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
                 if (h.tipo == CreaMsg.ERROR_MSG) {
                     ErrorMessage eMsg = new ErrorMessage(mes);
-                    Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Message from server: " + eMsg.sMessageError, null));
+                    Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Message from server: " + eMsg.sMessageError, null)); //$NON-NLS-1$
                 }
                 else if (h.tipo == Message.TIP_ECHO) {
                     try {
@@ -600,7 +600,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                             continue;
                         }
                     } catch (Exception e) {
-                        Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error decoding incoming message", e));
+                        Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error decoding incoming message", e)); //$NON-NLS-1$
                         continue;
                     }
 
@@ -613,14 +613,14 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             os.write(CreaMsg.creaStopDataMsg());
             os.flush();
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error stopping data stream", e));
+            Activator.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error stopping data stream", e)); //$NON-NLS-1$
         }
 
         try {
             os.write(CreaMsg.creaLogoutMsg());
             os.flush();
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error closing connection to streaming server", e));
+            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error closing connection to streaming server", e)); //$NON-NLS-1$
         }
 
         try {
@@ -628,7 +628,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             is.close();
             socket.close();
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error closing connection to streaming server", e));
+            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error closing connection to streaming server", e)); //$NON-NLS-1$
         }
 
         os = null;
@@ -636,7 +636,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         socket = null;
 
         if (!isStopping()) {
-            thread = new Thread(this, name + " - Data Reader");
+            thread = new Thread(this, name + " - Data Reader"); //$NON-NLS-1$
             try {
                 Thread.sleep(2 * 1000);
             } catch (Exception e) {
@@ -677,7 +677,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         }
 
         if (toRemove.size() != 0) {
-            logger.info("Removing " + toRemove);
+            logger.info("Removing " + toRemove); //$NON-NLS-1$
             int flag[] = new int[toRemove.size()];
             for (int i = 0; i < flag.length; i++) {
                 flag[i] = 0;
@@ -687,7 +687,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         }
 
         if (toAdd.size() != 0) {
-            logger.info("Adding " + toAdd);
+            logger.info("Adding " + toAdd); //$NON-NLS-1$
             String s[] = toAdd.toArray(new String[toAdd.size()]);
             int flag[] = new int[s.length];
             for (int i = 0; i < flag.length; i++) {
@@ -709,7 +709,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             }
 
             if (toMod.size() != 0) {
-                logger.info("Modifying " + toMod);
+                logger.info("Modifying " + toMod); //$NON-NLS-1$
 
                 String s[] = toMod.keySet().toArray(new String[toMod.keySet().size()]);
                 int flag[] = new int[s.length];
@@ -832,7 +832,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
 
         try {
-            HttpMethod method = createMethod(sTit, "t", streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
+            HttpMethod method = createMethod(sTit, "t", streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt()); //$NON-NLS-1$
             method.setFollowRedirects(true);
 
             HttpClient client = new HttpClient();
@@ -843,13 +843,13 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
             String s5;
             while ((s5 = bufferedreader.readLine()) != null) {
-                String[] campo = s5.split("\\;");
+                String[] campo = s5.split("\\;"); //$NON-NLS-1$
                 if (campo.length != 0) {
                     hashtable.put(campo[0], campo);
                 }
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e);
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e); //$NON-NLS-1$
             Activator.log(status);
         }
 
@@ -875,7 +875,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 subscription.setBook((IBook) newValue);
                 subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), oldValue, newValue));
             } catch (Exception e) {
-                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e));
+                Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e)); //$NON-NLS-1$
             }
         }
 
@@ -889,12 +889,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         }
 
         try {
-            String s = "[!QUOT]";
+            String s = "[!QUOT]"; //$NON-NLS-1$
             byte byte0 = 43;
 
             Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
             try {
-                HttpMethod method = createMethodOld(sTit, DATI, "213.92.13.41", WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
+                HttpMethod method = createMethodOld(sTit, DATI, "213.92.13.41", WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt()); //$NON-NLS-1$
                 method.setFollowRedirects(true);
 
                 HttpClient client = new HttpClient();
@@ -913,18 +913,18 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                         if (s5.startsWith(s)) {
                             String as[] = new String[43];
                             for (int i = 0; i < 43; i++) {
-                                as[i] = "0";
+                                as[i] = "0"; //$NON-NLS-1$
                             }
 
-                            StringTokenizer stringtokenizer = new StringTokenizer(s5, ",\t");
+                            StringTokenizer stringtokenizer = new StringTokenizer(s5, ",\t"); //$NON-NLS-1$
                             String s2 = stringtokenizer.nextToken();
                             s2 = s2.substring(s2.indexOf(s) + s.length()).trim();
                             for (int j = 0; j < byte0; j++) {
                                 String s4;
                                 try {
                                     s4 = stringtokenizer.nextToken().trim();
-                                    if (s4.equals("")) {
-                                        s4 = "0";
+                                    if (s4.equals("")) { //$NON-NLS-1$
+                                        s4 = "0"; //$NON-NLS-1$
                                     }
                                 } catch (NoSuchElementException nosuchelementexception) {
                                     hashtable.put(s2, as);
@@ -934,17 +934,17 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                             }
 
                             if (as[2].length() == 6) {
-                                as[2] = as[2].substring(0, 2) + ":" + as[2].substring(2, 4) + ":" + as[2].substring(4, 6);
+                                as[2] = as[2].substring(0, 2) + ":" + as[2].substring(2, 4) + ":" + as[2].substring(4, 6); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                             if (as[3].length() == 8) {
-                                as[3] = as[3].substring(6, 8) + "." + as[3].substring(4, 6) + "." + as[3].substring(0, 4);
+                                as[3] = as[3].substring(6, 8) + "." + as[3].substring(4, 6) + "." + as[3].substring(0, 4); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                             hashtable.put(s2, as);
                         }
                     } while ((s5 = bufferedreader.readLine()) != null);
                 }
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e); //$NON-NLS-1$
                 Activator.log(status);
             }
 
@@ -965,21 +965,21 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 priceData.setLast(Double.parseDouble(sVal[PREZZO]));
                 priceData.setVolume(Long.parseLong(sVal[VOLUME]));
                 try {
-                    if (sVal[DATA].equals("0")) {
-                        sVal[DATA] = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
+                    if (sVal[DATA].equals("0")) { //$NON-NLS-1$
+                        sVal[DATA] = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime()); //$NON-NLS-1$
                     }
 
                     if (sVal[ORA].indexOf(':') == -1) {
                         if (sVal[ORA].length() < 6) {
-                            sVal[ORA] = "0" + sVal[ORA];
+                            sVal[ORA] = "0" + sVal[ORA]; //$NON-NLS-1$
                         }
-                        priceData.setTime(df2.parse(sVal[DATA] + " " + sVal[ORA]));
+                        priceData.setTime(df2.parse(sVal[DATA] + " " + sVal[ORA])); //$NON-NLS-1$
                     }
                     else {
-                        priceData.setTime(df.parse(sVal[DATA] + " " + sVal[ORA]));
+                        priceData.setTime(df.parse(sVal[DATA] + " " + sVal[ORA])); //$NON-NLS-1$
                     }
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e);
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     Activator.log(status);
                 }
                 Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
@@ -1020,7 +1020,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
             wakeupNotifyThread();
         } catch (Exception e) {
-            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e));
+            Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e)); //$NON-NLS-1$
         }
     }
 
@@ -1033,40 +1033,40 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     }
 
     private HttpMethod createMethod(String as[], String mode, String host, String urt, String prt) throws MalformedURLException {
-        GetMethod method = new GetMethod("http://" + host + "/preqs/getdata.php");
+        GetMethod method = new GetMethod("http://" + host + "/preqs/getdata.php"); //$NON-NLS-1$ //$NON-NLS-2$
 
         StringBuffer s = new StringBuffer();
         for (int i = 0; i < as.length; i++) {
             s.append(as[i]);
-            s.append("|");
+            s.append("|"); //$NON-NLS-1$
         }
 
         method.setQueryString(new NameValuePair[] {
-                new NameValuePair("modo", mode),
-                new NameValuePair("u", urt),
-                new NameValuePair("p", prt),
-                new NameValuePair("out", "p"),
-                new NameValuePair("listaid", s.toString()),
-                new NameValuePair("lb", "20"),
+                new NameValuePair("modo", mode), //$NON-NLS-1$
+                new NameValuePair("u", urt), //$NON-NLS-1$
+                new NameValuePair("p", prt), //$NON-NLS-1$
+                new NameValuePair("out", "p"), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("listaid", s.toString()), //$NON-NLS-1$
+                new NameValuePair("lb", "20"), //$NON-NLS-1$ //$NON-NLS-2$
         });
 
         return method;
     }
 
     private HttpMethod createMethodOld(String as[], String mode, String host, String urt, String prt) throws MalformedURLException {
-        GetMethod method = new GetMethod("http://" + host + "/cgi-bin/preqa.fcgi");
+        GetMethod method = new GetMethod("http://" + host + "/cgi-bin/preqa.fcgi"); //$NON-NLS-1$ //$NON-NLS-2$
 
         StringBuffer s = new StringBuffer();
         for (int i = 0; i < as.length; i++) {
             s.append(as[i]);
-            s.append("|");
+            s.append("|"); //$NON-NLS-1$
         }
 
         method.setQueryString(new NameValuePair[] {
-                new NameValuePair("modo", mode),
-                new NameValuePair("stcmd", s.toString()),
-                new NameValuePair("u", urt),
-                new NameValuePair("p", prt),
+                new NameValuePair("modo", mode), //$NON-NLS-1$
+                new NameValuePair("stcmd", s.toString()), //$NON-NLS-1$
+                new NameValuePair("u", urt), //$NON-NLS-1$
+                new NameValuePair("p", prt), //$NON-NLS-1$
         });
 
         return method;

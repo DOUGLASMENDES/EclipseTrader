@@ -32,8 +32,8 @@ public class MarketsPage extends WizardPage {
     private CheckboxTableViewer markets;
 
     public MarketsPage() {
-        super("markets", "Markets", null);
-        setDescription("Assign the securities to one or more markets.");
+        super("markets", Messages.MarketsPage_Name, null); //$NON-NLS-1$
+        setDescription(Messages.MarketsPage_Description);
     }
 
     /* (non-Javadoc)
@@ -47,7 +47,7 @@ public class MarketsPage extends WizardPage {
         initializeDialogUnits(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Markets:");
+        label.setText(Messages.MarketsPage_Markets);
         label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
         markets = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         markets.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));

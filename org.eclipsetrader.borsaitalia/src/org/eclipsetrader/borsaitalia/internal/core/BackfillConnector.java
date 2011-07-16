@@ -58,8 +58,8 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
      */
     @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
+        id = config.getAttribute("id"); //$NON-NLS-1$
+        name = config.getAttribute("name"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -132,23 +132,23 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
             return null;
         }
 
-        String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY");
+        String period = String.valueOf(timeSpan.getLength()) + (timeSpan.getUnits() == Units.Minutes ? "MIN" : "DAY"); //$NON-NLS-1$ //$NON-NLS-2$
 
         List<OHLC> list = new ArrayList<OHLC>();
 
         try {
-            HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll");
+            HttpMethod method = new GetMethod("http://" + host + "/scripts/cligipsw.dll"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("app", "tic_d"),
-                    new NameValuePair("action", "dwnld4push"),
-                    new NameValuePair("cod", code),
-                    new NameValuePair("codneb", isin),
-                    new NameValuePair("req_type", "GRAF_DS"),
-                    new NameValuePair("ascii", "1"),
-                    new NameValuePair("form_id", ""),
-                    new NameValuePair("period", period),
-                    new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(from)),
-                    new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(to)),
+                    new NameValuePair("app", "tic_d"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("action", "dwnld4push"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("cod", code), //$NON-NLS-1$
+                    new NameValuePair("codneb", isin), //$NON-NLS-1$
+                    new NameValuePair("req_type", "GRAF_DS"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("ascii", "1"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("form_id", ""), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("period", period), //$NON-NLS-1$
+                    new NameValuePair("From", new SimpleDateFormat("yyyyMMdd000000").format(from)), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("To", new SimpleDateFormat("yyyyMMdd000000").format(to)), //$NON-NLS-1$ //$NON-NLS-2$
             });
             method.setFollowRedirects(true);
 
@@ -159,9 +159,9 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
 
             String inputLine = in.readLine();
-            if (inputLine.startsWith("@")) {
+            if (inputLine.startsWith("@")) { //$NON-NLS-1$
                 while ((inputLine = in.readLine()) != null) {
-                    if (inputLine.startsWith("@") || inputLine.length() == 0) {
+                    if (inputLine.startsWith("@") || inputLine.length() == 0) { //$NON-NLS-1$
                         continue;
                     }
 
@@ -176,7 +176,7 @@ public class BackfillConnector implements IBackfillConnector, IExecutableExtensi
                 }
             }
             else {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, NLS.bind("Unexpected response from {0}: {1}", new Object[] { //$NON-NLS-1$
                         method.getURI().toString(), inputLine
                 }), null);
                 Activator.getDefault().getLog().log(status);

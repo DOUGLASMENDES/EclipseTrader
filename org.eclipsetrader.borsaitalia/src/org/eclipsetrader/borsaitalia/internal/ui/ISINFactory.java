@@ -23,7 +23,7 @@ import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class ISINFactory implements IDataProviderFactory, IExecutableExtension, IExecutableExtensionFactory {
 
-    public static final String SYMBOL_PROPERTY = "org.eclipsetrader.borsaitalia.isin";
+    public static final String SYMBOL_PROPERTY = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -119,8 +119,8 @@ public class ISINFactory implements IDataProviderFactory, IExecutableExtension, 
      */
     @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
+        id = config.getAttribute("id"); //$NON-NLS-1$
+        name = config.getAttribute("name"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

@@ -42,7 +42,7 @@ public class LoginAction implements IWorkbenchWindowActionDelegate {
     @Override
     public void run(IAction action) {
         WebConnector connector = WebConnector.getInstance();
-        if ("".equals(connector.getUser())) {
+        if ("".equals(connector.getUser())) { //$NON-NLS-1$
             connector.login();
         }
     }

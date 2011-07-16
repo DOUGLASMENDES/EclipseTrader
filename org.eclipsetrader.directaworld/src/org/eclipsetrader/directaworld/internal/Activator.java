@@ -32,14 +32,14 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
 
-    public static final String PLUGIN_ID = "org.eclipsetrader.directaworld";
+    public static final String PLUGIN_ID = "org.eclipsetrader.directaworld"; //$NON-NLS-1$
     public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
 
-    public static final String PROP_SYMBOL = "org.eclipsetrader.directaworld.symbol";
-    public static final String PROP_SYMBOL_ALT = "org.eclipsetrader.borsaitalia.code";
+    public static final String PROP_SYMBOL = "org.eclipsetrader.directaworld.symbol"; //$NON-NLS-1$
+    public static final String PROP_SYMBOL_ALT = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
 
-    public static final String PREFS_USERNAME = "USERNAME";
-    public static final String PREFS_PASSWORD = "PASSWORD";
+    public static final String PREFS_USERNAME = "USERNAME"; //$NON-NLS-1$
+    public static final String PREFS_PASSWORD = "PASSWORD"; //$NON-NLS-1$
 
     // The shared instance
     private static Activator plugin;

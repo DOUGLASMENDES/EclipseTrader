@@ -40,16 +40,16 @@ import org.osgi.framework.ServiceReference;
  */
 public class Activator extends AbstractUIPlugin {
 
-    public static final String PLUGIN_ID = "org.eclipsetrader.directa";
+    public static final String PLUGIN_ID = "org.eclipsetrader.directa"; //$NON-NLS-1$
     public static final String REPOSITORY_FILE = "identifiers.xml"; //$NON-NLS-1$
 
     public static final String PROP_CODE = "org.eclipsetrader.borsaitalia.code"; //$NON-NLS-1$
     public static final String PROP_ISIN = "org.eclipsetrader.borsaitalia.isin"; //$NON-NLS-1$
 
-    public static final String PREFS_USERNAME = "USERNAME";
-    public static final String PREFS_PASSWORD = "PASSWORD";
-    public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD";
-    public static final String PREFS_TRADING_HOST = "TRADING_HOST";
+    public static final String PREFS_USERNAME = "USERNAME"; //$NON-NLS-1$
+    public static final String PREFS_PASSWORD = "PASSWORD"; //$NON-NLS-1$
+    public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD"; //$NON-NLS-1$
+    public static final String PREFS_TRADING_HOST = "TRADING_HOST"; //$NON-NLS-1$
 
     // The shared instance
     private static Activator plugin;
@@ -103,7 +103,7 @@ public class Activator extends AbstractUIPlugin {
             IStatusLineManager statusLine = (IStatusLineManager) context.getService(serviceReference);
 
             StatusLineContributionItem item = new StatusLineContributionItem(PLUGIN_ID);
-            item.setImage(imageDescriptorFromPlugin(PLUGIN_ID, "icons/d-small.gif").createImage());
+            item.setImage(imageDescriptorFromPlugin(PLUGIN_ID, "icons/d-small.gif").createImage()); //$NON-NLS-1$
             statusLine.add(item);
 
             context.ungetService(serviceReference);

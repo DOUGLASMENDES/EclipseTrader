@@ -81,7 +81,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
         if (!connector.isLoggedIn()) {
             connector.login();
             if (!connector.isLoggedIn()) {
-                throw new BrokerException("Unable to login");
+                throw new BrokerException(Messages.OrderMonitor_UnableToLogin);
             }
         }
 
@@ -98,12 +98,12 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
         if (!connector.isLoggedIn()) {
             connector.login();
             if (!connector.isLoggedIn()) {
-                throw new BrokerException("Unable to login");
+                throw new BrokerException(Messages.OrderMonitor_UnableToLogin);
             }
         }
 
         if (getId() == null) {
-            throw new BrokerException("Invalid order");
+            throw new BrokerException(Messages.OrderMonitor_InvalidOrder);
         }
 
         connector.cancelOrder(this);
@@ -122,7 +122,7 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
      */
     @Override
     public void modify(IOrder order) throws BrokerException {
-        throw new BrokerException("Modify not allowed");
+        throw new BrokerException(Messages.OrderMonitor_ModifyNotAllowed);
     }
 
     /* (non-Javadoc)
@@ -257,6 +257,6 @@ public class OrderMonitor implements IOrderMonitor, IAdaptable {
      */
     @Override
     public String toString() {
-        return "OrderMonitor: id=" + getId() + ", status=" + getStatus() + ", filledQuantity=" + getFilledQuantity() + ", averagePrice=" + getAveragePrice() + " [" + order.toString() + "]";
+        return "OrderMonitor: id=" + getId() + ", status=" + getStatus() + ", filledQuantity=" + getFilledQuantity() + ", averagePrice=" + getAveragePrice() + " [" + order.toString() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     }
 }

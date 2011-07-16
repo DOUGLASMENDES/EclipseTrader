@@ -48,8 +48,8 @@ public class InstrumentsPage extends WizardPage {
     private List<Instrument> instrumentList;
 
     public InstrumentsPage() {
-        super("instrument", "Import Instruments", null);
-        setDescription("Select the intruments.");
+        super("instrument", Messages.InstrumentsPage_Name, null); //$NON-NLS-1$
+        setDescription(Messages.InstrumentsPage_Description);
         setPageComplete(false);
     }
 
@@ -64,7 +64,7 @@ public class InstrumentsPage extends WizardPage {
         initializeDialogUnits(content);
 
         Label label = new Label(content, SWT.NONE);
-        label.setText("Instruments:");
+        label.setText(Messages.InstrumentsPage_Instruments);
 
         instruments = CheckboxTableViewer.newCheckList(content, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         instruments.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -100,9 +100,9 @@ public class InstrumentsPage extends WizardPage {
 
     protected void init() {
         try {
-            File file = Activator.getDefault().getStateLocation().append("instruments.xml").toFile();
+            File file = Activator.getDefault().getStateLocation().append("instruments.xml").toFile(); //$NON-NLS-1$
             if (!file.exists()) {
-                file = new File(FileLocator.getBundleFile(Activator.getDefault().getBundle()), "data/instruments.xml");
+                file = new File(FileLocator.getBundleFile(Activator.getDefault().getBundle()), "data/instruments.xml"); //$NON-NLS-1$
             }
             if (file.exists() == true) {
                 try {

@@ -18,7 +18,7 @@ public class ErrorMessage {
 
     public ErrorMessage(byte packet[]) {
         nTipeError = 0;
-        sMessageError = "";
+        sMessageError = ""; //$NON-NLS-1$
         if (packet == null || packet.length < 1) {
             return;
         }

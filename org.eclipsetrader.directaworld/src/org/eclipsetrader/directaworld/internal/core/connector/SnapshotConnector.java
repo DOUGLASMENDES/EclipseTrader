@@ -80,7 +80,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     private static final int I_LOW = 14;
     private static final int I_HIGH = 15;
 
-    private static final String HOST = "registrazioni.directaworld.it";
+    private static final String HOST = "registrazioni.directaworld.it"; //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -106,7 +106,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     public SnapshotConnector() {
         symbolSubscriptions = new HashMap<String, FeedSubscription>();
 
-        timeZone = TimeZone.getTimeZone("Europe/Rome");
+        timeZone = TimeZone.getTimeZone("Europe/Rome"); //$NON-NLS-1$
 
         dateTimeParser = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); //$NON-NLS-1$
         dateTimeParser.setTimeZone(timeZone);
@@ -121,8 +121,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
      */
     @Override
     public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
+        id = config.getAttribute("id"); //$NON-NLS-1$
+        name = config.getAttribute("name"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -198,12 +198,12 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     protected void startThread() {
         if (thread == null) {
             stopping = false;
-            thread = new Thread(this, name + " - Data Reader");
+            thread = new Thread(this, name + " - Data Reader"); //$NON-NLS-1$
             thread.start();
         }
 
         if (barTimer == null) {
-            barTimer = new Timer(name + " - Bar Timer", true);
+            barTimer = new Timer(name + " - Bar Timer", true); //$NON-NLS-1$
             barTimer.scheduleAtFixedRate(new TimerTask() {
 
                 @Override
@@ -243,7 +243,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                     thread.join(30 * 1000);
                 }
             } catch (InterruptedException e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping thread", e); //$NON-NLS-1$
                 Activator.log(status);
             }
             thread = null;
@@ -262,13 +262,13 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
         final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
         try {
             if (userName == null) {
-                userName = preferences.get(Activator.PREFS_USERNAME, "");
+                userName = preferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
             }
             if (password == null) {
-                password = preferences.get(Activator.PREFS_PASSWORD, "");
+                password = preferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
             }
         } catch (Exception e) {
-            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
             Display.getDefault().syncExec(new Runnable() {
 
                 @Override
@@ -284,7 +284,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
         try {
             setupProxy(client, HOST);
         } catch (URISyntaxException e) {
-            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error setting proxy", e);
+            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error setting proxy", e); //$NON-NLS-1$
             Display.getDefault().syncExec(new Runnable() {
 
                 @Override
@@ -296,7 +296,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
         }
 
         do {
-            if (userName == null || password == null || "".equals(userName) || "".equals(password)) {
+            if (userName == null || password == null || "".equals(userName) || "".equals(password)) { //$NON-NLS-1$ //$NON-NLS-2$
                 Display.getDefault().syncExec(new Runnable() {
 
                     @Override
@@ -309,9 +309,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                             if (dlg.isSavePassword()) {
                                 try {
                                     preferences.put(Activator.PREFS_USERNAME, userName, true);
-                                    preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true);
+                                    preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
                                 } catch (Exception e) {
-                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e);
+                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
                                     Activator.log(status);
                                     ErrorDialog.openError(null, null, null, status);
                                 }
@@ -384,10 +384,10 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                 symbols = symbolSubscriptions.keySet().toArray(new String[symbolSubscriptions.size()]);
             }
 
-            StringBuilder url = new StringBuilder("http://" + HOST + "/cgi-bin/qta?idx=alfa&modo=t&appear=n");
+            StringBuilder url = new StringBuilder("http://" + HOST + "/cgi-bin/qta?idx=alfa&modo=t&appear=n"); //$NON-NLS-1$ //$NON-NLS-2$
             int x = 0;
             for (; x < symbols.length; x++) {
-                url.append("&id" + (x + 1) + "=" + symbols[x]);
+                url.append("&id" + (x + 1) + "=" + symbols[x]); //$NON-NLS-1$ //$NON-NLS-2$
             }
             for (; x < 30; x++) {
                 url.append("&id" + (x + 1) + "="); //$NON-NLS-1$ //$NON-NLS-2$
@@ -403,26 +403,26 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             String inputLine;
             in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
-                if (inputLine.indexOf("<!--QT START HERE-->") != -1) {
+                if (inputLine.indexOf("<!--QT START HERE-->") != -1) { //$NON-NLS-1$
                     while ((inputLine = in.readLine()) != null) {
-                        if (inputLine.indexOf("<!--QT STOP HERE-->") != -1) {
+                        if (inputLine.indexOf("<!--QT STOP HERE-->") != -1) { //$NON-NLS-1$
                             break;
                         }
                         try {
                             parseLine(inputLine);
                         } catch (Exception e) {
-                            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + inputLine, e);
+                            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing line: " + inputLine, e); //$NON-NLS-1$
                             Activator.log(status);
                         }
                     }
                 }
-                else if (inputLine.indexOf("Sara' possibile ricaricare la pagina tra") != -1) {
-                    int beginIndex = inputLine.indexOf("tra ") + 4;
-                    int endIndex = inputLine.indexOf("sec") - 1;
+                else if (inputLine.indexOf("Sara' possibile ricaricare la pagina tra") != -1) { //$NON-NLS-1$
+                    int beginIndex = inputLine.indexOf("tra ") + 4; //$NON-NLS-1$
+                    int endIndex = inputLine.indexOf("sec") - 1; //$NON-NLS-1$
                     try {
                         requiredDelay = Integer.parseInt(inputLine.substring(beginIndex, endIndex)) + 1;
                     } catch (Exception e) {
-                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing required delay", e);
+                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing required delay", e); //$NON-NLS-1$
                         Activator.log(status);
                     }
                 }
@@ -439,7 +439,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             }
 
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e);
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
             Activator.log(status);
         } finally {
             try {
@@ -464,14 +464,14 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                 if (item[I_TIME].length() == 7) {
                     item[I_TIME] = item[I_TIME].charAt(0) + ":" + item[I_TIME].charAt(1) + item[I_TIME].charAt(3) + ":" + item[5].charAt(4) + item[I_TIME].charAt(6); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                if ("".equals(item[I_DATE]) || " ".equals(item[I_DATE])) {
+                if ("".equals(item[I_DATE]) || " ".equals(item[I_DATE])) { //$NON-NLS-1$ //$NON-NLS-2$
                     priceData.setTime(timeParser.parse(item[I_TIME]));
                 }
                 else {
-                    priceData.setTime(dateTimeParser.parse(item[I_DATE] + " " + item[I_TIME]));
+                    priceData.setTime(dateTimeParser.parse(item[I_DATE] + " " + item[I_TIME])); //$NON-NLS-1$
                 }
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date in line: " + line, e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date in line: " + line, e); //$NON-NLS-1$
                 Activator.log(status);
             }
             priceData.setLast(numberFormat.parse(item[I_LAST]).doubleValue());
@@ -515,7 +515,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
 
         BufferedReader in = null;
         try {
-            StringBuilder url = new StringBuilder("http://" + HOST + "/cgi-bin/qta?idx=alfa&modo=t&appear=n");
+            StringBuilder url = new StringBuilder("http://" + HOST + "/cgi-bin/qta?idx=alfa&modo=t&appear=n"); //$NON-NLS-1$ //$NON-NLS-2$
             int x = 0;
             for (; x < 30; x++) {
                 url.append("&id" + (x + 1) + "="); //$NON-NLS-1$ //$NON-NLS-2$
@@ -531,13 +531,13 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             String inputLine;
             in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
-                if (inputLine.indexOf("<!--QT START HERE-->") != -1) {
+                if (inputLine.indexOf("<!--QT START HERE-->") != -1) { //$NON-NLS-1$
                     result = true;
                 }
             }
             in.close();
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e);
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading data", e); //$NON-NLS-1$
             Activator.log(status);
         } finally {
             try {

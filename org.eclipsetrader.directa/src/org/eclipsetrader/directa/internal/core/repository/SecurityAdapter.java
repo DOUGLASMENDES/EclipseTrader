@@ -199,14 +199,14 @@ public class SecurityAdapter extends XmlAdapter<String, ISecurity> {
                     context.ungetService(serviceReference);
                 }
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
                 Activator.getDefault().getLog().log(status);
             }
         }
 
         if (security == null) {
             if (Activator.getDefault() != null) {
-                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
+                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null); //$NON-NLS-1$
                 Activator.getDefault().getLog().log(status);
             }
             return new FailsafeSecurity(uri);
