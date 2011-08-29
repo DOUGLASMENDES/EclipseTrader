@@ -241,6 +241,7 @@ public class HistoryTest extends TestCase {
     public void testNotifyUpdatesOfIntradaySubsets() throws Exception {
         StoreProperties day22StoreProperties = new StoreProperties();
         day22StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+        day22StoreProperties.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
         day22StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 22));
         IOHLC[] bars22 = new IOHLC[] {
                 new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
@@ -251,6 +252,7 @@ public class HistoryTest extends TestCase {
 
         StoreProperties day23StoreProperties = new StoreProperties();
         day23StoreProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IHistory.class.getName());
+        day23StoreProperties.setProperty(IPropertyConstants.TIME_SPAN, TimeSpan.minutes(1));
         day23StoreProperties.setProperty(IPropertyConstants.BARS_DATE, getTime(2008, Calendar.MAY, 23));
         IOHLC[] bars23 = new IOHLC[] {
                 new OHLC(getTime(2008, Calendar.MAY, 23, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),

@@ -175,16 +175,12 @@ public class DataImportJob extends Job {
                         }
 
                         if (currentTimeSpan.equals(TimeSpan.days(1))) {
-                            monitor.subTask(security.getName().replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
-
                             IOHLC[] ohlc = backfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
                             if (ohlc != null && ohlc.length != 0) {
                                 dataMap.put(currentTimeSpan, ohlc);
                             }
                         }
                         else if (intradayBackfillConnector.canBackfill(identifier, currentTimeSpan)) {
-                            monitor.subTask(NLS.bind("{0} ({1})", new Object[] { security.getName().replace("&", "&&"), currentTimeSpan.toString()})); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
                             IOHLC[] ohlc = intradayBackfillConnector.backfillHistory(identifier, beginDate, endDate, currentTimeSpan);
                             if (ohlc != null && ohlc.length != 0) {
                                 dataMap.put(currentTimeSpan, ohlc);

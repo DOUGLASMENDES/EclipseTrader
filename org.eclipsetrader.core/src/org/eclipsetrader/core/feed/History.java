@@ -69,12 +69,29 @@ public class History implements IHistory, IStoreObject {
             return last;
         }
 
+        public boolean isInRange(Date date) {
+            if (first != null && date.before(first)) {
+                return false;
+            }
+            if (last != null && date.after(last)) {
+                return false;
+            }
+            return true;
+        }
+
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
          */
         @Override
         public int hashCode() {
-            return 7 * first.hashCode() + 11 * last.hashCode() + 13 * timeSpan.hashCode();
+            int hash = 13 * timeSpan.hashCode();
+            if (first != null) {
+                hash += 7 * first.hashCode();
+            }
+            if (last != null) {
+                hash += 11 * last.hashCode();
+            }
+            return hash;
         }
 
         /* (non-Javadoc)
@@ -286,12 +303,13 @@ public class History implements IHistory, IStoreObject {
                 Set<Key> updatedElements = new HashSet<Key>();
 
                 for (int ii = 0; ii < storeObject.length; ii++) {
+                    TimeSpan timeSpan = (TimeSpan) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.TIME_SPAN);
                     Date barsDate = (Date) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
                     for (int i = 0; i < entry.length; i++) {
                         HistoryDay element = entry[i].getValue().get();
                         Key key = entry[i].getKey();
-                        if (element != null && element != this) {
-                            if (barsDate.before(entry[i].getKey().getFirst()) || barsDate.after(entry[i].getKey().getLast())) {
+                        if (element != null && element != this && element.getTimeSpan().equals(timeSpan)) {
+                            if (!entry[i].getKey().isInRange(barsDate)) {
                                 continue;
                             }
                             updatedElements.add(key);
@@ -314,7 +332,7 @@ public class History implements IHistory, IStoreObject {
                             IStoreProperties properties = childStore.fetchProperties(null);
 
                             Date barsDate = (Date) properties.getProperty(IPropertyConstants.BARS_DATE);
-                            if (barsDate.before(key.getFirst()) || barsDate.after(key.getLast())) {
+                            if (!key.isInRange(barsDate)) {
                                 continue;
                             }
 
@@ -324,7 +342,7 @@ public class History implements IHistory, IStoreObject {
                     }
                     for (int i = 0; i < storeObject.length; i++) {
                         Date barsDate = (Date) storeObject[i].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
-                        if (barsDate.before(key.getFirst()) || barsDate.after(key.getLast())) {
+                        if (!key.isInRange(barsDate)) {
                             continue;
                         }
 
