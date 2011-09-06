@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.core.feed.FeedIdentifier;
@@ -32,6 +33,8 @@ public class OrderDialogTest extends TestCase {
     Shell shell;
     Security security;
     IAccount account;
+    IBroker broker1;
+    IBroker broker2;
     ITradingService tradingService;
 
     /* (non-Javadoc)
@@ -46,32 +49,49 @@ public class OrderDialogTest extends TestCase {
         account = EasyMock.createNiceMock(IAccount.class);
         EasyMock.expect(account.getDescription()).andStubReturn("Demo");
 
-        IBroker broker = EasyMock.createNiceMock(IBroker.class);
-        EasyMock.expect(broker.getName()).andStubReturn("Test Broker");
-        EasyMock.expect(broker.getAllowedSides()).andStubReturn(new IOrderSide[] {
+        broker1 = EasyMock.createNiceMock(IBroker.class);
+        EasyMock.expect(broker1.getName()).andStubReturn("Test Broker 1");
+        EasyMock.expect(broker1.getAllowedSides()).andStubReturn(new IOrderSide[] {
                 IOrderSide.Buy,
                 IOrderSide.Sell,
                 IOrderSide.BuyCover,
                 IOrderSide.SellShort
         });
-        EasyMock.expect(broker.getAllowedTypes()).andStubReturn(new IOrderType[] {
+        EasyMock.expect(broker1.getAllowedTypes()).andStubReturn(new IOrderType[] {
                 IOrderType.Limit, IOrderType.Market
         });
-        EasyMock.expect(broker.getAllowedValidity()).andStubReturn(new IOrderValidity[] {
+        EasyMock.expect(broker1.getAllowedValidity()).andStubReturn(new IOrderValidity[] {
             IOrderValidity.Day
         });
-        EasyMock.expect(broker.getAllowedRoutes()).andStubReturn(new IOrderRoute[0]);
-        EasyMock.expect(broker.getAccounts()).andStubReturn(new IAccount[] {
+        EasyMock.expect(broker1.getAllowedRoutes()).andStubReturn(new IOrderRoute[0]);
+        EasyMock.expect(broker1.getAccounts()).andStubReturn(new IAccount[] {
             account
         });
-        EasyMock.expect(broker.getSymbolFromSecurity(security)).andStubReturn(security.getIdentifier().getSymbol());
+        EasyMock.expect(broker1.getSymbolFromSecurity(security)).andStubReturn(security.getIdentifier().getSymbol());
+
+        broker2 = EasyMock.createNiceMock(IBroker.class);
+        EasyMock.expect(broker2.getName()).andStubReturn("Test Broker 2");
+        EasyMock.expect(broker2.getAllowedSides()).andStubReturn(new IOrderSide[] {
+                IOrderSide.Buy, IOrderSide.Sell,
+        });
+        EasyMock.expect(broker2.getAllowedTypes()).andStubReturn(new IOrderType[] {
+                IOrderType.Limit, IOrderType.Market
+        });
+        EasyMock.expect(broker2.getAllowedValidity()).andStubReturn(new IOrderValidity[] {
+            IOrderValidity.Day
+        });
+        EasyMock.expect(broker2.getAllowedRoutes()).andStubReturn(new IOrderRoute[0]);
+        EasyMock.expect(broker2.getAccounts()).andStubReturn(new IAccount[] {
+            account
+        });
+        EasyMock.expect(broker2.getSymbolFromSecurity(security)).andStubReturn(security.getIdentifier().getSymbol());
 
         tradingService = EasyMock.createNiceMock(ITradingService.class);
         EasyMock.expect(tradingService.getBrokers()).andStubReturn(new IBroker[] {
-            broker
+                broker1, broker2
         });
 
-        EasyMock.replay(tradingService, broker, account);
+        EasyMock.replay(tradingService, broker1, broker2, account);
     }
 
     /* (non-Javadoc)
@@ -114,5 +134,19 @@ public class OrderDialogTest extends TestCase {
         dlg.setSecurity(new Security("TEST", new FeedIdentifier("TST", null)));
         dlg.create();
         assertEquals("TST", dlg.symbol.getText());
+    }
+
+    public void testKeepSideWhenSwitchingBroker() throws Exception {
+        OrderDialog dlg = new OrderDialog(shell, tradingService);
+        dlg.setOrderSide(IOrderSide.Sell);
+
+        dlg.create();
+        assertSame(IOrderSide.Sell, ((IStructuredSelection) dlg.sideCombo.getSelection()).getFirstElement());
+        assertSame(broker1, ((IStructuredSelection) dlg.brokerCombo.getSelection()).getFirstElement());
+
+        dlg.brokerCombo.setSelection(new StructuredSelection(broker2));
+
+        assertSame(IOrderSide.Sell, ((IStructuredSelection) dlg.sideCombo.getSelection()).getFirstElement());
+        assertSame(broker2, ((IStructuredSelection) dlg.brokerCombo.getSelection()).getFirstElement());
     }
 }

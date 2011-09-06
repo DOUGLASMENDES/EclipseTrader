@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -397,31 +398,41 @@ public class OrderDialog extends TitleAreaDialog {
         }
 
         IOrderSide[] sides = connector.getAllowedSides();
+        ISelection oldSelection = sideCombo.getSelection();
         sideCombo.setInput(sides);
+        sideCombo.setSelection(oldSelection);
         if (sideCombo.getSelection().isEmpty()) {
             sideCombo.setSelection(new StructuredSelection(sides[0]));
         }
 
         IOrderType[] types = connector.getAllowedTypes();
+        oldSelection = typeCombo.getSelection();
         typeCombo.setInput(types);
+        typeCombo.setSelection(oldSelection);
         if (typeCombo.getSelection().isEmpty() && types.length != 0) {
             typeCombo.setSelection(new StructuredSelection(types[0]));
         }
 
         IOrderValidity[] validities = connector.getAllowedValidity();
+        oldSelection = validityCombo.getSelection();
         validityCombo.setInput(validities);
+        validityCombo.setSelection(oldSelection);
         if (validityCombo.getSelection().isEmpty() && validities.length != 0) {
             validityCombo.setSelection(new StructuredSelection(validities[0]));
         }
 
         IOrderRoute[] routes = connector.getAllowedRoutes();
+        oldSelection = routeCombo.getSelection();
         routeCombo.setInput(routes);
+        routeCombo.setSelection(oldSelection);
         if (routeCombo.getSelection().isEmpty() && routes.length != 0) {
             routeCombo.setSelection(new StructuredSelection(routes[0]));
         }
 
         IAccount[] accounts = connector.getAccounts();
+        oldSelection = accountCombo.getSelection();
         accountCombo.setInput(accounts);
+        accountCombo.setSelection(oldSelection);
         if (accountCombo.getSelection().isEmpty() && accounts.length != 0) {
             accountCombo.setSelection(new StructuredSelection(accounts[0]));
         }
