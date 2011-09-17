@@ -211,7 +211,7 @@ public class LocalRepository implements IRepository, ISchedulingRule {
             return watchlists.get(uri);
         }
 
-        if (URI_SECURITY_PART.equals(uri.getSchemeSpecificPart())) {
+        if (URI_TRADE_PART.equals(uri.getSchemeSpecificPart())) {
             if (trades == null) {
                 initializeTradesCollections();
             }
