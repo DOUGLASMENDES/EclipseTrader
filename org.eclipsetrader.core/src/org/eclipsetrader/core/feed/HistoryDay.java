@@ -350,7 +350,7 @@ public class HistoryDay implements IHistory {
 
             IOHLC[] bars = (IOHLC[]) storeProperties[i].getProperty(timeSpan.toString());
             if (bars == null) {
-                IOHLC[] minuteBars = (IOHLC[]) storeProperties[i].getProperty(TimeSpan.minutes(1).toString());
+                IOHLC[] minuteBars = getLowestTimespanBars(storeProperties[i]);
                 if (minuteBars != null) {
                     Date startDate = null, endDate = null;
                     Double open = null, high = null, low = null, close = null;
@@ -406,6 +406,25 @@ public class HistoryDay implements IHistory {
         updateRange();
 
         propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
+    }
+
+    IOHLC[] getLowestTimespanBars(IStoreProperties storeProperties) {
+        TimeSpan lowestTimeSpan = null;
+
+        for (String name : storeProperties.getPropertyNames()) {
+            TimeSpan propertyTimeSpan = TimeSpan.fromString(name);
+            if (propertyTimeSpan != null && propertyTimeSpan.lowerThan(timeSpan)) {
+                if (lowestTimeSpan == null || propertyTimeSpan.lowerThan(lowestTimeSpan)) {
+                    lowestTimeSpan = propertyTimeSpan;
+                }
+            }
+        }
+
+        if (lowestTimeSpan != null) {
+            return (IOHLC[]) storeProperties.getProperty(lowestTimeSpan.toString());
+        }
+
+        return null;
     }
 
     protected void updateRange() {

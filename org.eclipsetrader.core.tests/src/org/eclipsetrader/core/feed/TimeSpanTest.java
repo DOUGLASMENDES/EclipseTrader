@@ -36,4 +36,18 @@ public class TimeSpanTest extends TestCase {
         assertEquals(Units.Days, aggr.getUnits());
         assertEquals(5, aggr.getLength());
     }
+
+    public void testLowerThan() throws Exception {
+        TimeSpan ref = TimeSpan.minutes(30);
+        assertTrue(ref.lowerThan(TimeSpan.minutes(60)));
+        assertFalse(ref.lowerThan(TimeSpan.minutes(10)));
+        assertTrue(ref.lowerThan(TimeSpan.days(30)));
+    }
+
+    public void testHigherThan() throws Exception {
+        TimeSpan ref = TimeSpan.minutes(30);
+        assertFalse(ref.higherThan(TimeSpan.minutes(60)));
+        assertTrue(ref.higherThan(TimeSpan.minutes(10)));
+        assertFalse(ref.higherThan(TimeSpan.days(30)));
+    }
 }

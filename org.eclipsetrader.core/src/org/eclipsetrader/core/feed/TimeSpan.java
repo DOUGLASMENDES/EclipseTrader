@@ -101,6 +101,26 @@ public class TimeSpan {
         return ((TimeSpan) obj).getUnits() == getUnits() && ((TimeSpan) obj).getLength() == getLength();
     }
 
+    public boolean lowerThan(TimeSpan timeSpan) {
+        if (units.ordinal() < timeSpan.units.ordinal()) {
+            return true;
+        }
+        if (length < timeSpan.length) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean higherThan(TimeSpan timeSpan) {
+        if (units.ordinal() > timeSpan.units.ordinal()) {
+            return true;
+        }
+        if (length > timeSpan.length) {
+            return true;
+        }
+        return false;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

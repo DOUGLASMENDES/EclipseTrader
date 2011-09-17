@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.core.repositories.StoreProperties;
 
 public class HistoryDayTest extends TestCase {
 
@@ -61,6 +62,44 @@ public class HistoryDayTest extends TestCase {
         IOHLC[] propBars2 = (IOHLC[]) storeObjects[1].getStoreProperties().getProperty(TimeSpan.minutes(1).toString());
         assertEquals(1, propBars2.length);
         assertSame(bars[1], propBars2[0]);
+    }
+
+    public void testGetLowestTimespanBars() throws Exception {
+        IOHLC[] bars1min = new IOHLC[] {
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 4), 26.55, 26.6, 26.51, 26.52, 35083L),
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+        };
+        IOHLC[] bars5min = new IOHLC[] {
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
+        };
+
+        StoreProperties properties = new StoreProperties();
+        properties.setProperty(TimeSpan.minutes(1).toString(), bars1min);
+        properties.setProperty(TimeSpan.minutes(5).toString(), bars5min);
+
+        Security security = new Security("Test", null);
+        HistoryDay history = new HistoryDay(security, TimeSpan.minutes(30));
+
+        IOHLC[] bars = history.getLowestTimespanBars(properties);
+        assertSame(bars, bars1min);
+    }
+
+    public void testNoLowestTimespanBars() throws Exception {
+        IOHLC[] bars5min = new IOHLC[] {
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
+        };
+
+        StoreProperties properties = new StoreProperties();
+        properties.setProperty(TimeSpan.minutes(5).toString(), bars5min);
+
+        Security security = new Security("Test", null);
+        HistoryDay history = new HistoryDay(security, TimeSpan.minutes(1));
+
+        IOHLC[] bars = history.getLowestTimespanBars(properties);
+        assertNull(bars);
     }
 
     private Date getTime(int year, int month, int day, int hour, int minute) {
