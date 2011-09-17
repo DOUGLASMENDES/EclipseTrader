@@ -74,7 +74,6 @@ public class ChartLoadJob extends Job {
             c.set(Calendar.MINUTE, 59);
             c.set(Calendar.SECOND, 59);
             c.set(Calendar.MILLISECOND, 999);
-            Date lastDate = c.getTime();
 
             if (timeSpan.getUnits() == Units.Days) {
                 int index = history.getOHLC().length - timeSpan.getLength();
@@ -82,7 +81,7 @@ public class ChartLoadJob extends Job {
                     index = 0;
                 }
                 Date firstDate = history.getOHLC()[index].getDate();
-                subsetHistory = history.getSubset(firstDate, lastDate, resolutionTimeSpan);
+                subsetHistory = history.getSubset(firstDate, null, resolutionTimeSpan);
             }
             else {
                 c = Calendar.getInstance();
@@ -99,15 +98,15 @@ public class ChartLoadJob extends Job {
                     case Months:
                         c.add(Calendar.MONTH, -timeSpan.getLength());
                         if (resolutionTimeSpan != null) {
-                            subsetHistory = history.getSubset(c.getTime(), lastDate, resolutionTimeSpan);
+                            subsetHistory = history.getSubset(c.getTime(), null, resolutionTimeSpan);
                         }
                         else {
-                            subsetHistory = history.getSubset(c.getTime(), lastDate);
+                            subsetHistory = history.getSubset(c.getTime(), null);
                         }
                         break;
                     case Years:
                         c.add(Calendar.YEAR, -timeSpan.getLength());
-                        subsetHistory = history.getSubset(c.getTime(), lastDate);
+                        subsetHistory = history.getSubset(c.getTime(), null);
                         break;
                 }
             }
