@@ -39,6 +39,7 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 
@@ -209,6 +210,14 @@ public class CurrencyServiceTest extends TestCase {
          */
         @Override
         public void saveAdaptable(IAdaptable[] adaptables, IRepository defaultRepository) {
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.core.repositories.IRepositoryService#getObjectFromURI(java.net.URI)
+         */
+        @Override
+        public IStoreObject getObjectFromURI(URI uri) {
+            return null;
         }
     };
 

@@ -184,4 +184,13 @@ public interface IRepositoryService {
     public void removeRepositoryResourceListener(IRepositoryChangeListener listener);
 
     public IHolding[] getTrades();
+
+    /**
+     * Returns the store object known with the given URI, or <code>null</code> if no
+     * store object with the given URI exists.
+     *
+     * @param uri the URI.
+     * @return the store object, or null.
+     */
+    public IStoreObject getObjectFromURI(URI uri);
 }

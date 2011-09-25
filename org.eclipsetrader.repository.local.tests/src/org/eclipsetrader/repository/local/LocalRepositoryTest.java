@@ -13,10 +13,12 @@ package org.eclipsetrader.repository.local;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.views.IWatchListColumn;
 import org.eclipsetrader.core.views.WatchList;
+import org.eclipsetrader.repository.local.internal.ScriptsCollection;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 
@@ -33,28 +35,49 @@ public class LocalRepositoryTest extends TestCase {
 
     public void testCreateSecurityObject() throws Exception {
         LocalRepository repository = new LocalRepository(null);
+
         Security security = new Security("Test", null);
+
         IStore store = repository.createObject();
         store.putProperties(security.getStoreProperties(), null);
+
         assertEquals(1, repository.fetchObjects(null).length);
         assertEquals(1, SecurityCollection.getInstance().getAll().length);
     }
 
     public void testCreateWatchListObject() throws Exception {
         LocalRepository repository = new LocalRepository(null);
+
         WatchList watchlist = new WatchList("Test", new IWatchListColumn[0]);
+
         IStore store = repository.createObject();
         store.putProperties(watchlist.getStoreProperties(), null);
+
         assertEquals(1, repository.fetchObjects(null).length);
         assertEquals(1, WatchListCollection.getInstance().getAll().length);
     }
 
     public void testGetObjectFromURI() throws Exception {
         LocalRepository repository = new LocalRepository(null);
+
         Security security = new Security("Test", null);
+
         IStore store = repository.createObject();
         store.putProperties(security.getStoreProperties(), null);
+
         assertNotNull(store.toURI());
         assertNotNull(repository.getObject(store.toURI()));
+    }
+
+    public void testCreateScriptObject() throws Exception {
+        LocalRepository repository = new LocalRepository(null);
+
+        Script script = new Script("Test");
+
+        IStore store = repository.createObject();
+        store.putProperties(script.getStoreProperties(), null);
+
+        assertEquals(1, repository.fetchObjects(null).length);
+        assertEquals(1, ScriptsCollection.getInstance().getAll().length);
     }
 }

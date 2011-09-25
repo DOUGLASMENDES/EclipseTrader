@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -38,6 +37,7 @@ import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.IdentifiersCollection;
+import org.eclipsetrader.repository.local.internal.ScriptsCollection;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
 import org.eclipsetrader.repository.local.internal.TradeCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
@@ -51,12 +51,14 @@ public class LocalRepository implements IRepository, ISchedulingRule {
     public static final String URI_SECURITY_INTRADAY_HISTORY_PART = "securities/history/{0}/{1}";
     public static final String URI_WATCHLIST_PART = "watchlists";
     public static final String URI_TRADE_PART = "trades";
+    public static final String URI_SCRIPT_PART = "scripts";
 
     public static final String IDENTIFIERS_FILE = "identifiers.xml"; //$NON-NLS-1$
     public static final String SECURITIES_FILE = "securities.xml"; //$NON-NLS-1$
     public static final String SECURITIES_HISTORY_FILE = ".history"; //$NON-NLS-1$
     public static final String WATCHLISTS_FILE = "watchlists.xml"; //$NON-NLS-1$
     public static final String TRADES_FILE = "trades.xml"; //$NON-NLS-1$
+    public static final String SCRIPTS_FILE = "scripts.xml"; //$NON-NLS-1$
 
     private static LocalRepository instance;
     private IPath location;
@@ -65,6 +67,7 @@ public class LocalRepository implements IRepository, ISchedulingRule {
     private SecurityCollection securities;
     private WatchListCollection watchlists;
     private TradeCollection trades;
+    private ScriptsCollection scripts;
 
     private IJobManager jobManager;
     private final ILock lock;
@@ -78,6 +81,7 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 
         identifiers = new IdentifiersCollection();
         securities = new SecurityCollection();
+        scripts = new ScriptsCollection();
     }
 
     public static LocalRepository getInstance() {
@@ -99,6 +103,12 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         securities = (SecurityCollection) unmarshal(SecurityCollection.class, file);
         if (securities == null) {
             securities = new SecurityCollection();
+        }
+
+        file = location.append(SCRIPTS_FILE).toFile();
+        scripts = (ScriptsCollection) unmarshal(ScriptsCollection.class, file);
+        if (scripts == null) {
+            scripts = new ScriptsCollection();
         }
     }
 
@@ -144,6 +154,9 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         file = location.append(IDENTIFIERS_FILE).toFile();
         marshal(identifiers, IdentifiersCollection.class, file);
 
+        file = location.append(SCRIPTS_FILE).toFile();
+        marshal(scripts, ScriptsCollection.class, file);
+
         if (trades != null) {
             file = location.append(TRADES_FILE).toFile();
             marshal(trades, TradeCollection.class, file);
@@ -180,17 +193,19 @@ public class LocalRepository implements IRepository, ISchedulingRule {
     @Override
     public IStore[] fetchObjects(IProgressMonitor monitor) {
         List<IStore> list = new ArrayList<IStore>();
-        list.addAll(Arrays.asList(securities.getAll()));
+
+        list.addAll(securities.getList());
+        list.addAll(scripts.getList());
 
         if (watchlists == null) {
             initializeWatchListsCollections();
         }
-        list.addAll(Arrays.asList(watchlists.getAll()));
+        list.addAll(watchlists.getList());
 
         if (trades == null) {
             initializeTradesCollections();
         }
-        list.addAll(Arrays.asList(trades.getAll()));
+        list.addAll(trades.getList());
 
         return list.toArray(new IStore[list.size()]);
     }
@@ -216,6 +231,10 @@ public class LocalRepository implements IRepository, ISchedulingRule {
                 initializeTradesCollections();
             }
             return trades.get(uri);
+        }
+
+        if (URI_SCRIPT_PART.equals(uri.getSchemeSpecificPart())) {
+            return scripts.get(uri);
         }
 
         return null;
@@ -293,12 +312,12 @@ public class LocalRepository implements IRepository, ISchedulingRule {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(Class adapter) {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected void marshal(Object object, Class clazz, File file) {
         try {
             if (file.exists()) {
@@ -324,7 +343,7 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected Object unmarshal(Class clazz, File file) {
         try {
             if (file.exists()) {

@@ -16,6 +16,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.Security;
@@ -58,9 +59,10 @@ public class IntradayHistoryStoreTest extends TestCase {
             }
         };
         IStoreProperties properties = store.fetchProperties(null);
-        assertEquals(2, properties.getPropertyNames().length);
+        assertEquals(3, properties.getPropertyNames().length);
         assertSame(security, properties.getProperty(IPropertyConstants.SECURITY));
         assertEquals(date, properties.getProperty(IPropertyConstants.BARS_DATE));
+        assertSame(IHistory.class.getName(), properties.getProperty(IPropertyConstants.OBJECT_TYPE));
     }
 
     public void testUpdateStoreProperties() throws Exception {
@@ -76,9 +78,10 @@ public class IntradayHistoryStoreTest extends TestCase {
         store.putProperties(properties, null);
 
         properties = store.fetchProperties(null);
-        assertEquals(3, properties.getPropertyNames().length);
+        assertEquals(4, properties.getPropertyNames().length);
         assertSame(security, properties.getProperty(IPropertyConstants.SECURITY));
         assertEquals(date, properties.getProperty(IPropertyConstants.BARS_DATE));
         assertNotNull(properties.getProperty(TimeSpan.minutes(1).toString()));
+        assertSame(IHistory.class.getName(), properties.getProperty(IPropertyConstants.OBJECT_TYPE));
     }
 }

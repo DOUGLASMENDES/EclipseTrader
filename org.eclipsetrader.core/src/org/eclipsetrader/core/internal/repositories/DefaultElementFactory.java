@@ -14,6 +14,8 @@ package org.eclipsetrader.core.internal.repositories;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipsetrader.core.IScript;
+import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
@@ -90,6 +92,9 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
             }
             if (IHolding.class.getName().equals(type)) {
                 return new Holding(store, properties);
+            }
+            if (IScript.class.getName().equals(type)) {
+                return new Script(store, properties);
             }
         }
         return null;

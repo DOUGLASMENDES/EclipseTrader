@@ -897,4 +897,21 @@ public class RepositoryService implements IRepositoryService {
         }
         return deltas.toArray(new RepositoryResourceDelta[deltas.size()]);
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getObjectFromURI(java.net.URI)
+     */
+    @Override
+    public IStoreObject getObjectFromURI(URI uri) {
+        String schema = uri.getScheme();
+        IRepository repository = getRepository(schema);
+        if (repository != null) {
+            IStore store = repository.getObject(uri);
+            if (store != null) {
+                IStoreObject element = createElement(store, store.fetchProperties(null));
+                return element;
+            }
+        }
+        return null;
+    }
 }

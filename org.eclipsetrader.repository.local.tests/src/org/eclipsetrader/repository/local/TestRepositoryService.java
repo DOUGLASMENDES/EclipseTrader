@@ -221,10 +221,16 @@ public class TestRepositoryService implements IRepositoryService {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#addRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
+     */
     @Override
     public void addRepositoryResourceListener(IRepositoryChangeListener listener) {
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#removeRepositoryResourceListener(org.eclipsetrader.core.repositories.IRepositoryChangeListener)
+     */
     @Override
     public void removeRepositoryResourceListener(IRepositoryChangeListener listener) {
     }
@@ -234,6 +240,14 @@ public class TestRepositoryService implements IRepositoryService {
      */
     @Override
     public IHistory getHistoryFor(ISecurity security) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getObjectFromURI(java.net.URI)
+     */
+    @Override
+    public IStoreObject getObjectFromURI(URI uri) {
         return null;
     }
 }
