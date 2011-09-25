@@ -67,14 +67,11 @@ public class RepositoryLabelProvider extends LabelProvider implements IFontProvi
         if (element instanceof IRepository) {
             return repositoryIcon;
         }
-        if (element instanceof ISecurity || element instanceof IWatchList) {
-            return securityIcon;
-        }
-        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject) {
+        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject || element instanceof OthersContainerObject) {
             return securityFolderIcon;
         }
 
-        return null;
+        return securityIcon;
     }
 
     /* (non-Javadoc)
@@ -110,7 +107,7 @@ public class RepositoryLabelProvider extends LabelProvider implements IFontProvi
         if (element instanceof IRepository) {
             return repositoryFont;
         }
-        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject) {
+        if (element instanceof SecurityContainerObject || element instanceof WatchListContainerObject || element instanceof OthersContainerObject) {
             return categoryFont;
         }
 

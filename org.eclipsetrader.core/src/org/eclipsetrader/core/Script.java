@@ -128,10 +128,20 @@ public class Script implements IScript, IStoreObject {
             "unchecked", "rawtypes"
     })
     public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(IStoreProperties.class)) {
+            return getStoreProperties();
+        }
         if (adapter.isAssignableFrom(getClass())) {
             return this;
         }
-
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name;
     }
 }

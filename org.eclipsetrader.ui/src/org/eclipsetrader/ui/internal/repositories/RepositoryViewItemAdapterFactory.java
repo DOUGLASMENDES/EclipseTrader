@@ -12,6 +12,9 @@
 package org.eclipsetrader.ui.internal.repositories;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipsetrader.core.IScript;
+import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.internal.markets.Market;
 import org.eclipsetrader.core.repositories.IRepository;
@@ -27,7 +30,7 @@ public class RepositoryViewItemAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
         if (adaptableObject instanceof RepositoryViewItem) {
             return ((RepositoryViewItem) adaptableObject).getAdapter(adapterType);
@@ -39,13 +42,16 @@ public class RepositoryViewItemAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getAdapterList() {
         return new Class[] {
                 IRepository.class,
+                ISecurity.class,
+                Security.class,
                 IWatchList.class,
                 WatchList.class,
-                Security.class,
+                IScript.class,
+                Script.class,
                 Market.class,
         };
     }

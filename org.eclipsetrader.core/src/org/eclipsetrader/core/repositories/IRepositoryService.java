@@ -193,4 +193,6 @@ public interface IRepositoryService {
      * @return the store object, or null.
      */
     public IStoreObject getObjectFromURI(URI uri);
+
+    public IStoreObject[] getAllObjects();
 }

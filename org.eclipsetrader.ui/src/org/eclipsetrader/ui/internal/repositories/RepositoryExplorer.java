@@ -29,7 +29,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
@@ -58,7 +57,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.handlers.IHandlerService;
@@ -67,16 +65,13 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.views.IView;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewVisitor;
-import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.SelectionProvider;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.views.WatchListView;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -334,20 +329,7 @@ public class RepositoryExplorer extends ViewPart {
             public void doubleClick(DoubleClickEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
                 if (selection.size() == 1) {
-                    RepositoryViewItem element = (RepositoryViewItem) selection.getFirstElement();
-
-                    if (element.getObject() instanceof IWatchList) {
-                        try {
-                            IStoreObject storeObject = (IStoreObject) ((IWatchList) element.getObject()).getAdapter(IStoreObject.class);
-                            IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
-                            getViewSite().getPage().showView(WatchListView.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
-                        } catch (PartInitException e) {
-                            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening watchlist view", e); //$NON-NLS-1$
-                            UIActivator.getDefault().getLog().log(status);
-                        }
-                        return;
-                    }
-
+                    Object element = selection.getFirstElement();
                     if (viewer.getExpandedState(element)) {
                         viewer.collapseToLevel(element, 1);
                     }

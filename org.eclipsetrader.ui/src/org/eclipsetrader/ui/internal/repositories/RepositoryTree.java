@@ -12,6 +12,7 @@
 package org.eclipsetrader.ui.internal.repositories;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class RepositoryTree implements IView {
 
     private SecurityContainerObject instrumentsContainer = new SecurityContainerObject(Messages.RepositoryTree_Instruments);
     private WatchListContainerObject watchlistsContainer = new WatchListContainerObject(Messages.RepositoryTree_Watchlists);
+    private OthersContainerObject othersContainer = new OthersContainerObject("Others");
 
     public RepositoryTree(IRepositoryService service) {
         this.service = service;
@@ -78,13 +80,15 @@ public class RepositoryTree implements IView {
     }
 
     protected void visit(IRepositoryService service, IRepository repository, RepositoryViewItem parent) {
+        List<IStoreObject> storeObjects = new ArrayList<IStoreObject>();
+        storeObjects.addAll(Arrays.asList(service.getAllObjects()));
+
         List<Object> childObjects = new ArrayList<Object>();
-        for (ISecurity security : service.getSecurities()) {
-            IStoreObject object = (IStoreObject) security.getAdapter(IStoreObject.class);
-            if (object != null && object.getStore() != null) {
-                if (object.getStore().getRepository() == repository) {
-                    childObjects.add(security);
-                }
+        for (Iterator<IStoreObject> iter = storeObjects.iterator(); iter.hasNext();) {
+            IStoreObject storeObject = iter.next();
+            if (storeObject instanceof ISecurity) {
+                childObjects.add(storeObject);
+                iter.remove();
             }
         }
         RepositoryViewItem element = parent.getChild(instrumentsContainer);
@@ -94,12 +98,11 @@ public class RepositoryTree implements IView {
         visit(childObjects, element);
 
         childObjects = new ArrayList<Object>();
-        for (IWatchList watchlist : service.getWatchLists()) {
-            IStoreObject object = (IStoreObject) watchlist.getAdapter(IStoreObject.class);
-            if (object != null && object.getStore() != null) {
-                if (object.getStore().getRepository() == repository) {
-                    childObjects.add(watchlist);
-                }
+        for (Iterator<IStoreObject> iter = storeObjects.iterator(); iter.hasNext();) {
+            IStoreObject storeObject = iter.next();
+            if (storeObject instanceof IWatchList) {
+                childObjects.add(storeObject);
+                iter.remove();
             }
         }
         element = parent.getChild(watchlistsContainer);
@@ -107,6 +110,12 @@ public class RepositoryTree implements IView {
             element = parent.createChild(watchlistsContainer);
         }
         visit(childObjects, element);
+
+        element = parent.getChild(othersContainer);
+        if (element == null) {
+            element = parent.createChild(othersContainer);
+        }
+        visit(storeObjects, element);
     }
 
     protected void visit(List<?> objects, RepositoryViewItem parent) {
@@ -138,7 +147,9 @@ public class RepositoryTree implements IView {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (adapter.isAssignableFrom(getClass())) {
             return this;

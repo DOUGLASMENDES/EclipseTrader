@@ -66,6 +66,7 @@ import org.eclipsetrader.core.views.WatchList;
 public class RepositoryService implements IRepositoryService {
 
     private Map<String, IRepository> repositoryMap = new HashMap<String, IRepository>();
+    private Map<URI, IStoreObject> objectsMap = new HashMap<URI, IStoreObject>();
 
     private Map<URI, ISecurity> uriMap = new HashMap<URI, ISecurity>();
     private Map<String, ISecurity> nameMap = new HashMap<String, ISecurity>();
@@ -908,10 +909,40 @@ public class RepositoryService implements IRepositoryService {
         if (repository != null) {
             IStore store = repository.getObject(uri);
             if (store != null) {
-                IStoreObject element = createElement(store, store.fetchProperties(null));
+                IStoreObject element = objectsMap.get(store.toURI());
+                if (element == null) {
+                    element = createElement(store, store.fetchProperties(null));
+                    if (element != null) {
+                        objectsMap.put(store.toURI(), element);
+                    }
+                }
                 return element;
             }
         }
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getAllObjects()
+     */
+    @Override
+    public IStoreObject[] getAllObjects() {
+        List<IStoreObject> result = new ArrayList<IStoreObject>();
+        for (IRepository repository : getRepositories()) {
+            IStore[] objects = repository.fetchObjects(new NullProgressMonitor());
+            for (IStore store : objects) {
+                IStoreObject element = objectsMap.get(store.toURI());
+                if (element == null) {
+                    element = createElement(store, store.fetchProperties(null));
+                    if (element != null) {
+                        objectsMap.put(store.toURI(), element);
+                    }
+                }
+                if (element != null) {
+                    result.add(element);
+                }
+            }
+        }
+        return result.toArray(new IStoreObject[result.size()]);
     }
 }

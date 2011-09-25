@@ -78,6 +78,14 @@
             id="org.eclipsetrader.ui.views.level2"
             name="Level II">
       </view>
+      <view
+            allowMultiple="true"
+            class="org.eclipsetrader.ui.internal.editors.ScriptEditor"
+            icon="icons/eview16/script.png"
+            id="org.eclipsetrader.ui.editors.script"
+            name="Script"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipsetrader.core.providers">
@@ -276,6 +284,17 @@
             Create a new market.
          </description>
       </wizard>
+      <wizard
+            class="org.eclipsetrader.ui.internal.editors.ScriptWizard"
+            hasPages="true"
+            icon="icons/eview16/script.png"
+            id="org.eclipsetrader.ui.wizard.script"
+            name="Script"
+            preferredPerspectives="org.eclipsetrader.ui.traderPerspective">
+         <description>
+            Create a new script.
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -293,6 +312,25 @@
                      operator="and">
                   <adapt
                         type="org.eclipsetrader.core.views.IWatchList">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
+      <handler
+            commandId="org.eclipse.ui.file.open">
+         <class
+               class="org.eclipsetrader.ui.internal.handlers.ScriptOpenHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate
+                     operator="and">
+                  <adapt
+                        type="org.eclipsetrader.core.IScript">
                   </adapt>
                </iterate>
             </and>
@@ -361,17 +399,19 @@
                commandId="org.eclipse.ui.file.open"
                mnemonic="O">
             <visibleWhen>
-               <and>
-                  <count
-                        value="+">
-                  </count>
+               <or>
                   <iterate
-                        operator="and">
+                        operator="or">
                      <adapt
                            type="org.eclipsetrader.core.views.IWatchList">
                      </adapt>
                   </iterate>
-               </and>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.IScript">
+                     </adapt>
+                  </iterate>
+               </or>
             </visibleWhen>
          </command>
       </menuContribution>
@@ -406,6 +446,14 @@
       <activityPatternBinding
             activityId="org.eclipsetrader.activities.hideContributions"
             pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.views.watchlist">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.views.level2">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.editors.script">
       </activityPatternBinding>
    </extension>
    <extension
