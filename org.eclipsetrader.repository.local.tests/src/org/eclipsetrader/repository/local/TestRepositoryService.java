@@ -250,4 +250,12 @@ public class TestRepositoryService implements IRepositoryService {
     public IStoreObject getObjectFromURI(URI uri) {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.repositories.IRepositoryService#getAllObjects()
+     */
+    @Override
+    public IStoreObject[] getAllObjects() {
+        return null;
+    }
 }
