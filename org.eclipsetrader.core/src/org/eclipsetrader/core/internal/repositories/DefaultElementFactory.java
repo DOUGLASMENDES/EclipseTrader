@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.internal.repositories;
 
+import java.lang.reflect.Constructor;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -72,6 +74,9 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
      * @see org.eclipsetrader.core.repositories.IRepositoryElementFactory#createElement(org.eclipsetrader.core.repositories.IStore, org.eclipsetrader.core.repositories.IStoreProperties)
      */
     @Override
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
     public IStoreObject createElement(IStore store, IStoreProperties properties) {
         String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
         if (type != null) {
@@ -95,6 +100,19 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
             }
             if (IScript.class.getName().equals(type)) {
                 return new Script(store, properties);
+            }
+
+            // Attempt to construct the referenced class object directly
+            try {
+                Class clazz = Class.forName(type);
+                if (!clazz.isInterface()) {
+                    Constructor constructor = clazz.getConstructor(IStore.class, IStoreProperties.class);
+                    if (constructor != null) {
+                        return (IStoreObject) constructor.newInstance(store, properties);
+                    }
+                }
+            } catch (Exception e) {
+                // Do nothing
             }
         }
         return null;
