@@ -12,7 +12,6 @@
 package org.eclipsetrader.ui.internal.editors;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,15 +26,20 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
+import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ScriptEditor extends ViewPart implements ISaveablePart {
@@ -54,6 +58,31 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
     IDialogSettings dialogSettings;
     IRepositoryService repositoryService;
 
+    private final IRepositoryChangeListener changeListener = new IRepositoryChangeListener() {
+
+        @Override
+        public void repositoryResourceChanged(RepositoryChangeEvent event) {
+            for (RepositoryResourceDelta delta : event.getDeltas()) {
+                if (delta.getResource() != script) {
+                    continue;
+                }
+                if ((delta.getKind() & RepositoryResourceDelta.REMOVED) != 0) {
+                    Display.getDefault().asyncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            IWorkbench workbench = PlatformUI.getWorkbench();
+                            workbench.getActiveWorkbenchWindow().getActivePage().hideView(ScriptEditor.this);
+                        }
+                    });
+                }
+                else if ((delta.getKind() & RepositoryResourceDelta.MOVED_TO) != 0) {
+                    dialogSettings.put(K_URI, script.getStore().toURI().toString());
+                }
+            }
+        }
+    };
+
     public ScriptEditor() {
     }
 
@@ -65,17 +94,13 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         super.init(site, memento);
 
         repositoryService = UIActivator.getDefault().getRepositoryService();
+        dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
 
         try {
-            dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
             uri = new URI(dialogSettings.get(K_URI));
-            IStoreObject object = UIActivator.getDefault().getRepositoryService().getObjectFromURI(uri);
-            if (object instanceof Script) {
-                script = (Script) object;
-            }
-        } catch (URISyntaxException e) {
-            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, "Error loading view " + site.getSecondaryId(), e);
-            UIActivator.getDefault().getLog().log(status);
+            script = (Script) repositoryService.getObjectFromURI(uri);
+        } catch (Exception e) {
+            throw new PartInitException("Error loading view " + site.getSecondaryId(), e);
         }
     }
 
@@ -108,6 +133,8 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
                 }
             }
         });
+
+        repositoryService.addRepositoryResourceListener(changeListener);
     }
 
     /* (non-Javadoc)
@@ -208,9 +235,12 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void dispose() {
+        repositoryService.removeRepositoryResourceListener(changeListener);
+
         if (font != null) {
             font.dispose();
         }
+
         super.dispose();
     }
 }
