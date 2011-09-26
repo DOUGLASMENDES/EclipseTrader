@@ -95,37 +95,41 @@ public class RepositoryObjectTransfer extends ByteArrayTransfer {
     }
 
     @Override
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
     protected Object nativeToJava(TransferData transferData) {
-        IAdaptable[] adaptables = new IAdaptable[0];
-
         if (isSupportedType(transferData)) {
             byte[] buffer = (byte[]) super.nativeToJava(transferData);
             if (buffer == null) {
-                return null;
+                return new IAdaptable[0];
             }
 
-            IRepositoryService service = getRepositoryService();
-
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
             try {
+                IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
+
                 ByteArrayInputStream in = new ByteArrayInputStream(buffer);
                 ObjectInputStream readIn = new ObjectInputStream(in);
 
                 int length = readIn.readInt();
-                adaptables = new IAdaptable[length];
+                IAdaptable[] adaptables = new IAdaptable[length];
                 for (int i = 0; i < length; i++) {
                     URI uri = (URI) readIn.readObject();
-                    adaptables[i] = service.getSecurityFromURI(uri);
-                    if (adaptables[i] == null) {
-                        adaptables[i] = service.getWatchListFromURI(uri);
-                    }
+                    adaptables[i] = (IAdaptable) service.getObjectFromURI(uri);
                 }
+
+                return adaptables;
             } catch (Exception e) {
                 Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reassembling transfer object", e); //$NON-NLS-1$
-                UIActivator.getDefault().getLog().log(status);
+                UIActivator.log(status);
+            } finally {
+                context.ungetService(serviceReference);
             }
         }
 
-        return adaptables;
+        return new IAdaptable[0];
     }
 
     public static boolean checkMyType(Object object) {
@@ -141,19 +145,5 @@ public class RepositoryObjectTransfer extends ByteArrayTransfer {
             return true;
         }
         return false;
-    }
-
-    protected IRepositoryService getRepositoryService() {
-        try {
-            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-            IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-            context.ungetService(serviceReference);
-            return service;
-        } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
-            UIActivator.getDefault().getLog().log(status);
-        }
-        return null;
     }
 }

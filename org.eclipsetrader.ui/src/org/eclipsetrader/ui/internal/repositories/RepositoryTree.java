@@ -83,6 +83,12 @@ public class RepositoryTree implements IView {
         List<IStoreObject> storeObjects = new ArrayList<IStoreObject>();
         storeObjects.addAll(Arrays.asList(service.getAllObjects()));
 
+        for (Iterator<IStoreObject> iter = storeObjects.iterator(); iter.hasNext();) {
+            if (iter.next().getStore().getRepository() != repository) {
+                iter.remove();
+            }
+        }
+
         List<Object> childObjects = new ArrayList<Object>();
         for (Iterator<IStoreObject> iter = storeObjects.iterator(); iter.hasNext();) {
             IStoreObject storeObject = iter.next();
