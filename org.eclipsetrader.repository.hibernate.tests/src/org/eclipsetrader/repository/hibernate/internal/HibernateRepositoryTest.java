@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -33,6 +34,7 @@ import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.repository.hibernate.HibernateRepository;
+import org.eclipsetrader.repository.hibernate.internal.stores.ScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.SecurityStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.WatchListStore;
 import org.eclipsetrader.repository.hibernate.internal.types.IdentifierType;
@@ -158,7 +160,7 @@ public class HibernateRepositoryTest extends TestCase {
             }
         }, null);
         assertEquals(0, repository.getSession().createCriteria(SecurityStore.class).list().size());
-        assertEquals(0, repository.getSession().createCriteria(IdentifierType.class).list().size());
+        assertEquals(1, repository.getSession().createCriteria(IdentifierType.class).list().size());
         assertEquals(0, repository.fetchObjects(null).length);
     }
 
@@ -287,6 +289,55 @@ public class HibernateRepositoryTest extends TestCase {
         assertEquals(2, repository.getSession().createCriteria(SecurityStore.class).list().size());
         assertEquals(0, repository.getSession().createCriteria(WatchListStore.class).list().size());
         assertEquals(2, repository.fetchObjects(null).length);
+    }
+
+    public void testCreateScript() throws Exception {
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                StoreProperties storeProperties = new StoreProperties();
+                storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, Script.class.getName());
+                storeProperties.setProperty(IPropertyConstants.NAME, "Test");
+                IStore repositoryStore = repository.createObject();
+                repositoryStore.putProperties(storeProperties, null);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(1, repository.getSession().createCriteria(ScriptStore.class).list().size());
+        assertEquals(1, repository.fetchObjects(null).length);
+    }
+
+    public void testDeleteScript() throws Exception {
+        final IStore repositoryStore = repository.createObject();
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                StoreProperties storeProperties = new StoreProperties();
+                storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, Script.class.getName());
+                storeProperties.setProperty(IPropertyConstants.NAME, "Test");
+                repositoryStore.putProperties(storeProperties, null);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(1, repository.getSession().createCriteria(ScriptStore.class).list().size());
+        assertEquals(1, repository.fetchObjects(null).length);
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                repositoryStore.delete(monitor);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(0, repository.getSession().createCriteria(ScriptStore.class).list().size());
+        assertEquals(0, repository.fetchObjects(null).length);
     }
 
     private IStore createSecurity(String name, IFeedIdentifier identifier) {

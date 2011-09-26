@@ -45,6 +45,7 @@ import org.eclipsetrader.repository.hibernate.internal.RepositoryValidator;
 import org.eclipsetrader.repository.hibernate.internal.stores.HistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.IntradayHistoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.RepositoryStore;
+import org.eclipsetrader.repository.hibernate.internal.stores.ScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.SecurityStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.TradeStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.WatchListStore;
@@ -74,6 +75,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
     public static final String URI_SECURITY_INTRADAY_HISTORY_PART = "securities/history/{0}/{1}";
     public static final String URI_WATCHLIST_PART = "watchlists";
     public static final String URI_TRADE_PART = "trades";
+    public static final String URI_SCRIPT_PART = "scripts";
 
     private static final String ERROR_MESSAGE = "Errors occurred updating database";
 
@@ -187,6 +189,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
         cfg.addAnnotatedClass(HistoryStore.class);
         cfg.addAnnotatedClass(IntradayHistoryStore.class);
         cfg.addAnnotatedClass(TradeStore.class);
+        cfg.addAnnotatedClass(ScriptStore.class);
 
         cfg.getEventListeners().setPostInsertEventListeners(new PostInsertEventListener[] {
             new PostInsertEventListener() {
@@ -201,6 +204,9 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
                     }
                     if (event.getEntity() instanceof WatchListStore) {
                         uriMap.put(((WatchListStore) event.getEntity()).toURI(), (WatchListStore) event.getEntity());
+                    }
+                    if (event.getEntity() instanceof ScriptStore) {
+                        uriMap.put(((ScriptStore) event.getEntity()).toURI(), (ScriptStore) event.getEntity());
                     }
                 }
             },
@@ -218,6 +224,9 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
                     }
                     if (event.getEntity() instanceof WatchListStore) {
                         uriMap.remove(((WatchListStore) event.getEntity()).toURI());
+                    }
+                    if (event.getEntity() instanceof ScriptStore) {
+                        uriMap.remove(((ScriptStore) event.getEntity()).toURI());
                     }
                 }
             },
@@ -294,6 +303,12 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
 
         List<SecurityStore> securities = session.createCriteria(SecurityStore.class).list();
         for (SecurityStore store : securities) {
+            store.setRepository(this);
+            uriMap.put(store.toURI(), store);
+        }
+
+        List<ScriptStore> scripts = session.createCriteria(ScriptStore.class).list();
+        for (ScriptStore store : scripts) {
             store.setRepository(this);
             uriMap.put(store.toURI(), store);
         }
@@ -437,15 +452,13 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
         } catch (Exception e) {
             status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
             Activator.log(status);
-        } finally {
-            if (currentTransaction != null) {
-                try {
-                    currentTransaction.rollback();
-                } catch (Exception e1) {
-                    Status status1 = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
-                    Activator.log(status1);
-                }
+            try {
+                currentTransaction.rollback();
+            } catch (Exception e1) {
+                Status status1 = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
+                Activator.log(status1);
             }
+        } finally {
             lock.release();
             jobManager.endRule(rule);
         }
@@ -491,7 +504,9 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (repositoryDefinition != null && adapter.isAssignableFrom(repositoryDefinition.getClass())) {
             return repositoryDefinition;

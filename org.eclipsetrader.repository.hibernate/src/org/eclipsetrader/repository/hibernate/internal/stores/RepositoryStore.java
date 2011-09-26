@@ -16,6 +16,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -109,6 +110,9 @@ public class RepositoryStore implements IStore {
                         store = new HistoryStore(security, repository);
                     }
                 }
+            }
+            else if (Script.class.getName().equals(type)) {
+                store = new ScriptStore(repository);
             }
         }
         if (store != null) {
