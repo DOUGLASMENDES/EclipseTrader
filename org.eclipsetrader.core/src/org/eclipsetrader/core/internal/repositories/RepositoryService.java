@@ -311,8 +311,9 @@ public class RepositoryService implements IRepositoryService {
                                     store.delete(monitor);
                                     object.setStore(null);
 
+                                    uriMap.remove(store.toURI());
+
                                     if (adaptable instanceof ISecurity) {
-                                        uriMap.remove(store.toURI());
                                         nameMap.remove(((ISecurity) adaptable).getName());
                                         Set<IAdaptable> containers = removeSecurityFromContainers((ISecurity) adaptable);
                                         saveCascade.addAll(containers);
@@ -577,7 +578,7 @@ public class RepositoryService implements IRepositoryService {
                         }
 
                         for (IStoreObject object : storeObjects) {
-                            IStore oldStore = object.getStore();
+                            final IStore oldStore = object.getStore();
                             if (oldStore != null && oldStore.getRepository() == destination) {
                                 continue;
                             }
@@ -589,7 +590,7 @@ public class RepositoryService implements IRepositoryService {
                             object.setStore(newStore);
 
                             for (IStoreObject childObject : childStoreObjects) {
-                                IStore oldChildStore = childObject.getStore();
+                                final IStore oldChildStore = childObject.getStore();
                                 if (oldChildStore != null && oldChildStore.getRepository() == destination) {
                                     continue;
                                 }
@@ -600,11 +601,31 @@ public class RepositoryService implements IRepositoryService {
                                 newChildStore.putProperties(childProperties, monitor);
                                 childObject.setStore(newStore);
 
-                                oldChildStore.delete(monitor);
+                                IStatus status = oldChildStore.getRepository().runInRepository(new IRepositoryRunnable() {
+
+                                    @Override
+                                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                                        oldChildStore.delete(monitor);
+                                        return Status.OK_STATUS;
+                                    }
+                                }, monitor);
+                                if (status != Status.OK_STATUS) {
+                                    return status;
+                                }
                             }
 
                             if (oldStore != null) {
-                                oldStore.delete(monitor);
+                                IStatus status = oldStore.getRepository().runInRepository(new IRepositoryRunnable() {
+
+                                    @Override
+                                    public IStatus run(IProgressMonitor monitor) throws Exception {
+                                        oldStore.delete(monitor);
+                                        return Status.OK_STATUS;
+                                    }
+                                }, monitor);
+                                if (status != Status.OK_STATUS) {
+                                    return status;
+                                }
                             }
 
                             if (adaptable instanceof ISecurity) {
