@@ -41,7 +41,7 @@ public class WatchListHolding implements IHolding {
     @Target(SecurityType.class)
     private ISecurity security;
 
-    @Column(name = "position")
+    @Column(name = "quantity")
     private Long position;
 
     @Column(name = "price")
