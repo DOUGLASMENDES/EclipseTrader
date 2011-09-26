@@ -33,8 +33,6 @@ import javax.persistence.Version;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IDividend;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedProperties;
@@ -47,14 +45,12 @@ import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.repositories.StoreProperties;
 import org.eclipsetrader.repository.hibernate.HibernateRepository;
-import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.types.DividendType;
 import org.eclipsetrader.repository.hibernate.internal.types.IdentifierType;
 import org.eclipsetrader.repository.hibernate.internal.types.RepositoryFactoryType;
 import org.eclipsetrader.repository.hibernate.internal.types.SecurityUnknownPropertyType;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Target;
@@ -231,47 +227,27 @@ public class SecurityStore implements IStore {
      * @see org.eclipsetrader.core.repositories.IStore#delete(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void delete(IProgressMonitor monitor) throws CoreException {
         Session session = repository.getSession();
 
-        Transaction currentTransaction = session.beginTransaction();
-        try {
-            session.delete(this);
+        session.delete(this);
 
-            Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument");
-            query.setString("instrument", toURI().toString());
-            List l = query.list();
-            if (l != null) {
-                for (Object o : l) {
-                    session.delete(o);
-                }
-            }
-
-            currentTransaction.commit();
-            currentTransaction = null;
-        } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
-            Activator.log(status);
-        } finally {
-            if (currentTransaction != null) {
-                try {
-                    currentTransaction.rollback();
-                } catch (Exception e1) {
-                    Status status1 = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
-                    Activator.log(status1);
-                }
+        Query query = session.createQuery("from HistoryStore where instrument = :instrument");
+        query.setString("instrument", toURI().toString());
+        List l = query.list();
+        if (l != null) {
+            for (Object o : l) {
+                session.delete(o);
             }
         }
-
-        session.clear();
     }
 
     /* (non-Javadoc)
      * @see org.eclipsetrader.core.repositories.IStore#fetchChilds(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public IStore[] fetchChilds(IProgressMonitor monitor) {
         if (historyStore == null) {
             Query query = repository.getSession().createQuery("from HistoryStore where instrument = :instrument and type = :type");

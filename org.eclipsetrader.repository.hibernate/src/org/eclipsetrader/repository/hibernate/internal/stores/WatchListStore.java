@@ -29,8 +29,6 @@ import javax.persistence.Version;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
@@ -41,12 +39,10 @@ import org.eclipsetrader.core.views.IColumn;
 import org.eclipsetrader.core.views.IHolding;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.repository.hibernate.HibernateRepository;
-import org.eclipsetrader.repository.hibernate.internal.Activator;
 import org.eclipsetrader.repository.hibernate.internal.types.RepositoryFactoryType;
 import org.eclipsetrader.repository.hibernate.internal.types.WatchListColumn;
 import org.eclipsetrader.repository.hibernate.internal.types.WatchListHolding;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Target;
 import org.hibernate.annotations.Type;
@@ -169,27 +165,7 @@ public class WatchListStore implements IStore {
     @Override
     public void delete(IProgressMonitor monitor) throws CoreException {
         Session session = repository.getSession();
-
-        Transaction currentTransaction = session.beginTransaction();
-        try {
-            session.delete(this);
-            currentTransaction.commit();
-            currentTransaction = null;
-        } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running repository task", e); //$NON-NLS-1$
-            Activator.log(status);
-        } finally {
-            if (currentTransaction != null) {
-                try {
-                    currentTransaction.rollback();
-                } catch (Exception e1) {
-                    Status status1 = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error rolling back transaction", e1); //$NON-NLS-1$
-                    Activator.log(status1);
-                }
-            }
-        }
-
-        session.clear();
+        session.delete(this);
     }
 
     /* (non-Javadoc)
