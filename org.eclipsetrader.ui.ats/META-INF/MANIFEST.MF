@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Automated Trading System UI
+Bundle-SymbolicName: org.eclipsetrader.ui.ats;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.ui.internal.ats.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.ats,
+ org.eclipsetrader.core.trading,
+ org.eclipsetrader.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipsetrader.ui.internal.ats;x-internal:=true

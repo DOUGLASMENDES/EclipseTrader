@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Automated Trading Systems Core
+Bundle-SymbolicName: org.eclipsetrader.core.ats;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipsetrader.core.internal.ats.Activator
+Bundle-Vendor: EclipseTrader.org
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipsetrader.core,
+ org.eclipsetrader.core.trading
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipsetrader.core.internal.ats;x-internal:=true
