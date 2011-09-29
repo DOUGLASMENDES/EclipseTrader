@@ -47,6 +47,8 @@ import org.eclipsetrader.repository.hibernate.internal.stores.IntradayHistorySto
 import org.eclipsetrader.repository.hibernate.internal.stores.RepositoryStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.ScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.SecurityStore;
+import org.eclipsetrader.repository.hibernate.internal.stores.StrategyScriptProperties;
+import org.eclipsetrader.repository.hibernate.internal.stores.StrategyScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.TradeStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.WatchListStore;
 import org.eclipsetrader.repository.hibernate.internal.types.DividendType;
@@ -76,6 +78,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
     public static final String URI_WATCHLIST_PART = "watchlists";
     public static final String URI_TRADE_PART = "trades";
     public static final String URI_SCRIPT_PART = "scripts";
+    public static final String URI_STRATEGY_PART = "strategies";
 
     private static final String ERROR_MESSAGE = "Errors occurred updating database";
 
@@ -123,14 +126,14 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
         IStringVariableManager variableManager = VariablesPlugin.getDefault().getStringVariableManager();
 
         String[] propertyNames = new String[] {
-                "file.encoding",
-                "file.separator",
-                "java.home",
-                "user.dir",
-                "user.home",
-                "user.language",
-                "user.name",
-                "user.timezone",
+            "file.encoding",
+            "file.separator",
+            "java.home",
+            "user.dir",
+            "user.home",
+            "user.language",
+            "user.name",
+            "user.timezone",
         };
 
         List<IValueVariable> variables = new ArrayList<IValueVariable>();
@@ -155,7 +158,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
             Activator.getDefault().getRepositories().add(this);
         } catch (Exception e) {
             String message = NLS.bind("Error loading repository '{1}' ({0})", new Object[] {
-                    schema, name
+                schema, name
             });
             Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, e);
             Activator.log(status);
@@ -190,6 +193,8 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
         cfg.addAnnotatedClass(IntradayHistoryStore.class);
         cfg.addAnnotatedClass(TradeStore.class);
         cfg.addAnnotatedClass(ScriptStore.class);
+        cfg.addAnnotatedClass(StrategyScriptStore.class);
+        cfg.addAnnotatedClass(StrategyScriptProperties.class);
 
         cfg.getEventListeners().setPostInsertEventListeners(new PostInsertEventListener[] {
             new PostInsertEventListener() {
@@ -207,6 +212,9 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
                     }
                     if (event.getEntity() instanceof ScriptStore) {
                         uriMap.put(((ScriptStore) event.getEntity()).toURI(), (ScriptStore) event.getEntity());
+                    }
+                    if (event.getEntity() instanceof StrategyScriptStore) {
+                        uriMap.put(((StrategyScriptStore) event.getEntity()).toURI(), (StrategyScriptStore) event.getEntity());
                     }
                 }
             },
@@ -227,6 +235,9 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
                     }
                     if (event.getEntity() instanceof ScriptStore) {
                         uriMap.remove(((ScriptStore) event.getEntity()).toURI());
+                    }
+                    if (event.getEntity() instanceof StrategyScriptStore) {
+                        uriMap.remove(((StrategyScriptStore) event.getEntity()).toURI());
                     }
                 }
             },
@@ -256,7 +267,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
             initializeDatabase(cfg);
         } catch (Exception e) {
             String message = NLS.bind("Error initializing repository '{1}' ({0})", new Object[] {
-                    schema, name
+                schema, name
             });
             Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, e);
             Activator.log(status);
@@ -312,6 +323,12 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
             store.setRepository(this);
             uriMap.put(store.toURI(), store);
         }
+
+        List<StrategyScriptStore> strategies = session.createCriteria(StrategyScriptStore.class).list();
+        for (StrategyScriptStore store : strategies) {
+            store.setRepository(this);
+            uriMap.put(store.toURI(), store);
+        }
     }
 
     public void shutDown(IProgressMonitor monitor) {
@@ -321,7 +338,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
             }
         } catch (Exception e) {
             String message = NLS.bind("Error shutting down repository {0}:{1}", new Object[] {
-                    schema, name
+                schema, name
             });
             Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, e);
             Activator.log(status);
@@ -339,7 +356,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
                 }
             } catch (Exception e) {
                 String message = NLS.bind("Error loading repository {0}:{1}", new Object[] {
-                        schema, name
+                    schema, name
                 });
                 Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, message, e);
                 Activator.log(status);
@@ -505,7 +522,7 @@ public class HibernateRepository implements IRepository, ISchedulingRule, IExecu
      */
     @Override
     @SuppressWarnings({
-            "unchecked", "rawtypes"
+        "unchecked", "rawtypes"
     })
     public Object getAdapter(Class adapter) {
         if (repositoryDefinition != null && adapter.isAssignableFrom(repositoryDefinition.getClass())) {

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -36,6 +37,7 @@ import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.repository.hibernate.HibernateRepository;
 import org.eclipsetrader.repository.hibernate.internal.stores.ScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.SecurityStore;
+import org.eclipsetrader.repository.hibernate.internal.stores.StrategyScriptStore;
 import org.eclipsetrader.repository.hibernate.internal.stores.WatchListStore;
 import org.eclipsetrader.repository.hibernate.internal.types.IdentifierType;
 import org.hibernate.Transaction;
@@ -190,7 +192,7 @@ public class HibernateRepositoryTest extends TestCase {
                 storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
                 storeProperties.setProperty(IPropertyConstants.NAME, "Sample");
                 storeProperties.setProperty(IPropertyConstants.COLUMNS, new IColumn[] {
-                        new Column("C1", null), new Column("C2", null),
+                    new Column("C1", null), new Column("C2", null),
                 });
                 IStore repositoryStore = repository.createObject();
                 repositoryStore.putProperties(storeProperties, null);
@@ -215,7 +217,7 @@ public class HibernateRepositoryTest extends TestCase {
                 storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
                 storeProperties.setProperty(IPropertyConstants.NAME, "Sample");
                 storeProperties.setProperty(IPropertyConstants.HOLDINGS, new IHolding[] {
-                        new Holding(security1), new Holding(security2),
+                    new Holding(security1), new Holding(security2),
                 });
                 IStore repositoryStore = repository.createObject();
                 repositoryStore.putProperties(storeProperties, null);
@@ -269,7 +271,7 @@ public class HibernateRepositoryTest extends TestCase {
                 storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IWatchList.class.getName());
                 storeProperties.setProperty(IPropertyConstants.NAME, "Sample");
                 storeProperties.setProperty(IPropertyConstants.HOLDINGS, new IHolding[] {
-                        new Holding(security1), new Holding(security2),
+                    new Holding(security1), new Holding(security2),
                 });
                 repositoryStore.putProperties(storeProperties, null);
                 return Status.OK_STATUS;
@@ -337,6 +339,55 @@ public class HibernateRepositoryTest extends TestCase {
         }, null);
 
         assertEquals(0, repository.getSession().createCriteria(ScriptStore.class).list().size());
+        assertEquals(0, repository.fetchObjects(null).length);
+    }
+
+    public void testCreateScriptStrategy() throws Exception {
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                StoreProperties storeProperties = new StoreProperties();
+                storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IScriptStrategy.class.getName());
+                storeProperties.setProperty(IScriptStrategy.PROP_NAME, "Test");
+                IStore repositoryStore = repository.createObject();
+                repositoryStore.putProperties(storeProperties, null);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(1, repository.getSession().createCriteria(StrategyScriptStore.class).list().size());
+        assertEquals(1, repository.fetchObjects(null).length);
+    }
+
+    public void testDeleteScriptStrategy() throws Exception {
+        final IStore repositoryStore = repository.createObject();
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                StoreProperties storeProperties = new StoreProperties();
+                storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IScriptStrategy.class.getName());
+                storeProperties.setProperty(IScriptStrategy.PROP_NAME, "Test");
+                repositoryStore.putProperties(storeProperties, null);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(1, repository.getSession().createCriteria(StrategyScriptStore.class).list().size());
+        assertEquals(1, repository.fetchObjects(null).length);
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                repositoryStore.delete(monitor);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        assertEquals(0, repository.getSession().createCriteria(StrategyScriptStore.class).list().size());
         assertEquals(0, repository.fetchObjects(null).length);
     }
 

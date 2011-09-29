@@ -14,12 +14,14 @@ package org.eclipsetrader.repository.local;
 import junit.framework.TestCase;
 
 import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.views.IWatchListColumn;
 import org.eclipsetrader.core.views.WatchList;
 import org.eclipsetrader.repository.local.internal.ScriptsCollection;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
+import org.eclipsetrader.repository.local.internal.StrategiesCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 
 public class LocalRepositoryTest extends TestCase {
@@ -79,5 +81,18 @@ public class LocalRepositoryTest extends TestCase {
 
         assertEquals(1, repository.fetchObjects(null).length);
         assertEquals(1, ScriptsCollection.getInstance().getAll().length);
+    }
+
+    public void testCreateScriptStrategyObject() throws Exception {
+        LocalRepository repository = new LocalRepository(null);
+
+        ScriptStrategy script = new ScriptStrategy();
+        script.setName("Test");
+
+        IStore store = repository.createObject();
+        store.putProperties(script.getStoreProperties(), null);
+
+        assertEquals(1, repository.fetchObjects(null).length);
+        assertEquals(1, StrategiesCollection.getInstance().getAll().length);
     }
 }

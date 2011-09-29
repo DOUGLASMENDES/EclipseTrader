@@ -17,6 +17,7 @@ import java.util.Date;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.ICurrencyExchange;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -29,6 +30,7 @@ import org.eclipsetrader.core.repositories.IStoreProperties;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.repository.local.internal.ScriptsCollection;
 import org.eclipsetrader.repository.local.internal.SecurityCollection;
+import org.eclipsetrader.repository.local.internal.StrategiesCollection;
 import org.eclipsetrader.repository.local.internal.WatchListCollection;
 
 public class RepositoryStore implements IStore {
@@ -96,6 +98,9 @@ public class RepositoryStore implements IStore {
             }
             else if (Script.class.getName().equals(type)) {
                 store = ScriptsCollection.getInstance().create();
+            }
+            else if (IScriptStrategy.class.getName().equals(type)) {
+                store = StrategiesCollection.getInstance().create();
             }
         }
         if (store != null) {

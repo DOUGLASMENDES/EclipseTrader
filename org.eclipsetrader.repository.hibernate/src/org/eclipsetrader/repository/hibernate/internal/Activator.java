@@ -86,7 +86,9 @@ public class Activator extends AbstractUIPlugin {
 
     public static void log(IStatus status) {
         if (plugin == null) {
-            status.getException().printStackTrace();
+            if (status.getException() != null) {
+                status.getException().printStackTrace();
+            }
         }
         else {
             plugin.getLog().log(status);
