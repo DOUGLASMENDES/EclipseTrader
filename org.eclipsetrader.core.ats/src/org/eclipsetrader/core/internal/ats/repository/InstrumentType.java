@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.trading.SecurityAdapter;
 
 @XmlRootElement(name = "instrument")
 public class InstrumentType {

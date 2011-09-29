@@ -10,4 +10,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core.trading
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipsetrader.core.internal.ats;x-internal:=true
+Export-Package: org.eclipsetrader.core.ats,
+ org.eclipsetrader.core.internal.ats;x-internal:=true,
+ org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.trading"

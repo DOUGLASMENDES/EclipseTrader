@@ -15,16 +15,11 @@ import java.util.Hashtable;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipsetrader.core.ats.ITradeSystem;
-import org.eclipsetrader.core.ats.ITradeSystemService;
-import org.eclipsetrader.core.internal.ats.TradeSystemService;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.trading.IAlertService;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
@@ -37,7 +32,6 @@ public class Activator extends Plugin {
 
     public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.trading.brokers";
     public static final String ALERTS_EXTENSION_ID = "org.eclipsetrader.core.trading.alerts";
-    public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.trading.systems";
 
     private static Activator plugin;
 
@@ -71,15 +65,6 @@ public class Activator extends Plugin {
                 ITradingService.class.getName(), TradingService.class.getName()
         }, tradingServiceFactory, new Hashtable<String, Object>());
 
-        final TradeSystemService tradeSystemService = new TradeSystemService();
-        context.registerService(new String[] {
-                ITradeSystemService.class.getName(),
-                TradeSystemService.class.getName()
-        }, tradeSystemService, new Hashtable<String, Object>());
-        tradeSystemService.startUp();
-
-        Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
-
         alertService = new AlertService();
         alertServiceRegistration = context.registerService(new String[] {
                 IAlertService.class.getName(), AlertService.class.getName()
@@ -93,15 +78,6 @@ public class Activator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        ServiceReference serviceReference = context.getServiceReference(TradeSystemService.class.getName());
-        if (serviceReference != null) {
-            TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
-            if (service != null) {
-                service.shutDown();
-            }
-            context.ungetService(serviceReference);
-        }
-
         alertServiceRegistration.unregister();
         alertService.shutDown();
 

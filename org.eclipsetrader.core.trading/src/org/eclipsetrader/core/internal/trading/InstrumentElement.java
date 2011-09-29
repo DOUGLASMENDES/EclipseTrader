@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.ats.repository.SecurityAdapter;
 
 @XmlRootElement(name = "instrument")
 public class InstrumentElement {
