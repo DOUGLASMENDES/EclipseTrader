@@ -246,4 +246,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipsetrader.core.ats"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipsetrader.ui.ats"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
