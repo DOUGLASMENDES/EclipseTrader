@@ -189,6 +189,7 @@ public class TraderActionBarAdvisor extends ActionBarAdvisor {
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_GROUP));
             fileToolBar.add(saveAction);
+            fileToolBar.add(saveAllAction);
             fileToolBar.add(new GroupMarker(IWorkbenchActionConstants.SAVE_EXT));
             fileToolBar.add(printAction);
             fileToolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
