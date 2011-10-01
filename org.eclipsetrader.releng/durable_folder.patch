@@ -1,11 +1,10 @@
+### Eclipse Workspace Patch 1.0
+#P org.eclipse.ui.workbench
 Index: Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java
 ===================================================================
-RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java,v
-retrieving revision 1.83
-diff -u -r1.83 IWorkbenchConstants.java
---- Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	25 May 2009 20:52:11 -0000	1.83
-+++ Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	13 May 2011 08:55:29 -0000
-@@ -346,4 +346,6 @@
+--- Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	(revisione 1609)
++++ Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	(copia locale)
+@@ -348,4 +348,6 @@
      //Colors
      public static final String COLOR_HIGHLIGHT = "org.eclipse.ui.highlight"; //$NON-NLS-1$
  
@@ -14,11 +13,8 @@ diff -u -r1.83 IWorkbenchConstants.java
  }
 Index: Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java
 ===================================================================
-RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java,v
-retrieving revision 1.16
-diff -u -r1.16 ViewSashContainer.java
---- Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	16 Mar 2007 18:00:32 -0000	1.16
-+++ Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	13 May 2011 08:55:29 -0000
+--- Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	(revisione 1609)
++++ Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	(copia locale)
 @@ -118,10 +118,14 @@
                  folder.setID(partID);
                  result.add(folder.restoreState(childMem
@@ -40,11 +36,8 @@ diff -u -r1.16 ViewSashContainer.java
              part.setContainer(this);
 Index: Eclipse UI/org/eclipse/ui/internal/ViewStack.java
 ===================================================================
-RCS file: /cvsroot/eclipse/org.eclipse.ui.workbench/Eclipse UI/org/eclipse/ui/internal/ViewStack.java,v
-retrieving revision 1.31
-diff -u -r1.31 ViewStack.java
---- Eclipse UI/org/eclipse/ui/internal/ViewStack.java	25 May 2009 20:52:11 -0000	1.31
-+++ Eclipse UI/org/eclipse/ui/internal/ViewStack.java	13 May 2011 08:55:30 -0000
+--- Eclipse UI/org/eclipse/ui/internal/ViewStack.java	(revisione 1609)
++++ Eclipse UI/org/eclipse/ui/internal/ViewStack.java	(copia locale)
 @@ -13,7 +13,9 @@
   *******************************************************************************/
  package org.eclipse.ui.internal;
@@ -85,3 +78,16 @@ diff -u -r1.31 ViewStack.java
 +		return super.restoreState(memento);
 +	}
  }
+Index: META-INF/MANIFEST.MF
+===================================================================
+--- META-INF/MANIFEST.MF	(revisione 1609)
++++ META-INF/MANIFEST.MF	(copia locale)
+@@ -2,7 +2,7 @@
+ Bundle-ManifestVersion: 2
+ Bundle-Name: %pluginName
+ Bundle-SymbolicName: org.eclipse.ui.workbench; singleton:=true
+-Bundle-Version: 3.7.0.qualifier
++Bundle-Version: 3.7.0.I20110519-0100-ET
+ Bundle-ClassPath: e4-workbench.jar,
+  compatibility.jar,
+  .

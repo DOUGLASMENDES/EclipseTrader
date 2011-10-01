@@ -1,0 +1,21 @@
+### Eclipse Workspace Patch 1.0
+#P org.eclipse.rcp-feature
+Index: feature.xml
+===================================================================
+--- feature.xml	(revisione 1613)
++++ feature.xml	(copia locale)
+@@ -2,12 +2,12 @@
+ <feature
+       id="org.eclipse.rcp"
+       label="%featureName"
+-      version="3.7.1.qualifier"
++      version="3.7.1.r37x_v20110729-9DB5FmNFnFLSFCtLxnRfMqt15A4A"
+       provider-name="%providerName"
+       plugin="org.eclipse.rcp"
+       image="eclipse_update_120.jpg"
+       license-feature="org.eclipse.license"
+-      license-feature-version="1.0.0.qualifier">
++      license-feature-version="1.0.0.r37x_v20110729-9DB5FmNFnFLSFCtLxnRfMqt15A4A">
+ 
+    <description>
+       %description
