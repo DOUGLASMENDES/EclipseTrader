@@ -86,7 +86,6 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         identifiers = new IdentifiersCollection();
         securities = new SecurityCollection();
         scripts = new ScriptsCollection();
-        strategies = new StrategiesCollection();
     }
 
     public static LocalRepository getInstance() {
@@ -115,12 +114,6 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         if (scripts == null) {
             scripts = new ScriptsCollection();
         }
-
-        file = location.append(STRATEGIES_FILE).toFile();
-        strategies = (StrategiesCollection) unmarshal(StrategiesCollection.class, file);
-        if (strategies == null) {
-            strategies = new StrategiesCollection();
-        }
     }
 
     protected synchronized void initializeWatchListsCollections() {
@@ -133,6 +126,21 @@ public class LocalRepository implements IRepository, ISchedulingRule {
                 watchlists = WatchListCollection.getInstance();
                 if (watchlists == null) {
                     watchlists = new WatchListCollection();
+                }
+            }
+        }
+    }
+
+    protected synchronized void initializeStrategiesListsCollections() {
+        if (strategies == null) {
+            if (Activator.getDefault() != null) {
+                File file = Activator.getDefault().getStateLocation().append(STRATEGIES_FILE).toFile();
+                strategies = (StrategiesCollection) unmarshal(StrategiesCollection.class, file);
+            }
+            if (strategies == null) {
+                strategies = StrategiesCollection.getInstance();
+                if (strategies == null) {
+                    strategies = new StrategiesCollection();
                 }
             }
         }
@@ -168,8 +176,10 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         file = location.append(SCRIPTS_FILE).toFile();
         marshal(scripts, ScriptsCollection.class, file);
 
-        file = location.append(STRATEGIES_FILE).toFile();
-        marshal(strategies, StrategiesCollection.class, file);
+        if (strategies != null) {
+            file = location.append(STRATEGIES_FILE).toFile();
+            marshal(strategies, StrategiesCollection.class, file);
+        }
 
         if (trades != null) {
             file = location.append(TRADES_FILE).toFile();
@@ -210,6 +220,10 @@ public class LocalRepository implements IRepository, ISchedulingRule {
 
         list.addAll(securities.getList());
         list.addAll(scripts.getList());
+
+        if (strategies == null) {
+            initializeStrategiesListsCollections();
+        }
         list.addAll(strategies.getList());
 
         if (watchlists == null) {
@@ -253,6 +267,9 @@ public class LocalRepository implements IRepository, ISchedulingRule {
         }
 
         if (URI_STRATEGY_PART.equals(uri.getSchemeSpecificPart())) {
+            if (strategies == null) {
+                initializeStrategiesListsCollections();
+            }
             return strategies.get(uri);
         }
 
