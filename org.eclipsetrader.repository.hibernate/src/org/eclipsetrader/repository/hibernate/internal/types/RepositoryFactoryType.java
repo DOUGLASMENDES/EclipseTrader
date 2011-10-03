@@ -32,7 +32,7 @@ import org.hibernate.usertype.UserType;
 
 public class RepositoryFactoryType implements UserType {
 
-    private static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactory";
+    private static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactories";
 
     public class FailsafeRepositoryElementFactory implements IRepositoryElementFactory {
 

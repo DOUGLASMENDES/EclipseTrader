@@ -23,7 +23,7 @@ import org.eclipsetrader.repository.local.internal.Activator;
 
 public class RepositoryFactoryAdapter extends XmlAdapter<String, IRepositoryElementFactory> {
 
-    private static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactory";
+    private static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactories";
 
     public RepositoryFactoryAdapter() {
     }
