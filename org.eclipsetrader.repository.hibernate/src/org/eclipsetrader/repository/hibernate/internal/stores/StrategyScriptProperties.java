@@ -29,11 +29,13 @@ import javax.persistence.Table;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.repository.hibernate.internal.Activator;
+import org.eclipsetrader.repository.hibernate.internal.types.FailsafeScript;
 import org.eclipsetrader.repository.hibernate.internal.types.FailsafeSecurity;
 import org.hibernate.HibernateException;
 import org.hibernate.annotations.GenericGenerator;
@@ -90,6 +92,10 @@ public class StrategyScriptProperties {
         if (value instanceof ISecurity) {
             IStoreObject store = (IStoreObject) ((ISecurity) value).getAdapter(IStoreObject.class);
             return new StrategyScriptProperties(name, ISecurity.class.getName(), store.getStore().toURI().toString());
+        }
+        if (value instanceof IScript) {
+            IStoreObject store = (IStoreObject) ((IScript) value).getAdapter(IStoreObject.class);
+            return new StrategyScriptProperties(name, IScript.class.getName(), store.getStore().toURI().toString());
         }
         return new StrategyScriptProperties(name, value.toString());
     }
@@ -151,6 +157,32 @@ public class StrategyScriptProperties {
                     }
 
                     return security;
+                } catch (URISyntaxException e) {
+                    throw new HibernateException(e);
+                }
+            }
+            if (IScript.class.getName().equals(property.getType())) {
+                IScript script = null;
+                try {
+                    URI uri = new URI(property.getValue());
+                    try {
+                        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+                        ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+                        repositoryService = (IRepositoryService) context.getService(serviceReference);
+                        script = (IScript) repositoryService.getObjectFromURI(uri);
+                        context.ungetService(serviceReference);
+                    } catch (Exception e) {
+                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
+                        Activator.log(status);
+                    }
+
+                    if (script == null) {
+                        Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load script " + uri.toString(), null);
+                        Activator.log(status);
+                        return new FailsafeScript(uri);
+                    }
+
+                    return script;
                 } catch (URISyntaxException e) {
                     throw new HibernateException(e);
                 }

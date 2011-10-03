@@ -11,11 +11,13 @@
 
 package org.eclipsetrader.core.ats;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
@@ -34,6 +36,7 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
     private String name;
     private String language;
     private String text;
+    private List<IScript> includes = new ArrayList<IScript>();
     private List<ISecurity> instruments = new ArrayList<ISecurity>();
     private List<TimeSpan> barsTimeSpan = new ArrayList<TimeSpan>();
 
@@ -86,6 +89,21 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.IScriptStrategy#getIncludes()
+     */
+    @Override
+    public IScript[] getIncludes() {
+        return includes.toArray(new IScript[includes.size()]);
+    }
+
+    public void setIncludes(IScript[] includes) {
+        this.includes = new ArrayList<IScript>();
+        if (includes != null) {
+            this.includes.addAll(Arrays.asList(includes));
+        }
     }
 
     /* (non-Javadoc)
@@ -148,8 +166,9 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
         storeProperties.setProperty(IScriptStrategy.PROP_NAME, name);
         storeProperties.setProperty(IScriptStrategy.PROP_LANGUAGE, language);
         storeProperties.setProperty(IScriptStrategy.PROP_TEXT, text);
-        storeProperties.setProperty(IScriptStrategy.PROP_INSTRUMENTS, instruments.toArray(new ISecurity[instruments.size()]));
-        storeProperties.setProperty(IScriptStrategy.PROP_BARS_TIMESPAN, barsTimeSpan.toArray(new TimeSpan[barsTimeSpan.size()]));
+        storeProperties.setProperty(IScriptStrategy.PROP_INCLUDES, getIncludes());
+        storeProperties.setProperty(IScriptStrategy.PROP_INSTRUMENTS, getInstruments());
+        storeProperties.setProperty(IScriptStrategy.PROP_BARS_TIMESPAN, getBarsTimeSpan());
 
         return storeProperties;
     }
@@ -164,6 +183,12 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
         this.name = (String) storeProperties.getProperty(IScriptStrategy.PROP_NAME);
         this.language = (String) storeProperties.getProperty(IScriptStrategy.PROP_LANGUAGE);
         this.text = (String) storeProperties.getProperty(IScriptStrategy.PROP_TEXT);
+
+        IScript[] includes = (IScript[]) storeProperties.getProperty(IScriptStrategy.PROP_INCLUDES);
+        this.includes = new ArrayList<IScript>();
+        if (includes != null) {
+            this.includes.addAll(Arrays.asList(includes));
+        }
 
         this.instruments = new ArrayList<ISecurity>();
         ISecurity[] instruments = (ISecurity[]) storeProperties.getProperty(IScriptStrategy.PROP_INSTRUMENTS);
@@ -183,11 +208,13 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
      */
     @Override
     @SuppressWarnings({
-            "unchecked", "rawtypes"
+        "unchecked", "rawtypes"
     })
     public Object getAdapter(Class adapter) {
-        if (adapter.isAssignableFrom(IStoreProperties.class)) {
-            return getStoreProperties();
+        if (adapter.isAssignableFrom(URI.class)) {
+            if (store != null) {
+                return store.toURI();
+            }
         }
         if (adapter.isAssignableFrom(getClass())) {
             return this;

@@ -42,6 +42,8 @@ public class TestRepositoryService implements IRepositoryService {
     private Map<String, IWatchList> watchlists = new HashMap<String, IWatchList>();
     private Map<URI, IWatchList> watchlistsUriMap = new HashMap<URI, IWatchList>();
 
+    private Map<URI, IStoreObject> uriMap = new HashMap<URI, IStoreObject>();
+
     public TestRepositoryService() {
     }
 
@@ -82,6 +84,7 @@ public class TestRepositoryService implements IRepositoryService {
     public void saveAdaptable(IAdaptable[] adaptables) {
         for (IAdaptable a : adaptables) {
             IStoreObject so = (IStoreObject) a.getAdapter(IStoreObject.class);
+            this.uriMap.put(so.getStore().toURI(), so);
             if (a instanceof ISecurity) {
                 this.securities.put(((ISecurity) a).getName(), (ISecurity) a);
                 this.securitiesUriMap.put(so.getStore().toURI(), (ISecurity) a);
@@ -90,7 +93,7 @@ public class TestRepositoryService implements IRepositoryService {
                     this.identifiersMap.put(i.getSymbol(), i);
                 }
             }
-            if (a instanceof IWatchList) {
+            else if (a instanceof IWatchList) {
                 this.watchlists.put(((IWatchList) a).getName(), (IWatchList) a);
                 this.watchlistsUriMap.put(so.getStore().toURI(), (IWatchList) a);
             }
@@ -248,7 +251,7 @@ public class TestRepositoryService implements IRepositoryService {
      */
     @Override
     public IStoreObject getObjectFromURI(URI uri) {
-        return null;
+        return uriMap.get(uri);
     }
 
     /* (non-Javadoc)
@@ -256,6 +259,6 @@ public class TestRepositoryService implements IRepositoryService {
      */
     @Override
     public IStoreObject[] getAllObjects() {
-        return null;
+        return uriMap.values().toArray(new IStoreObject[uriMap.values().size()]);
     }
 }

@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipsetrader.core.IScript;
+import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -193,5 +195,59 @@ public class StrategyScriptStoreTest extends TestCase {
 
         assertNotNull(store.barsData);
         assertEquals(2, store.barsData.length);
+    }
+
+    public void testFetchIncludesProperty() throws Exception {
+        final Script script = new Script("Common Functions");
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                IStore store = repository.createObject();
+                store.putProperties(script.getStoreProperties(), monitor);
+                script.setStore(store);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        final List<StrategyScriptProperties> properties = new ArrayList<StrategyScriptProperties>();
+        properties.add(StrategyScriptProperties.create(StrategyScriptStore.K_INCLUDE, script));
+
+        StrategyScriptStore store = new StrategyScriptStore();
+        store.properties = properties;
+
+        IStoreProperties storeProperties = store.fetchProperties(new NullProgressMonitor());
+        IScript[] value = (IScript[]) storeProperties.getProperty(IScriptStrategy.PROP_INCLUDES);
+        assertNotNull(value);
+        assertEquals(1, value.length);
+    }
+
+    public void testPutIncludesProperty() throws Exception {
+        final Script script = new Script("Common Functions");
+
+        repository.runInRepository(new IRepositoryRunnable() {
+
+            @Override
+            public IStatus run(IProgressMonitor monitor) throws Exception {
+                IStore store = repository.createObject();
+                store.putProperties(script.getStoreProperties(), monitor);
+                script.setStore(store);
+                return Status.OK_STATUS;
+            }
+        }, null);
+
+        StoreProperties storeProperties = new StoreProperties();
+        storeProperties.setProperty(IScriptStrategy.PROP_INCLUDES, new IScript[] {
+            script
+        });
+
+        StrategyScriptStore store = new StrategyScriptStore();
+        store.setRepository(repository);
+
+        store.putProperties(storeProperties, new NullProgressMonitor());
+
+        assertNotNull(store.includesData);
+        assertEquals(1, store.includesData.length);
     }
 }

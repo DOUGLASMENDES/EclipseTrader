@@ -11,6 +11,8 @@
 
 package org.eclipsetrader.core.ats;
 
+import org.eclipsetrader.core.IScript;
+
 /**
  * Interface implemented by trading system strategies scripts.
  *
@@ -20,6 +22,7 @@ public interface IScriptStrategy extends IStrategy {
 
     public static final String PROP_LANGUAGE = "language";
     public static final String PROP_TEXT = "text";
+    public static final String PROP_INCLUDES = "includes";
 
     /**
      * Gets the script language.
@@ -34,4 +37,11 @@ public interface IScriptStrategy extends IStrategy {
      * @return the text
      */
     public String getText();
+
+    /**
+     * Gets a possibly empty array of included scripts.
+     * 
+     * @return the included scripts
+     */
+    public IScript[] getIncludes();
 }

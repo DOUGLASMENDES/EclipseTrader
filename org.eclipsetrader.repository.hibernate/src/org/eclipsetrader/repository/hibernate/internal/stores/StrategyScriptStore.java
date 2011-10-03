@@ -30,6 +30,7 @@ import javax.persistence.Version;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -50,6 +51,7 @@ import org.hibernate.annotations.Target;
 @Table(name = "strategies")
 public class StrategyScriptStore implements IStore {
 
+    public static final String K_INCLUDE = "include";
     public static final String K_INSTRUMENT = "instrument";
     public static final String K_BARS = "bars";
 
@@ -85,6 +87,9 @@ public class StrategyScriptStore implements IStore {
 
     @Transient
     ISecurity[] instrumentsData;
+
+    @Transient
+    IScript[] includesData;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
@@ -137,6 +142,17 @@ public class StrategyScriptStore implements IStore {
         properties.setProperty(IScriptStrategy.PROP_LANGUAGE, language);
         properties.setProperty(IScriptStrategy.PROP_TEXT, text);
 
+        if (includesData == null) {
+            List<IScript> l = new ArrayList<IScript>();
+            for (StrategyScriptProperties prop : this.properties) {
+                if (K_INCLUDE.equals(prop.getName()) && IScript.class.getName().equals(prop.getType())) {
+                    l.add((IScript) StrategyScriptProperties.convert(prop));
+                }
+            }
+            includesData = l.toArray(new IScript[l.size()]);
+        }
+        properties.setProperty(IScriptStrategy.PROP_INCLUDES, includesData);
+
         if (instrumentsData == null) {
             List<ISecurity> l = new ArrayList<ISecurity>();
             for (StrategyScriptProperties prop : this.properties) {
@@ -176,10 +192,16 @@ public class StrategyScriptStore implements IStore {
         this.language = (String) properties.getProperty(IScriptStrategy.PROP_LANGUAGE);
         this.text = (String) properties.getProperty(IScriptStrategy.PROP_TEXT);
 
+        this.includesData = (IScript[]) properties.getProperty(IScriptStrategy.PROP_INCLUDES);
         this.instrumentsData = (ISecurity[]) properties.getProperty(IScriptStrategy.PROP_INSTRUMENTS);
         this.barsData = (TimeSpan[]) properties.getProperty(IScriptStrategy.PROP_BARS_TIMESPAN);
 
         List<StrategyScriptProperties> list = new ArrayList<StrategyScriptProperties>();
+        if (this.includesData != null) {
+            for (int i = 0; i < this.includesData.length; i++) {
+                list.add(StrategyScriptProperties.create(K_INCLUDE, this.includesData[i]));
+            }
+        }
         if (this.instrumentsData != null) {
             for (int i = 0; i < this.instrumentsData.length; i++) {
                 list.add(StrategyScriptProperties.create(K_INSTRUMENT, this.instrumentsData[i]));

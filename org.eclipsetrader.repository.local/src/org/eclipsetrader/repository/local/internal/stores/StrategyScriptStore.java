@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -39,6 +40,7 @@ import org.eclipsetrader.repository.local.LocalRepository;
 import org.eclipsetrader.repository.local.internal.Activator;
 import org.eclipsetrader.repository.local.internal.StrategiesCollection;
 import org.eclipsetrader.repository.local.internal.types.RepositoryFactoryAdapter;
+import org.eclipsetrader.repository.local.internal.types.ScriptAdapter;
 import org.eclipsetrader.repository.local.internal.types.SecurityAdapter;
 import org.eclipsetrader.repository.local.internal.types.TimeSpanAdapter;
 
@@ -74,6 +76,11 @@ public class StrategyScriptStore implements IStore {
     @XmlJavaTypeAdapter(SecurityAdapter.class)
     private List<ISecurity> instruments = new ArrayList<ISecurity>();
 
+    @XmlElementWrapper(name = "includes")
+    @XmlElement(name = "script")
+    @XmlJavaTypeAdapter(ScriptAdapter.class)
+    private List<IScript> includes = new ArrayList<IScript>();
+
     public StrategyScriptStore() {
     }
 
@@ -96,6 +103,7 @@ public class StrategyScriptStore implements IStore {
         properties.setProperty(IScriptStrategy.PROP_NAME, name);
         properties.setProperty(IScriptStrategy.PROP_LANGUAGE, language);
         properties.setProperty(IScriptStrategy.PROP_TEXT, text);
+        properties.setProperty(IScriptStrategy.PROP_INCLUDES, includes.toArray(new IScript[includes.size()]));
         properties.setProperty(IScriptStrategy.PROP_INSTRUMENTS, instruments.toArray(new ISecurity[instruments.size()]));
         properties.setProperty(IScriptStrategy.PROP_BARS_TIMESPAN, barsTimeSpan.toArray(new TimeSpan[barsTimeSpan.size()]));
 
@@ -113,6 +121,12 @@ public class StrategyScriptStore implements IStore {
         this.name = (String) properties.getProperty(IScriptStrategy.PROP_NAME);
         this.language = (String) properties.getProperty(IScriptStrategy.PROP_LANGUAGE);
         this.text = (String) properties.getProperty(IScriptStrategy.PROP_TEXT);
+
+        this.includes = new ArrayList<IScript>();
+        IScript[] s = (IScript[]) properties.getProperty(IScriptStrategy.PROP_INCLUDES);
+        if (s != null) {
+            this.includes.addAll(Arrays.asList(s));
+        }
 
         this.instruments = new ArrayList<ISecurity>();
         ISecurity[] e = (ISecurity[]) properties.getProperty(IScriptStrategy.PROP_INSTRUMENTS);
@@ -166,7 +180,7 @@ public class StrategyScriptStore implements IStore {
     @Override
     public URI toURI() {
         try {
-            return new URI(LocalRepository.URI_SCHEMA, LocalRepository.URI_SCRIPT_PART, String.valueOf(id));
+            return new URI(LocalRepository.URI_SCHEMA, LocalRepository.URI_STRATEGY_PART, String.valueOf(id));
         } catch (URISyntaxException e) {
         }
         return null;

@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.core.ats;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 
@@ -19,7 +20,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
  *
  * @since 1.0
  */
-public interface IStrategy {
+public interface IStrategy extends IAdaptable {
 
     public static final String PROP_NAME = "name";
     public static final String PROP_INSTRUMENTS = "instruments";
