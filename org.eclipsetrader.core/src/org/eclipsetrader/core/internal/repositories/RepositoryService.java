@@ -456,9 +456,15 @@ public class RepositoryService implements IRepositoryService {
                             }
 
                             for (IStoreObject object : storeObjects) {
+                                int kind = RepositoryResourceDelta.MOVED_TO;
+
                                 IStore store = object.getStore();
                                 if (store == null) {
                                     store = repository.createObject();
+                                    kind |= RepositoryResourceDelta.ADDED;
+                                }
+                                else {
+                                    kind |= RepositoryResourceDelta.CHANGED;
                                 }
 
                                 IStoreProperties properties = object.getStoreProperties();
@@ -478,7 +484,6 @@ public class RepositoryService implements IRepositoryService {
                                 }
 
                                 if (deltas != null) {
-                                    int kind = RepositoryResourceDelta.MOVED_TO | RepositoryResourceDelta.ADDED;
                                     deltas.add(new RepositoryResourceDelta(kind, adaptable, null, store.getRepository(), null, properties));
                                 }
                             }
