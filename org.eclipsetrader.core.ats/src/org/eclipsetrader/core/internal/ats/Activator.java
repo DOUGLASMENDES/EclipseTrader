@@ -44,10 +44,10 @@ public class Activator extends Plugin {
 
         final TradeSystemService tradeSystemService = new TradeSystemService();
         context.registerService(new String[] {
-                ITradeSystemService.class.getName(),
-                TradeSystemService.class.getName()
+            ITradeSystemService.class.getName(),
+            TradeSystemService.class.getName()
         }, tradeSystemService, new Hashtable<String, Object>());
-        tradeSystemService.startUp();
+        //tradeSystemService.startUp();
 
         Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
     }
@@ -62,7 +62,7 @@ public class Activator extends Plugin {
         if (serviceReference != null) {
             TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
             if (service != null) {
-                service.shutDown();
+                //service.shutDown();
             }
             context.ungetService(serviceReference);
         }

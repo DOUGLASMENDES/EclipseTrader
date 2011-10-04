@@ -16,12 +16,18 @@ import org.eclipse.osgi.util.NLS;
 public class TimeSpan {
 
     public enum Units {
-        Minutes("min"), Days("d"), Months("mn"), Years("yr");
+        Minutes("min", "Minutes"), Days("d", "Days"), Months("mn", "Monts"), Years("yr", "Years");
 
-        private String name;
+        private final String name;
+        private final String key;
 
-        private Units(String name) {
+        private Units(String key, String name) {
             this.name = name;
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
         }
 
         @Override
@@ -55,8 +61,8 @@ public class TimeSpan {
         }
         Units[] u = Units.values();
         for (int i = 0; i < u.length; i++) {
-            if (s.endsWith(u[i].toString())) {
-                int length = Integer.parseInt(s.substring(0, s.length() - u[i].toString().length()));
+            if (s.endsWith(u[i].getKey())) {
+                int length = Integer.parseInt(s.substring(0, s.length() - u[i].getKey().length()));
                 return new TimeSpan(u[i], length);
             }
         }
@@ -69,7 +75,7 @@ public class TimeSpan {
         return null;
     }
 
-    protected TimeSpan(Units units, int length) {
+    public TimeSpan(Units units, int length) {
         this.units = units;
         this.length = length;
     }
@@ -105,8 +111,10 @@ public class TimeSpan {
         if (units.ordinal() < timeSpan.units.ordinal()) {
             return true;
         }
-        if (length < timeSpan.length) {
-            return true;
+        else if (units.ordinal() == timeSpan.units.ordinal()) {
+            if (length < timeSpan.length) {
+                return true;
+            }
         }
         return false;
     }
@@ -115,8 +123,10 @@ public class TimeSpan {
         if (units.ordinal() > timeSpan.units.ordinal()) {
             return true;
         }
-        if (length > timeSpan.length) {
-            return true;
+        else if (units.ordinal() == timeSpan.units.ordinal()) {
+            if (length > timeSpan.length) {
+                return true;
+            }
         }
         return false;
     }
@@ -127,7 +137,7 @@ public class TimeSpan {
     @Override
     public String toString() {
         return NLS.bind("{0}{1}", new Object[] {
-                String.valueOf(length), units.toString()
+            String.valueOf(length), units.getKey()
         });
     }
 }

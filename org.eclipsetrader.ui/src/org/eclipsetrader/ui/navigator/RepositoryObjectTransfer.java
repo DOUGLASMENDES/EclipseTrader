@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.securities;
+package org.eclipsetrader.ui.navigator;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,23 +23,22 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class SecurityObjectTransfer extends ByteArrayTransfer {
+public class RepositoryObjectTransfer extends ByteArrayTransfer {
 
-    private static SecurityObjectTransfer instance = new SecurityObjectTransfer();
-    private static final String TYPENAME = SecurityObjectTransfer.class.getName();
+    private static RepositoryObjectTransfer instance = new RepositoryObjectTransfer();
+    private static final String TYPENAME = RepositoryObjectTransfer.class.getName();
     private static final int TYPEID = registerType(TYPENAME);
 
-    private SecurityObjectTransfer() {
+    private RepositoryObjectTransfer() {
     }
 
-    public static SecurityObjectTransfer getInstance() {
+    public static RepositoryObjectTransfer getInstance() {
         return instance;
     }
 
@@ -73,25 +72,16 @@ public class SecurityObjectTransfer extends ByteArrayTransfer {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ObjectOutputStream writeOut = new ObjectOutputStream(out);
 
-            if (object instanceof ISecurity) {
+            if (object instanceof IAdaptable) {
                 writeOut.writeInt(1);
-                IStoreObject storeObject = (IStoreObject) ((ISecurity) object).getAdapter(IStoreObject.class);
+                IStoreObject storeObject = (IStoreObject) ((IAdaptable) object).getAdapter(IStoreObject.class);
                 writeOut.writeObject(storeObject.getStore().toURI());
             }
             else if (object instanceof IAdaptable[]) {
-                int count = 0;
+                writeOut.writeInt(((IAdaptable[]) object).length);
                 for (IAdaptable adaptable : (IAdaptable[]) object) {
-                    if (adaptable instanceof ISecurity) {
-                        count++;
-                    }
-                }
-
-                writeOut.writeInt(count);
-                for (IAdaptable adaptable : (IAdaptable[]) object) {
-                    if (adaptable instanceof ISecurity) {
-                        IStoreObject storeObject = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
-                        writeOut.writeObject(storeObject.getStore().toURI());
-                    }
+                    IStoreObject storeObject = (IStoreObject) adaptable.getAdapter(IStoreObject.class);
+                    writeOut.writeObject(storeObject.getStore().toURI());
                 }
             }
 
@@ -105,61 +95,55 @@ public class SecurityObjectTransfer extends ByteArrayTransfer {
     }
 
     @Override
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
     protected Object nativeToJava(TransferData transferData) {
-        ISecurity[] securities = new ISecurity[0];
-
         if (isSupportedType(transferData)) {
             byte[] buffer = (byte[]) super.nativeToJava(transferData);
             if (buffer == null) {
-                return null;
+                return new IAdaptable[0];
             }
 
-            IRepositoryService service = getRepositoryService();
-
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
+            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
             try {
+                IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
+
                 ByteArrayInputStream in = new ByteArrayInputStream(buffer);
                 ObjectInputStream readIn = new ObjectInputStream(in);
 
                 int length = readIn.readInt();
-                securities = new ISecurity[length];
+                IAdaptable[] adaptables = new IAdaptable[length];
                 for (int i = 0; i < length; i++) {
                     URI uri = (URI) readIn.readObject();
-                    securities[i] = service.getSecurityFromURI(uri);
+                    adaptables[i] = (IAdaptable) service.getObjectFromURI(uri);
                 }
+
+                return adaptables;
             } catch (Exception e) {
                 Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reassembling transfer object", e); //$NON-NLS-1$
-                UIActivator.getDefault().getLog().log(status);
+                UIActivator.log(status);
+            } finally {
+                context.ungetService(serviceReference);
             }
         }
 
-        return securities;
+        return new IAdaptable[0];
     }
 
     public static boolean checkMyType(Object object) {
         if (object instanceof IAdaptable) {
-            return object instanceof ISecurity;
+            return ((IAdaptable) object).getAdapter(IStoreObject.class) != null;
         }
         if (object instanceof IAdaptable[]) {
             for (IAdaptable adaptable : (IAdaptable[]) object) {
-                if (adaptable instanceof ISecurity) {
-                    return true;
+                if (adaptable.getAdapter(IStoreObject.class) == null) {
+                    return false;
                 }
             }
+            return true;
         }
         return false;
-    }
-
-    protected IRepositoryService getRepositoryService() {
-        try {
-            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-            IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-            context.ungetService(serviceReference);
-            return service;
-        } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading repository service", e); //$NON-NLS-1$
-            UIActivator.getDefault().getLog().log(status);
-        }
-        return null;
     }
 }

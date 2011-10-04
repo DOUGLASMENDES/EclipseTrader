@@ -68,8 +68,8 @@ import org.eclipsetrader.ui.SelectionProvider;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.repositories.Messages;
-import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
 import org.eclipsetrader.ui.navigator.INavigatorContentGroup;
+import org.eclipsetrader.ui.navigator.SecurityObjectTransfer;
 
 @SuppressWarnings("restriction")
 public class Navigator extends ViewPart {

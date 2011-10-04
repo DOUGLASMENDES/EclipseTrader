@@ -62,8 +62,8 @@ import org.eclipsetrader.ui.internal.providers.LastTradePriceFactory;
 import org.eclipsetrader.ui.internal.providers.LastTradeTimeFactory;
 import org.eclipsetrader.ui.internal.providers.SecurityNameFactory;
 import org.eclipsetrader.ui.internal.providers.TrendFactory;
-import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
-import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
+import org.eclipsetrader.ui.navigator.RepositoryObjectTransfer;
+import org.eclipsetrader.ui.navigator.SecurityObjectTransfer;
 
 public class TickersView extends ViewPart {
 

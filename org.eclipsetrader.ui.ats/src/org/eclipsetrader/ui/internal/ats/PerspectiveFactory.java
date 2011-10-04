@@ -32,6 +32,11 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 
         // Our editor area
         IFolderLayout editors = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
+        editors.addPlaceholder(ScriptEditor.VIEW_ID);
+        editors.addPlaceholder(ScriptEditor.VIEW_ID + ":*"); //$NON-NLS-1$
+        editors.addPlaceholder("org.eclipsetrader.ui.editors.script"); //$NON-NLS-1$
+        editors.addPlaceholder("org.eclipsetrader.ui.editors.script:*"); //$NON-NLS-1$
+        editors.addPlaceholder("org.eclipsetrader.ui.chart"); //$NON-NLS-1$
         editors.addPlaceholder("org.eclipsetrader.ui.chart:*"); //$NON-NLS-1$
 
         // Left.
@@ -44,11 +49,14 @@ public class PerspectiveFactory implements IPerspectiveFactory {
         bottom.addPlaceholder("org.eclipse.ui.views.ProgressView"); //$NON-NLS-1$
 
         // Right.
-        IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
+        IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, (float) 0.75, UIConstants.EDITOR_AREA); //$NON-NLS-1$
+        right.addView(ExplorerViewPart.VIEW_ID);
         right.addPlaceholder("org.eclipsetrader.ui.views.level2:*"); //$NON-NLS-1$
 
         // Add "new wizards".
+        layout.addNewWizardShortcut("org.eclipsetrader.ui.ats.scriptstrategy.wizard");//$NON-NLS-1$
         layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.security");//$NON-NLS-1$
+        layout.addNewWizardShortcut("org.eclipsetrader.ui.wizard.script");//$NON-NLS-1$
 
         // Add "actionsets".
 

@@ -97,8 +97,8 @@ import org.eclipsetrader.core.views.WatchListColumn;
 import org.eclipsetrader.core.views.WatchListElement;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.repositories.RepositoryObjectTransfer;
-import org.eclipsetrader.ui.internal.securities.SecurityObjectTransfer;
+import org.eclipsetrader.ui.navigator.RepositoryObjectTransfer;
+import org.eclipsetrader.ui.navigator.SecurityObjectTransfer;
 
 public class WatchListView extends ViewPart implements ISaveablePart {
 

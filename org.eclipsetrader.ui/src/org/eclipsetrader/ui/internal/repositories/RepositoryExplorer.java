@@ -72,6 +72,7 @@ import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.ui.SelectionProvider;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
+import org.eclipsetrader.ui.navigator.RepositoryObjectTransfer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
