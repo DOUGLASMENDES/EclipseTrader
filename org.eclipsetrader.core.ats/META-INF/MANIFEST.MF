@@ -7,9 +7,11 @@ Bundle-Activator: org.eclipsetrader.core.internal.ats.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
- org.eclipsetrader.core.trading
+ org.eclipsetrader.core.trading,
+ org.mozilla.rhino;bundle-version="[1.7.0,1.8.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.core.ats,
+ org.eclipsetrader.core.ats.engines,
  org.eclipsetrader.core.internal.ats;x-internal:=true,
  org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.trading"

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ATS Core Tests
+Bundle-SymbolicName: org.eclipsetrader.core.ats.tests
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: EclipseTrader.org
+Fragment-Host: org.eclipsetrader.core.ats;bundle-version="1.0.0.qualifier"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit

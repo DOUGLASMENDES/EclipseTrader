@@ -30,7 +30,6 @@ import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.trading.Activator;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -43,12 +42,13 @@ public class BarFactory implements IBarFactory {
 
     private ListenerList listeners = new ListenerList();
 
-    private Date date;
+    private Date dateOpen;
 
     private Double open;
     private Double high;
     private Double low;
     private Double close;
+    private Long volume;
 
     private Date dateClose;
 
@@ -77,7 +77,7 @@ public class BarFactory implements IBarFactory {
          */
         @Override
         public void run() {
-            if (BarFactory.this.date == date) {
+            if (BarFactory.this.dateOpen == date) {
                 fireBarCloseEvent();
             }
         }
@@ -133,9 +133,9 @@ public class BarFactory implements IBarFactory {
         IOHLC[] bars = null;
 
         BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-        ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
+        ServiceReference<IRepositoryService> serviceReference = context.getServiceReference(IRepositoryService.class);
         if (serviceReference != null) {
-            IRepositoryService repositoryService = (IRepositoryService) context.getService(serviceReference);
+            IRepositoryService repositoryService = context.getService(serviceReference);
 
             IHistory history = repositoryService.getHistoryFor(security);
             if (history != null) {
@@ -188,9 +188,9 @@ public class BarFactory implements IBarFactory {
             c.set(Calendar.SECOND, 0);
         }
 
-        if (date != null && dateClose != null) {
+        if (dateOpen != null && dateClose != null) {
             Date time = c.getTime();
-            if (!time.before(date) && time.before(dateClose)) {
+            if (!time.before(dateOpen) && time.before(dateClose)) {
                 if (high == null || trade.getPrice() > high) {
                     high = trade.getPrice();
                 }
@@ -198,6 +198,9 @@ public class BarFactory implements IBarFactory {
                     low = trade.getPrice();
                 }
                 close = trade.getPrice();
+                if (trade.getSize() != null) {
+                    volume = volume != null ? volume + trade.getSize() : trade.getSize();
+                }
             }
 
             if (!time.before(dateClose)) {
@@ -205,18 +208,18 @@ public class BarFactory implements IBarFactory {
             }
         }
 
-        if (date == null) {
+        if (dateOpen == null) {
             if (timeSpan.getUnits() == TimeSpan.Units.Minutes) {
                 int round = c.get(Calendar.MINUTE) % timeSpan.getLength();
                 c.add(Calendar.MINUTE, -round);
-                date = c.getTime();
+                dateOpen = c.getTime();
                 c.add(Calendar.MINUTE, timeSpan.getLength());
                 dateClose = c.getTime();
             }
             else if (timeSpan.getUnits() == TimeSpan.Units.Days) {
                 int round = c.get(Calendar.DAY_OF_MONTH) % timeSpan.getLength();
                 c.add(Calendar.DAY_OF_MONTH, -round);
-                date = c.getTime();
+                dateOpen = c.getTime();
                 c.add(Calendar.DAY_OF_MONTH, timeSpan.getLength());
                 dateClose = c.getTime();
             }
@@ -224,15 +227,16 @@ public class BarFactory implements IBarFactory {
             high = trade.getPrice();
             low = trade.getPrice();
             close = trade.getPrice();
+            volume = trade.getSize();
 
             fireBarOpenEvent();
 
-            timer.schedule(new BarCloseTimerTask(date), dateClose);
+            timer.schedule(new BarCloseTimerTask(dateOpen), dateClose);
         }
     }
 
     protected void fireBarOpenEvent() {
-        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, date, open);
+        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, dateOpen, open);
         event.factory = this;
 
         Object[] l = listeners.getListeners();
@@ -242,9 +246,9 @@ public class BarFactory implements IBarFactory {
     }
 
     protected void fireBarCloseEvent() {
-        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, date, open, high, low, close);
+        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, dateOpen, open, high, low, close, volume);
         event.factory = this;
-        date = null;
+        dateOpen = null;
 
         Object[] l = listeners.getListeners();
         for (int i = 0; i < l.length; i++) {

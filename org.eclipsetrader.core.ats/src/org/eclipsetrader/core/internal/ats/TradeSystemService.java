@@ -37,6 +37,7 @@ import org.eclipsetrader.core.ats.ITradeSystemListener;
 import org.eclipsetrader.core.ats.ITradeSystemMonitor;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.eclipsetrader.core.ats.TradeSystemEvent;
+import org.eclipsetrader.core.internal.ats.repository.TradeSystem;
 import org.eclipsetrader.core.internal.ats.repository.TradeSystemRepository;
 
 public class TradeSystemService implements ITradeSystemService, IAdapterFactory {

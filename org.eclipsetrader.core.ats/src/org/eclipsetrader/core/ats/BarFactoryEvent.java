@@ -24,6 +24,7 @@ public class BarFactoryEvent {
     public Double high;
     public Double low;
     public Double close;
+    public Long volume;
 
     public ISecurity security;
     public TimeSpan timeSpan;
@@ -39,7 +40,7 @@ public class BarFactoryEvent {
         this.open = open;
     }
 
-    public BarFactoryEvent(ISecurity security, TimeSpan timeSpan, Date date, Double open, Double high, Double low, Double close) {
+    public BarFactoryEvent(ISecurity security, TimeSpan timeSpan, Date date, Double open, Double high, Double low, Double close, Long volume) {
         this.security = security;
         this.timeSpan = timeSpan;
         this.date = date;
@@ -47,5 +48,6 @@ public class BarFactoryEvent {
         this.high = high;
         this.low = low;
         this.close = close;
+        this.volume = volume;
     }
 }
