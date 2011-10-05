@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mozilla.rhino"
+      label="Mozilla Rhino Feature"
+      version="1.7.3.R20110603"
+      provider-name="EclipseTrader.org"
+      image="eclipse_update_120.jpg">
+
+   <description url="http://www.mozilla.org">
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <plugin
+         id="org.mozilla.rhino"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

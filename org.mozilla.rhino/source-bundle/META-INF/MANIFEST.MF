@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Rhino JavaScript for Java Source
+Bundle-SymbolicName: org.mozilla.rhino.source
+Bundle-Version: 1.7.3.R20110603
+Bundle-Vendor: Mozilla.org
+Eclipse-SourceBundle: org.mozilla.rhino;version="1.7.3.R20110603"
