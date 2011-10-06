@@ -10,6 +10,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.ui.UIConstants;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -77,6 +78,8 @@ public class Activator extends AbstractUIPlugin {
      */
     @Override
     protected void initializeImageRegistry(ImageRegistry reg) {
+        reg.put(UIConstants.COLLAPSEALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/collapseall.gif")));
+        reg.put(UIConstants.EXPANDALL_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/expandall.gif")));
         reg.put(IMG_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/folder.png")));
         reg.put(IMG_INSTRUMENT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/shape_square.png")));
         reg.put(IMG_SCRIPT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/folder_page_white.png")));
