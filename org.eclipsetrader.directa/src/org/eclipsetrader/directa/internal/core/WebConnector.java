@@ -73,9 +73,9 @@ public class WebConnector {
     private static final String HOST = "www1.directatrading.com"; //$NON-NLS-1$
 
     public static final String[] PROPERTIES = new String[] {
-            "org.eclipsetrader.directa.symbol", //$NON-NLS-1$
-            "org.eclipsetrader.directaworld.symbol", //$NON-NLS-1$
-            "org.eclipsetrader.borsaitalia.code", //$NON-NLS-1$
+        "org.eclipsetrader.directa.symbol", //$NON-NLS-1$
+        "org.eclipsetrader.directaworld.symbol", //$NON-NLS-1$
+        "org.eclipsetrader.borsaitalia.code", //$NON-NLS-1$
     };
 
     private HttpClient client;
@@ -193,10 +193,10 @@ public class WebConnector {
                 HttpMethod method = new GetMethod("https://" + HOST + "/trading/collegc_3"); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setFollowRedirects(true);
                 method.setQueryString(new NameValuePair[] {
-                        new NameValuePair("USER", userName), //$NON-NLS-1$
-                        new NameValuePair("PASSW", password), //$NON-NLS-1$
-                        new NameValuePair("PAG", "VT4.4.0.6"), //$NON-NLS-1$ //$NON-NLS-2$
-                        new NameValuePair("TAPPO", "X"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("USER", userName), //$NON-NLS-1$
+                    new NameValuePair("PASSW", password), //$NON-NLS-1$
+                    new NameValuePair("PAG", "VT4.4.0.6"), //$NON-NLS-1$ //$NON-NLS-2$
+                    new NameValuePair("TAPPO", "X"), //$NON-NLS-1$ //$NON-NLS-2$
                 });
 
                 client.executeMethod(method);
@@ -363,7 +363,7 @@ public class WebConnector {
             query.add(new NameValuePair("MODO", "C")); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
-            logger.info(method.getURI().toString());
+            logger.trace(method.getURI().toString());
             client.executeMethod(method);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
@@ -392,10 +392,6 @@ public class WebConnector {
             Activator.log(status);
         }
 
-        if (!confirm && ok) {
-            logger.info(tracker.toString());
-        }
-
         // Se viene richiesta invia anche la conferma d'ordine
         if (ok && confirm) {
             ok = false;
@@ -407,7 +403,7 @@ public class WebConnector {
                 query.add(new NameValuePair("MODO", "V")); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
-                logger.info(method.getURI().toString());
+                logger.trace(method.getURI().toString());
                 client.executeMethod(method);
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
@@ -431,13 +427,26 @@ public class WebConnector {
                 Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error confirming order [" + order.toString() + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
                 Activator.log(status);
             }
-
-            if (ok) {
-                logger.info(tracker.toString());
-            }
         }
 
-        tracker.setStatus(IOrderStatus.PendingNew);
+        if (ok) {
+            if (logger.isInfoEnabled()) {
+                StringBuilder sb = new StringBuilder("Order Submitted:");
+                sb.append(" id=" + tracker.getId());
+                sb.append(", instrument=" + tracker.getOrder().getSecurity().getName());
+                sb.append(", type=" + tracker.getOrder().getType());
+                sb.append(", side=" + tracker.getOrder().getSide());
+                sb.append(", qty=" + tracker.getOrder().getQuantity());
+                if (tracker.getOrder().getPrice() != null) {
+                    sb.append(", price=" + tracker.getOrder().getPrice());
+                }
+                if (tracker.getOrder().getReference() != null) {
+                    sb.append(", reference=" + tracker.getOrder().getReference());
+                }
+                logger.info(sb.toString());
+            }
+            tracker.setStatus(IOrderStatus.PendingNew);
+        }
 
         return ok;
     }
@@ -449,16 +458,16 @@ public class WebConnector {
         try {
             GetMethod method = new GetMethod("https://" + HOST + "/trading/ordmod5c"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("TAST", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
-                    new NameValuePair("USER", user), //$NON-NLS-1$
-                    new NameValuePair("RIF", tracker.getId()), //$NON-NLS-1$
-                    new NameValuePair("TIPO", "I"), //$NON-NLS-1$ //$NON-NLS-2$
-                    new NameValuePair("PRZO", ""), //$NON-NLS-1$ //$NON-NLS-2$
-                    new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())), //$NON-NLS-1$
-                    new NameValuePair("FILL", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("TAST", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("USER", user), //$NON-NLS-1$
+                new NameValuePair("RIF", tracker.getId()), //$NON-NLS-1$
+                new NameValuePair("TIPO", "I"), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("PRZO", ""), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("TITO", getSecurityFeedSymbol(tracker.getOrder().getSecurity())), //$NON-NLS-1$
+                new NameValuePair("FILL", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
-            logger.info(method.getURI().toString());
+            logger.trace(method.getURI().toString());
             client.executeMethod(method);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
@@ -470,7 +479,8 @@ public class WebConnector {
             }
             in.close();
         } catch (Exception e) {
-            logger.error(e, e);
+            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error canceling order [" + tracker.toString() + "]", e); //$NON-NLS-1$ //$NON-NLS-2$
+            Activator.log(status);
         }
 
         if (ok) {
@@ -485,8 +495,8 @@ public class WebConnector {
             GetMethod method = new GetMethod("https://" + HOST + "/trading/select"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setFollowRedirects(true);
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("USER", user), //$NON-NLS-1$
-                    new NameValuePair("INCR", "N"), //$NON-NLS-1$ //$NON-NLS-2$
+                new NameValuePair("USER", user), //$NON-NLS-1$
+                new NameValuePair("INCR", "N"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
             logger.info(method.getURI().toString());
@@ -517,8 +527,8 @@ public class WebConnector {
             HttpMethod method = new GetMethod("https://" + HOST + "/trading/tabelc_4"); //$NON-NLS-1$ //$NON-NLS-2$
             method.setFollowRedirects(true);
             method.setQueryString(new NameValuePair[] {
-                    new NameValuePair("USER", user), //$NON-NLS-1$
-                    new NameValuePair("DEVAR", id), //$NON-NLS-1$
+                new NameValuePair("USER", user), //$NON-NLS-1$
+                new NameValuePair("DEVAR", id), //$NON-NLS-1$
             });
 
             logger.info(method.getURI().toString());

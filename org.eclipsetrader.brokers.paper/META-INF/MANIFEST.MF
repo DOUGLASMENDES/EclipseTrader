@@ -19,7 +19,8 @@ Import-Package: javax.xml.bind;version="[2.0.0,3.0.0)",
  javax.xml.bind.util;version="[2.0.0,3.0.0)",
  javax.xml.stream;version="[2.0.0,3.0.0)",
  javax.xml.stream.events;version="[2.0.0,3.0.0)",
- javax.xml.stream.util;version="[2.0.0,3.0.0)"
+ javax.xml.stream.util;version="[2.0.0,3.0.0)",
+ org.apache.commons.logging
 Export-Package: org.eclipsetrader.internal.brokers.paper;x-internal:=true,
  org.eclipsetrader.internal.brokers.paper.schemes;x-internal:=true,
  org.eclipsetrader.internal.brokers.paper.transactions;x-internal:=true,

@@ -209,26 +209,4 @@ public class PaperBrokerTest extends TestCase {
         ITransaction transaction = ((OrderMonitor) monitor).getTransactions()[0];
         assertEquals(-100 * 10.0, transaction.getAmount().getAmount());
     }
-
-    public void testBuyAtAskPrice() throws Exception {
-        PaperBroker broker = new PaperBroker(pricingEnvironment);
-
-        IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Market, IOrderSide.Buy, security, 100L, null, null));
-        monitor.submit();
-
-        assertEquals(new Long(100), monitor.getFilledQuantity());
-        assertEquals(new Double(11.0), monitor.getAveragePrice());
-        assertEquals(IOrderStatus.Filled, monitor.getStatus());
-    }
-
-    public void testSellAtBidPrice() throws Exception {
-        PaperBroker broker = new PaperBroker(pricingEnvironment);
-
-        IOrderMonitor monitor = broker.prepareOrder(new Order(null, IOrderType.Market, IOrderSide.Sell, security, 100L, null, null));
-        monitor.submit();
-
-        assertEquals(new Long(100), monitor.getFilledQuantity());
-        assertEquals(new Double(10.0), monitor.getAveragePrice());
-        assertEquals(IOrderStatus.Filled, monitor.getStatus());
-    }
 }

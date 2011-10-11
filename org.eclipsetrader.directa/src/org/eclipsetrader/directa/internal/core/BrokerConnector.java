@@ -277,7 +277,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     @Override
     public IOrderSide[] getAllowedSides() {
         return new IOrderSide[] {
-                IOrderSide.Buy, IOrderSide.Sell,
+            IOrderSide.Buy, IOrderSide.Sell,
         };
     }
 
@@ -287,7 +287,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     @Override
     public IOrderType[] getAllowedTypes() {
         return new IOrderType[] {
-                IOrderType.Limit, IOrderType.Market,
+            IOrderType.Limit, IOrderType.Market,
         };
     }
 
@@ -297,7 +297,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     @Override
     public IOrderValidity[] getAllowedValidity() {
         return new IOrderValidity[] {
-                IOrderValidity.Day, Valid30Days,
+            IOrderValidity.Day, Valid30Days,
         };
     }
 
@@ -307,11 +307,11 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
     @Override
     public IOrderRoute[] getAllowedRoutes() {
         return new IOrderRoute[] {
-                BrokerConnector.Immediate,
-                BrokerConnector.MTA,
-                BrokerConnector.CloseMTA,
-                BrokerConnector.Open,
-                BrokerConnector.AfterHours,
+            BrokerConnector.Immediate,
+            BrokerConnector.MTA,
+            BrokerConnector.CloseMTA,
+            BrokerConnector.Open,
+            BrokerConnector.AfterHours,
         };
     }
 
@@ -528,7 +528,6 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
         }
 
         IOrder order = tracker.getOrder();
-        ;
 
         try {
             Method classMethod = order.getClass().getMethod("setDate", Date.class); //$NON-NLS-1$
@@ -585,6 +584,34 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
 
         if ((status == IOrderStatus.Filled || status == IOrderStatus.Canceled || status == IOrderStatus.Rejected) && tracker.getStatus() != status) {
             tracker.setStatus(status);
+
+            if (logger.isInfoEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                if (status == IOrderStatus.Filled) {
+                    sb.append("Order Filled:");
+                }
+                else if (status == IOrderStatus.Canceled) {
+                    sb.append("Order Canceled:");
+                }
+                else if (status == IOrderStatus.Rejected) {
+                    sb.append("Order Rejected:");
+                }
+                if (tracker.getId() != null) {
+                    sb.append(" id=" + tracker.getId() + ",");
+                }
+                sb.append(" instrument=" + tracker.getOrder().getSecurity().getName());
+                sb.append(", type=" + tracker.getOrder().getType());
+                sb.append(", side=" + tracker.getOrder().getSide());
+                sb.append(", qty=" + tracker.getOrder().getQuantity());
+                if (tracker.getOrder().getPrice() != null) {
+                    sb.append(", price=" + tracker.getOrder().getPrice());
+                }
+                if (tracker.getOrder().getReference() != null) {
+                    sb.append(", reference=" + tracker.getOrder().getReference());
+                }
+                logger.info(sb.toString());
+            }
+
             tracker.fireOrderCompletedEvent();
         }
         else {

@@ -30,6 +30,8 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -38,7 +40,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IPricingListener;
-import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
@@ -76,6 +77,8 @@ public class PaperBroker implements IBroker, IExecutableExtension {
 
     private BundleContext context;
     private ServiceReference marketServiceReference;
+
+    private final Log log = LogFactory.getLog(getClass());
 
     private IPricingListener pricingListener = new IPricingListener() {
 
@@ -220,7 +223,7 @@ public class PaperBroker implements IBroker, IExecutableExtension {
     @Override
     public IOrderSide[] getAllowedSides() {
         return new IOrderSide[] {
-                IOrderSide.Buy, IOrderSide.Sell,
+            IOrderSide.Buy, IOrderSide.Sell,
         };
     }
 
@@ -230,7 +233,7 @@ public class PaperBroker implements IBroker, IExecutableExtension {
     @Override
     public IOrderType[] getAllowedTypes() {
         return new IOrderType[] {
-                IOrderType.Limit, IOrderType.Market,
+            IOrderType.Limit, IOrderType.Market,
         };
     }
 
@@ -276,6 +279,22 @@ public class PaperBroker implements IBroker, IExecutableExtension {
             @Override
             public void cancel() throws BrokerException {
                 setStatus(IOrderStatus.Canceled);
+
+                if (log.isInfoEnabled()) {
+                    StringBuilder sb = new StringBuilder("Order Cancelled:");
+                    sb.append(" instrument=" + getOrder().getSecurity().getName());
+                    sb.append(", type=" + getOrder().getType());
+                    sb.append(", side=" + getOrder().getSide());
+                    sb.append(", qty=" + getOrder().getQuantity());
+                    if (getOrder().getPrice() != null) {
+                        sb.append(", price=" + getOrder().getPrice());
+                    }
+                    if (getOrder().getReference() != null) {
+                        sb.append(", reference=" + getOrder().getReference());
+                    }
+                    log.info(sb.toString());
+                }
+
                 fireUpdateNotifications(new OrderDelta[] {
                     new OrderDelta(OrderDelta.KIND_UPDATED, this),
                 });
@@ -291,16 +310,24 @@ public class PaperBroker implements IBroker, IExecutableExtension {
                 setId(idFormatter.format(new Date()));
                 setStatus(IOrderStatus.PendingNew);
 
+                if (log.isInfoEnabled()) {
+                    StringBuilder sb = new StringBuilder("Order Submitted:");
+                    sb.append(" instrument=" + getOrder().getSecurity().getName());
+                    sb.append(", type=" + getOrder().getType());
+                    sb.append(", side=" + getOrder().getSide());
+                    sb.append(", qty=" + getOrder().getQuantity());
+                    if (getOrder().getPrice() != null) {
+                        sb.append(", price=" + getOrder().getPrice());
+                    }
+                    if (getOrder().getReference() != null) {
+                        sb.append(", reference=" + getOrder().getReference());
+                    }
+                    log.info(sb.toString());
+                }
+
                 fireUpdateNotifications(new OrderDelta[] {
                     new OrderDelta(OrderDelta.KIND_UPDATED, this),
                 });
-
-                if (getOrder().getType() == IOrderType.Market) {
-                    IQuote quote = pricingEnvironment.getQuote(getOrder().getSecurity());
-                    if (quote != null) {
-                        processMarketOrder(this, quote);
-                    }
-                }
             }
         };
 
@@ -313,28 +340,6 @@ public class PaperBroker implements IBroker, IExecutableExtension {
         });
 
         return monitor;
-    }
-
-    protected void processMarketOrder(OrderMonitor monitor, IQuote quote) {
-        List<OrderDelta> deltas = new ArrayList<OrderDelta>();
-
-        IOrder order = monitor.getOrder();
-        if (order.getSide() == IOrderSide.Buy) {
-            if (quote.getAsk() != null) {
-                fillOrder(monitor, monitor.getOrder(), null, quote.getAsk());
-                deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
-            }
-        }
-        else if (order.getSide() == IOrderSide.Sell) {
-            if (quote.getBid() != null) {
-                fillOrder(monitor, monitor.getOrder(), null, quote.getBid());
-                deltas.add(new OrderDelta(OrderDelta.KIND_UPDATED, monitor));
-            }
-        }
-
-        if (deltas.size() != 0) {
-            fireUpdateNotifications(deltas.toArray(new OrderDelta[deltas.size()]));
-        }
     }
 
     protected void processTrade(ISecurity security, ITrade trade) {
@@ -391,6 +396,23 @@ public class PaperBroker implements IBroker, IExecutableExtension {
             if (order.getSide() == IOrderSide.Sell || order.getSide() == IOrderSide.SellShort) {
                 monitor.addTransaction(new StockTransaction(monitor.getOrder().getSecurity(), -quantity, price));
             }
+        }
+
+        if (log.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder("Order Filled:");
+            sb.append(" instrument=" + order.getSecurity().getName());
+            sb.append(", type=" + order.getType());
+            sb.append(", side=" + order.getSide());
+            sb.append(", qty=" + order.getQuantity());
+            if (order.getPrice() != null) {
+                sb.append(", price=" + order.getPrice());
+            }
+            sb.append(", fillQty=" + monitor.getFilledQuantity());
+            sb.append(", avgPrice=" + monitor.getAveragePrice());
+            if (order.getReference() != null) {
+                sb.append(", reference=" + order.getReference());
+            }
+            log.info(sb.toString());
         }
 
         if (monitor.getFilledQuantity().equals(order.getQuantity())) {
