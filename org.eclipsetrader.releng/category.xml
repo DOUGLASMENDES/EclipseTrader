@@ -4,17 +4,25 @@
       <category name="platform"/>
    </feature>
    <feature url="features/org.eclipsetrader.brokers.paper_1.0.0.qualifier.jar" id="org.eclipsetrader.brokers.paper" version="1.0.0.qualifier">
-      <category name="plugins"/>
+      <category name="platform"/>
    </feature>
    <feature url="features/org.eclipsetrader.directa_1.0.0.qualifier.jar" id="org.eclipsetrader.directa" version="1.0.0.qualifier">
-      <category name="plugins"/>
+      <category name="platform"/>
    </feature>
    <feature url="features/org.eclipsetrader.directaworld_1.0.0.qualifier.jar" id="org.eclipsetrader.directaworld" version="1.0.0.qualifier">
-      <category name="plugins"/>
+      <category name="platform"/>
    </feature>
    <feature url="features/org.eclipsetrader.yahoo_1.0.0.qualifier.jar" id="org.eclipsetrader.yahoo" version="1.0.0.qualifier">
-      <category name="plugins"/>
+      <category name="platform"/>
    </feature>
-   <category-def name="platform" label="Platform"/>
-   <category-def name="plugins" label="Connectors"/>
+   <feature url="features/org.eclipsetrader.repository.hibernate_1.0.0.qualifier.jar" id="org.eclipsetrader.repository.hibernate" version="1.0.0.qualifier">
+      <category name="platform"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.repository.hibernate.derby_1.0.0.qualifier.jar" id="org.eclipsetrader.repository.hibernate.derby" version="1.0.0.qualifier">
+      <category name="platform"/>
+   </feature>
+   <feature url="features/org.eclipsetrader.repository.hibernate.postgresql_1.0.0.qualifier.jar" id="org.eclipsetrader.repository.hibernate.postgresql" version="1.0.0.qualifier">
+      <category name="platform"/>
+   </feature>
+   <category-def name="platform" label="EclipseTrader"/>
 </site>

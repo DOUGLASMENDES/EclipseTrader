@@ -1,14 +1,11 @@
 <project name="Product Build">
     <property name="eclipse.home" value="${user.home}/eclipse"/>
-    <property name="buildDirectory" value="${user.home}/eclipsetrader.build.p2"/>
+    <property name="buildDirectory" value="${user.home}/eclipsetrader.build"/>
     <property name="baseLocation" value="${user.home}/eclipse-platform-3.7"/>
+    <property name="pluginPath" value="${user.home}/eclipse-platform-3.7-nls"/>
 
     <available file="${buildDirectory}/label.properties" property="label.properties.exists" />
     <property file="${buildDirectory}/label.properties" />
-
-    <available file="${buildDirectory}/wc" type="dir" property="wc.present"/>
-    <property name="tag" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/trunk"/>
-    <property name="vendor_url" value="http://svn.eclipsetrader.org/svnroot/eclipsetrader/vendor"/>
 
     <path id="project.classpath">
         <pathelement location="${basedir}/libs/svnjavahl.jar"/>
@@ -16,6 +13,7 @@
         <pathelement location="${basedir}/libs/svnClientAdapter.jar"/>
     </path>
     <taskdef resource="svntask.properties" classpathref="project.classpath"/>
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
     <target name="create.label.properties" unless="label.properties.exists">
 		<mkdir dir="${buildDirectory}" />
@@ -51,24 +49,10 @@ buildLabel=${buildLabel}</echo>
 	    <echo message="PDE Build ${eclipse.pde.build}"/>
 	</target>
 
-    <target name="fetch-checkout" description="Checking out source from repository..." unless="wc.present">
-        <svn>
-            <checkout url="${tag}" destpath="${buildDirectory}/wc" revision="HEAD"/>
-            <checkout url="${vendor_url}/org.eclipse.ui.workbench/current" destpath="${buildDirectory}/wc/org.eclipse.ui.workbench" revision="HEAD"/>
-            <checkout url="${vendor_url}/org.eclipse.rcp-feature/current" destpath="${buildDirectory}/wc/org.eclipse.rcp-feature" revision="HEAD"/>
-        </svn>
-    </target>
-
-    <target name="fetch-update" description="Updating source from repository..." if="wc.present">
-        <svn>
-            <update dir="${buildDirectory}/wc"/>
-        </svn>
-    </target>
-
-	<target name="fetch" depends="fetch-checkout,fetch-update">
+	<target name="fetch">
 		<delete dir="${buildDirectory}/features"/>
 		<copy todir="${buildDirectory}/features">
-			<fileset dir="${buildDirectory}/wc">
+			<fileset dir="..">
 				<include name="*-feature/**/*" />
 			</fileset>
             <mapper type="regexp" from="(.*)-feature(.*)" to="\1\2" />
@@ -76,15 +60,24 @@ buildLabel=${buildLabel}</echo>
 
 		<delete dir="${buildDirectory}/plugins"/>
 		<copy todir="${buildDirectory}/plugins">
-			<fileset dir="${buildDirectory}/wc">
+			<fileset dir="..">
 				<include name="*/**/*" />
+                <exclude name=".*/**/*" />
+                <exclude name="**/bin/**" />
+                <exclude name="**/functional-bin/**" />
 				<exclude name="*.tests/**/*" />
 				<exclude name="*-feature/**/*" />
 			</fileset>
 		</copy>
 
-        <patch patchfile="durable_folder.patch" dir="${buildDirectory}/plugins/org.eclipse.ui.workbench" strip="0" />
-        <patch patchfile="durable_folder_feature.patch" dir="${buildDirectory}/features/org.eclipse.rcp" strip="0" />
+        <delete dir="${buildDirectory}/tests"/>
+        <copy todir="${buildDirectory}/tests">
+            <fileset dir="..">
+                <include name="*.tests/**/*" />
+                <exclude name="**/bin/**" />
+                <exclude name="**/functional-bin/**" />
+            </fileset>
+        </copy>
 	</target>
 
 	<target name="build" depends="create.label.properties,pde.build.init">
@@ -101,6 +94,7 @@ buildLabel=${buildLabel}</echo>
             <arg value="-buildfile"/>
             <arg value="${eclipse.pde.build}/scripts/productBuild/productBuild.xml"/>
             <arg value="-DbaseLocation=${baseLocation}"/>
+            <arg value="-DpluginPath=${pluginPath}"/>
             <arg value="-Dproduct=${basedir}/eclipsetrader.product"/>
             <arg value="-DbuildType=${buildType}"/>
             <arg value="-DbuildId=${buildId}"/>
@@ -115,75 +109,40 @@ buildLabel=${buildLabel}</echo>
             <arg value="-DskipDirector=true"/>
         </java>
 
-        <java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
-            <arg value="-application"/>
-            <arg value="org.eclipse.ant.core.antRunner"/>
-            <arg value="-buildfile"/>
-            <arg value="${eclipse.pde.build}/scripts/build.xml"/>
-            <arg value="-DbaseLocation=${buildDirectory}/updates"/>
-            <arg value="-DtopLevelElementId=org.eclipsetrader.repository.hibernate" />
-            <arg value="-DtopLevelElementType=feature" />
-            <arg value="-DbuildId=${buildId}"/>
-            <arg value="-DbuildLabel=updates"/>
-            <arg value="-Dtimestamp=${timestamp}"/>
-            <arg value="-DbuildDirectory=${buildDirectory}"/>
-            <arg value="-Dconfigs=*,*,*"/>
-            <arg value="-Dgenerate.p2.metadata=true"/>
-            <arg value="-Dp2.metadata.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.artifact.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.flavor=tooling"/>
-            <arg value="-Dp2.publish.artifacts=true"/>
-        </java>
+        <foreach list="org.eclipsetrader.repository.hibernate,org.eclipsetrader.repository.hibernate.derby,org.eclipsetrader.repository.hibernate.postgresql" param="topLevelElementId" target="feature.build" inheritall="true" />
+        <delete dir="${buildDirectory}/buildrepo"/>
 
-        <java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
-            <arg value="-application"/>
-            <arg value="org.eclipse.ant.core.antRunner"/>
-            <arg value="-buildfile"/>
-            <arg value="${eclipse.pde.build}/scripts/build.xml"/>
-            <arg value="-DbaseLocation=${buildDirectory}/updates"/>
-            <arg value="-DtopLevelElementId=org.eclipsetrader.repository.hibernate.derby" />
-            <arg value="-DtopLevelElementType=feature" />
-            <arg value="-DbuildId=${buildId}"/>
-            <arg value="-DbuildLabel=updates"/>
-            <arg value="-Dtimestamp=${timestamp}"/>
-            <arg value="-DbuildDirectory=${buildDirectory}"/>
-            <arg value="-Dconfigs=*,*,*"/>
-            <arg value="-Dgenerate.p2.metadata=true"/>
-            <arg value="-Dp2.metadata.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.artifact.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.flavor=tooling"/>
-            <arg value="-Dp2.publish.artifacts=true"/>
-        </java>
-
-        <java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
-            <arg value="-application"/>
-            <arg value="org.eclipse.ant.core.antRunner"/>
-            <arg value="-buildfile"/>
-            <arg value="${eclipse.pde.build}/scripts/build.xml"/>
-            <arg value="-DbaseLocation=${buildDirectory}/updates"/>
-            <arg value="-DtopLevelElementId=org.eclipsetrader.repository.hibernate.postgresql" />
-            <arg value="-DtopLevelElementType=feature" />
-            <arg value="-DbuildId=${buildId}"/>
-            <arg value="-DbuildLabel=updates"/>
-            <arg value="-Dtimestamp=${timestamp}"/>
-            <arg value="-DbuildDirectory=${buildDirectory}"/>
-            <arg value="-Dconfigs=*,*,*"/>
-            <arg value="-Dgenerate.p2.metadata=true"/>
-            <arg value="-Dp2.metadata.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.artifact.repo=file:${buildDirectory}/updates"/>
-            <arg value="-Dp2.flavor=tooling"/>
-            <arg value="-Dp2.publish.artifacts=true"/>
-        </java>
-
-		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+		<java jar="${eclipse.launcher}" fork="true" dir="${basedir}" failonerror="true">
 			<arg line="-application" />
 			<arg line="org.eclipse.equinox.p2.publisher.CategoryPublisher" />
 			<arg line="-metadataRepository file:${buildDirectory}/updates" />
-			<arg line="-categoryDefinition file:${buildDirectory}/category.xml"/>
+			<arg line="-categoryDefinition file:${basedir}/category.xml"/>
 			<arg line="-categoryQualifier" />
 			<arg line="-compress" />
 		</java>
 	</target>
+
+    <target name="feature.build">
+        <java jar="${eclipse.launcher}" fork="true" dir="${basedir}">
+            <arg value="-application"/>
+            <arg value="org.eclipse.ant.core.antRunner"/>
+            <arg value="-buildfile"/>
+            <arg value="${eclipse.pde.build}/scripts/build.xml"/>
+            <arg value="-DbaseLocation=${buildDirectory}/updates"/>
+            <arg value="-DtopLevelElementId=${topLevelElementId}" />
+            <arg value="-DtopLevelElementType=feature" />
+            <arg value="-DbuildId=${buildId}"/>
+            <arg value="-DbuildLabel=${buildLabel}"/>
+            <arg value="-Dtimestamp=${timestamp}"/>
+            <arg value="-DbuildDirectory=${buildDirectory}"/>
+            <arg value="-Dconfigs=*,*,*"/>
+            <arg value="-Dgenerate.p2.metadata=true"/>
+            <arg value="-Dp2.metadata.repo=file:${buildDirectory}/updates"/>
+            <arg value="-Dp2.artifact.repo=file:${buildDirectory}/updates"/>
+            <arg value="-Dp2.flavor=tooling"/>
+            <arg value="-Dp2.publish.artifacts=true"/>
+        </java>
+    </target>
 
 	<target name="publish" depends="pde.build.init">
 		<antcall target="publish-linux-gtk-x86" />
@@ -320,9 +279,8 @@ buildLabel=${buildLabel}</echo>
 	<target name="clean">
 		<delete dir="${buildDirectory}/features"/>
 		<delete dir="${buildDirectory}/plugins"/>
+        <delete dir="${buildDirectory}/tests"/>
 		<delete dir="${buildDirectory}/updates"/>
-		<delete dir="${buildDirectory}/artifact"/>
-		<delete dir="${buildDirectory}/repo"/>
 		<delete file="${buildDirectory}/label.properties"/>
 		<delete>
 			<fileset dir="${buildDirectory}" includes="assemble.*"/>
