@@ -357,7 +357,7 @@ public class BarChart implements IChartObject, ISummaryBarDecorator, IAdaptable 
             "\r\nO:" + numberFormat.format(ohlc.getOpen()) + //$NON-NLS-1$
             "\r\nH:" + numberFormat.format(ohlc.getHigh()) + //$NON-NLS-1$
             "\r\nL:" + numberFormat.format(ohlc.getLow()) + //$NON-NLS-1$
-            "\r\nC:" + numberFormat.format(ohlc.getHigh()); //$NON-NLS-1$
+            "\r\nC:" + numberFormat.format(ohlc.getClose()); //$NON-NLS-1$
         }
     }
 }
