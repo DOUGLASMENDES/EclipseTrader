@@ -11,10 +11,14 @@ Require-Bundle: org.eclipse.core.databinding,
  org.eclipse.core.runtime,
  org.eclipse.jface.databinding,
  org.eclipse.ui,
+ org.eclipse.nebula.widgets.cdatetime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.ats,
+ org.eclipsetrader.core.charts,
  org.eclipsetrader.core.trading,
- org.eclipsetrader.ui
+ org.eclipsetrader.ui,
+ org.eclipsetrader.ui.charts,
+ org.eclipsetrader.ui.charts.indicators
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.ui.internal.ats;x-internal:=true

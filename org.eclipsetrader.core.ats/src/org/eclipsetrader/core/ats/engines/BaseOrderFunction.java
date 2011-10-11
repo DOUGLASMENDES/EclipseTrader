@@ -32,7 +32,7 @@ public abstract class BaseOrderFunction extends ScriptableObject {
 
     public static final String PROPERTY_ACCOUNT = "account";
     public static final String PROPERTY_BROKER = "broker";
-    public static final String PROPERTY_INSTRUMENT = "security";
+    public static final String PROPERTY_INSTRUMENT = "instrument";
 
     private IBroker broker;
     private IAccount account;
@@ -127,9 +127,6 @@ public abstract class BaseOrderFunction extends ScriptableObject {
 
         monitor = broker.prepareOrder(order);
         monitor.submit();
-
-        System.out.println(String.format("%s: qty=%d, msg='%s', account=%s", getClassName(), quantity, text, account.getDescription()));
-        System.out.println(order);
 
         return null;
     }

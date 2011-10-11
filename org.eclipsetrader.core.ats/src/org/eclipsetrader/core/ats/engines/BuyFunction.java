@@ -17,7 +17,6 @@ import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 public class BuyFunction extends BaseOrderFunction {
@@ -31,29 +30,34 @@ public class BuyFunction extends BaseOrderFunction {
         super(broker, account, security);
     }
 
-    public static Scriptable jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) {
-        IBroker broker = (IBroker) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_BROKER);
-        IAccount account = (IAccount) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_ACCOUNT);
-        ISecurity instrument = (ISecurity) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_INSTRUMENT);
+    public static Object jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) {
+        if (inNewExpr) {
+            IBroker broker = (IBroker) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_BROKER);
+            IAccount account = (IAccount) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_ACCOUNT);
+            ISecurity instrument = (ISecurity) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_INSTRUMENT);
 
-        BuyFunction result = new BuyFunction(broker, account, instrument);
-        result.side = IOrderSide.Buy;
+            BuyFunction result = new BuyFunction(broker, account, instrument);
+            result.side = IOrderSide.Buy;
 
-        int index = 0;
-        if (args.length >= index + 1) {
-            result.jsSet_quantity(args[index]);
-            index++;
-        }
-        if (args.length >= index + 1) {
-            result.jsSet_price(args[index]);
-            index++;
-        }
-        if (args.length >= index + 1) {
-            result.jsSet_text(args[index]);
-            index++;
-        }
+            int index = 0;
+            if (args.length >= index + 1) {
+                result.jsSet_quantity(args[index]);
+                index++;
+            }
+            if (args.length >= index + 1) {
+                result.jsSet_price(args[index]);
+                index++;
+            }
+            if (args.length >= index + 1) {
+                result.jsSet_text(args[index]);
+                index++;
+            }
 
-        return result;
+            return result;
+        }
+        else {
+            return BaseOrderFunction.Buy;
+        }
     }
 
     /* (non-Javadoc)

@@ -30,7 +30,7 @@ public interface ITradeSystemMonitor {
      *
      * @return the context.
      */
-    public ITradeSystemContext getTradeSystemContext();
+    public ITradingSystemContext getTradeSystemContext();
 
     /**
      * Stops the running strategy.

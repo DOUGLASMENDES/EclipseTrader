@@ -142,6 +142,7 @@ public class DateValuesAxis implements IAxis {
     }
 
     public void setZoomFactor(int zoomFactor) {
+        this.fillAvailableSpace = false;
         this.zoomFactor = zoomFactor;
         this.gridSize = zoomFactor != 0 ? 5.0 + 2.0 * zoomFactor : 5.0;
     }

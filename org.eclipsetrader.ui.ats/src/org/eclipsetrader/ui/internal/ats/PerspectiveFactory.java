@@ -16,6 +16,8 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipsetrader.ui.UIConstants;
+import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
+import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewPart;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
 
@@ -34,10 +36,15 @@ public class PerspectiveFactory implements IPerspectiveFactory {
         IFolderLayout editors = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
         editors.addPlaceholder(ScriptEditor.VIEW_ID);
         editors.addPlaceholder(ScriptEditor.VIEW_ID + ":*"); //$NON-NLS-1$
+        editors.addPlaceholder(ReportViewPart.VIEW_ID);
+        editors.addPlaceholder(ReportViewPart.VIEW_ID + ":*"); //$NON-NLS-1$
         editors.addPlaceholder("org.eclipsetrader.ui.editors.script"); //$NON-NLS-1$
         editors.addPlaceholder("org.eclipsetrader.ui.editors.script:*"); //$NON-NLS-1$
         editors.addPlaceholder("org.eclipsetrader.ui.chart"); //$NON-NLS-1$
         editors.addPlaceholder("org.eclipsetrader.ui.chart:*"); //$NON-NLS-1$
+        editors.addPlaceholder("org.eclipsetrader.ui.views.portfolio");
+        editors.addPlaceholder("org.eclipsetrader.ui.views.watchlist");
+        editors.addPlaceholder("org.eclipsetrader.ui.views.watchlist:*");
 
         // Left.
         IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, UIConstants.EDITOR_AREA); //$NON-NLS-1$

@@ -160,32 +160,6 @@ public class BaseChartViewer implements ISelectionProvider {
         return chartCanvas;
     }
 
-    public void setHorizontalScaleVisible(boolean visible) {
-        /*if (visible && !horizontalScaleCanvas.getVisible()) {
-        	((GridData) horizontalScaleCanvas.getLayoutData()).exclude = false;
-        	horizontalScaleCanvas.setVisible(true);
-        	composite.layout();
-        }
-        if (!visible && horizontalScaleCanvas.getVisible()) {
-        	((GridData) horizontalScaleCanvas.getLayoutData()).exclude = true;
-        	horizontalScaleCanvas.setVisible(false);
-        	composite.layout();
-        }*/
-    }
-
-    public void setVerticalScaleVisible(boolean visible) {
-        /*if (visible && !canvas.getVerticalScaleCanvas().getVisible()) {
-        	((GridData) horizontalScaleCanvas.getLayoutData()).horizontalSpan = 1;
-        	canvas.setVerticalScaleVisible(visible);
-        	composite.layout();
-        }
-        if (!visible && canvas.getVerticalScaleCanvas().getVisible()) {
-        	((GridData) horizontalScaleCanvas.getLayoutData()).horizontalSpan = 2;
-        	canvas.setVerticalScaleVisible(visible);
-        	composite.layout();
-        }*/
-    }
-
     public Display getDisplay() {
         return composite.getDisplay();
     }
@@ -703,6 +677,15 @@ public class BaseChartViewer implements ISelectionProvider {
         redraw();
     }
 
+    public void setFillAvailableSpace(boolean fill) {
+        datesAxis.fillAvailableSpace = fill;
+
+        updateScrollbars();
+        revalidate();
+
+        redraw();
+    }
+
     public TimeSpan getResolutionTimeSpan() {
         return dateScaleCanvas.getResolutionTimeSpan();
     }
@@ -717,6 +700,15 @@ public class BaseChartViewer implements ISelectionProvider {
 
     public void setWeights(int[] weights) {
         sashForm.setWeights(weights);
+        sashForm.layout();
+    }
+
+    public void setSummaryVisible(boolean visible) {
+        for (int i = 0; i < chartCanvas.length; i++) {
+            if (chartCanvas[i] != null && !chartCanvas[i].isDisposed()) {
+                chartCanvas[i].setSummaryVisible(visible);
+            }
+        }
         sashForm.layout();
     }
 }

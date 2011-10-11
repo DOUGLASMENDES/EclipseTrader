@@ -60,9 +60,9 @@ public class Account implements IAccount {
 
     @XmlElementWrapper(name = "transactions")
     @XmlElementRefs({
-            @XmlElementRef(type = ExpenseTransaction.class),
-            @XmlElementRef(type = TradeTransaction.class),
-            @XmlElementRef(type = StockTransaction.class),
+        @XmlElementRef(type = ExpenseTransaction.class),
+        @XmlElementRef(type = TradeTransaction.class),
+        @XmlElementRef(type = StockTransaction.class),
     })
     private List<ITransaction> transactions = new ArrayList<ITransaction>();
 
@@ -121,9 +121,13 @@ public class Account implements IAccount {
         this.currency = currency;
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAccount#getBalance()
+     */
+    @Override
     @XmlTransient
-    public Double getBalance() {
-        return balance;
+    public Cash getBalance() {
+        return new Cash(balance, currency);
     }
 
     public void setBalance(Double balance) {

@@ -65,9 +65,12 @@ public class Stock extends Security implements IStock {
      */
     @Override
     @SuppressWarnings({
-            "unchecked", "rawtypes"
+        "unchecked", "rawtypes"
     })
     public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(Currency.class)) {
+            return currency;
+        }
         if (dividends != null && adapter.isAssignableFrom(dividends.getClass())) {
             return dividends;
         }

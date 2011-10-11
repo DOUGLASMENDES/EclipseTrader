@@ -372,13 +372,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
         periodAllAction = new PeriodAction(this, Messages.ChartViewPart_AllPeriodAction, null, null);
         periodAction = new PeriodAction[] {
-                new PeriodAction(this, TimeSpan.years(2), null),
-                new PeriodAction(this, TimeSpan.years(1), null),
-                new PeriodAction(this, TimeSpan.months(6), null),
-                new PeriodAction(this, TimeSpan.months(3), TimeSpan.minutes(30)),
-                new PeriodAction(this, TimeSpan.months(1), TimeSpan.minutes(15)),
-                new PeriodAction(this, TimeSpan.days(5), TimeSpan.minutes(5)),
-                new PeriodAction(this, TimeSpan.days(1), TimeSpan.minutes(1)),
+            new PeriodAction(this, TimeSpan.years(2), null),
+            new PeriodAction(this, TimeSpan.years(1), null),
+            new PeriodAction(this, TimeSpan.months(6), null),
+            new PeriodAction(this, TimeSpan.months(3), TimeSpan.minutes(30)),
+            new PeriodAction(this, TimeSpan.months(1), TimeSpan.minutes(15)),
+            new PeriodAction(this, TimeSpan.days(5), TimeSpan.minutes(5)),
+            new PeriodAction(this, TimeSpan.days(1), TimeSpan.minutes(1)),
         };
 
         TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
@@ -453,14 +453,14 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             @Override
             public void run() {
                 DataImportJob job = new DataImportJob(security, DataImportJob.INCREMENTAL, null, null, new TimeSpan[] {
-                        TimeSpan.days(1),
-                        TimeSpan.minutes(1),
-                        TimeSpan.minutes(2),
-                        TimeSpan.minutes(3),
-                        TimeSpan.minutes(5),
-                        TimeSpan.minutes(10),
-                        TimeSpan.minutes(15),
-                        TimeSpan.minutes(30),
+                    TimeSpan.days(1),
+                    TimeSpan.minutes(1),
+                    TimeSpan.minutes(2),
+                    TimeSpan.minutes(3),
+                    TimeSpan.minutes(5),
+                    TimeSpan.minutes(10),
+                    TimeSpan.minutes(15),
+                    TimeSpan.minutes(30),
                 });
                 job.setUser(true);
                 job.schedule();
@@ -517,8 +517,6 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     @Override
     public void createPartControl(Composite parent) {
         viewer = new BaseChartViewer(parent, SWT.NONE);
-        viewer.setHorizontalScaleVisible(true);
-        viewer.setVerticalScaleVisible(true);
 
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -577,7 +575,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
         if (security != null && template != null) {
             setPartName(NLS.bind("{0} - {1}", new Object[] { //$NON-NLS-1$
-                    security.getName(), template.getName(),
+                security.getName(), template.getName(),
             }));
 
             view = new ChartView(template);

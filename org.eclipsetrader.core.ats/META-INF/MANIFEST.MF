@@ -6,12 +6,17 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.core.internal.ats.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.databinding.observable,
  org.eclipsetrader.core,
+ org.eclipsetrader.core.charts,
  org.eclipsetrader.core.trading,
- org.mozilla.rhino;bundle-version="[1.7.0,1.8.0)"
+ org.mozilla.rhino,
+ com.tictactec.ta.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.core.ats,
  org.eclipsetrader.core.ats.engines,
- org.eclipsetrader.core.internal.ats;x-internal:=true,
- org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.trading"
+ org.eclipsetrader.core.ats.simulation,
+ org.eclipsetrader.core.internal.ats;x-friends:="org.eclipsetrader.ui.ats",
+ org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.ats"
+Import-Package: org.apache.commons.logging

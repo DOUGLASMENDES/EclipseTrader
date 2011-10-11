@@ -27,7 +27,7 @@
       </category>
       <view
             category="org.eclipsetrader.ui.ats"
-            class="org.eclipsetrader.ui.internal.ats.ExplorerViewPart"
+            class="org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewPart"
             icon="icons/eview16/cog.png"
             id="org.eclipsetrader.ui.ats.views.explorer"
             name="Strategy Explorer"
@@ -36,11 +36,20 @@
       <view
             allowMultiple="true"
             category="org.eclipsetrader.ui.ats"
-            class="org.eclipsetrader.ui.internal.ats.ScriptEditor"
+            class="org.eclipsetrader.ui.internal.ats.editors.ScriptEditor"
             icon="icons/obj16/page_white_code.png"
             id="org.eclipsetrader.ui.ats.scritpstrategy.editor"
             name="Script Strategy Editor"
             restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipsetrader.ui.ats"
+            class="org.eclipsetrader.ui.internal.ats.ReportViewPart"
+            icon="icons/eview16/report.png"
+            id="org.eclipsetrader.ui.ats.views.report"
+            name="Report"
+            restorable="false">
       </view>
    </extension>
    <extension
@@ -51,7 +60,7 @@
       </category>
       <wizard
             category="org.eclipsetrader.ui.ats"
-            class="org.eclipsetrader.ui.internal.ats.ScriptStrategyWizard"
+            class="org.eclipsetrader.ui.internal.ats.wizards.ScriptStrategyWizard"
             hasPages="true"
             icon="icons/eview16/cog.png"
             id="org.eclipsetrader.ui.ats.scriptstrategy.wizard"
@@ -62,8 +71,8 @@
    <extension
          point="org.eclipse.core.runtime.adapters">
       <factory
-            adaptableType="org.eclipsetrader.ui.internal.ats.StrategyItem"
-            class="org.eclipsetrader.ui.internal.ats.ExplorerViewItemAdapterFactory">
+            adaptableType="org.eclipsetrader.ui.internal.ats.explorer.StrategyItem"
+            class="org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewItemAdapterFactory">
          <adapter
                type="org.eclipsetrader.core.ats.ScriptStrategy">
          </adapter>
@@ -75,8 +84,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipsetrader.ui.internal.ats.InstrumentItem"
-            class="org.eclipsetrader.ui.internal.ats.ExplorerViewItemAdapterFactory">
+            adaptableType="org.eclipsetrader.ui.internal.ats.explorer.InstrumentItem"
+            class="org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewItemAdapterFactory">
          <adapter
                type="org.eclipsetrader.core.instruments.Security">
          </adapter>
@@ -85,8 +94,8 @@
          </adapter>
       </factory>
       <factory
-            adaptableType="org.eclipsetrader.ui.internal.ats.ScriptItem"
-            class="org.eclipsetrader.ui.internal.ats.ExplorerViewItemAdapterFactory">
+            adaptableType="org.eclipsetrader.ui.internal.ats.explorer.ScriptItem"
+            class="org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewItemAdapterFactory">
          <adapter
                type="org.eclipsetrader.core.Script">
          </adapter>
@@ -100,7 +109,7 @@
       <handler
             commandId="org.eclipse.ui.file.properties">
          <class
-               class="org.eclipsetrader.ui.internal.ats.StrategyPropertiesHandler">
+               class="org.eclipsetrader.ui.internal.ats.wizards.StrategyPropertiesHandler">
          </class>
          <activeWhen>
             <and>
@@ -118,7 +127,7 @@
       <handler
             commandId="org.eclipse.ui.file.open">
          <class
-               class="org.eclipsetrader.ui.internal.ats.StrategyScriptEditHandler">
+               class="org.eclipsetrader.ui.internal.ats.editors.StrategyScriptEditHandler">
          </class>
          <activeWhen>
             <and>
@@ -128,7 +137,7 @@
                <iterate
                      operator="and">
                   <instanceof
-                        value="org.eclipsetrader.ui.internal.ats.MainScriptItem">
+                        value="org.eclipsetrader.ui.internal.ats.explorer.MainScriptItem">
                   </instanceof>
                </iterate>
             </and>
@@ -147,13 +156,52 @@
                   <iterate
                         operator="or">
                      <instanceof
-                           value="org.eclipsetrader.ui.internal.ats.MainScriptItem">
+                           value="org.eclipsetrader.ui.internal.ats.explorer.MainScriptItem">
                      </instanceof>
                   </iterate>
                </or>
             </visibleWhen>
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+         <command
+               commandId="org.eclipsetrader.ui.ats.commands.simulation">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.ats.IScriptStrategy">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.eclipsetrader.ui.ats.commands.simulation"
+            name="Run Simulation...">
+         <defaultHandler
+               class="org.eclipsetrader.ui.internal.ats.RunSimulationHandler">
+         </defaultHandler>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.activities">
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui.ats/org.eclipsetrader.ui.ats.scritpstrategy.editor">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui.ats/org.eclipsetrader.ui.ats.views.report">
+      </activityPatternBinding>
    </extension>
 
 </plugin>

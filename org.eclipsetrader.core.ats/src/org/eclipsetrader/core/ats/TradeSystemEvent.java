@@ -22,8 +22,8 @@ public class TradeSystemEvent {
 
     public int kind;
     public ITradeSystemService service;
-    public ITradeSystem tradeSystem;
-    public ITradeSystemContext tradeSystemContext;
+    public ITradingSystem tradeSystem;
+    public ITradingSystemContext tradeSystemContext;
 
     public TradeSystemEvent() {
     }

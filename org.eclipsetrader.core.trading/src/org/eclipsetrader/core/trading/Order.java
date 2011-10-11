@@ -195,6 +195,22 @@ public class Order implements IOrder {
      */
     @Override
     public String toString() {
-        return "Order: date=" + getDate() + ", instrument=" + getSecurity().getName() + ", type=" + getType() + ", side=" + getSide() + ", quantity=" + getQuantity() + ", price=" + getPrice() + ", stopPrice=" + getStopPrice() + ", timeInForce=" + getValidity() + ", expiration=" + getExpire() + ", reference=" + getReference();
+        StringBuilder sb = new StringBuilder("Order: date=" + getDate() + ", instrument=" + getSecurity().getName() + ", type=" + getType() + ", side=" + getSide() + ", quantity=" + getQuantity());
+        if (getPrice() != null) {
+            sb.append(", price=" + getPrice());
+        }
+        if (getStopPrice() != null) {
+            sb.append(", stopPrice=" + getStopPrice());
+        }
+        if (getValidity() != null) {
+            sb.append(", timeInForce=" + getValidity());
+        }
+        if (getExpire() != null) {
+            sb.append(", expiration=" + getExpire());
+        }
+        if (getReference() != null) {
+            sb.append(", reference=" + getReference());
+        }
+        return sb.toString();
     }
 }

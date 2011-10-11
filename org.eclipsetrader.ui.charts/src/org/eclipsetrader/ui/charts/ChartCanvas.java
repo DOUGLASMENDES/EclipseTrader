@@ -231,7 +231,7 @@ public class ChartCanvas {
                         IDataSeries series = object.getDataSeries().getSeries(new AdaptableWrapper(firstDate), new AdaptableWrapper(lastDate));
                         if (series != null) {
                             verticalAxis.addValues(new Object[] {
-                                    series.getLowest(), series.getHighest()
+                                series.getLowest(), series.getHighest()
                             });
                         }
                     }
@@ -283,7 +283,7 @@ public class ChartCanvas {
         graphics.pushState();
         try {
             graphics.setLineDash(new int[] {
-                    3, 3
+                3, 3
             });
             graphics.setForegroundColor(Util.blend(graphics.getForegroundColor(), graphics.getBackgroundColor(), 15));
 
@@ -548,5 +548,15 @@ public class ChartCanvas {
                 return true;
             }
         });
+    }
+
+    public SummaryBar getSummary() {
+        return summary;
+    }
+
+    public void setSummaryVisible(boolean visible) {
+        summary.getControl().setVisible(visible);
+        ((GridData) summary.getControl().getLayoutData()).exclude = !visible;
+        composite.layout();
     }
 }

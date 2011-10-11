@@ -60,7 +60,9 @@ public class JavaScriptLineStyler implements LineStyleListener {
         protected boolean fEofSeen = false;
 
         private String[] fgKeywords = {
-                "function", "new", "return", "var",
+            "function", "new", "return", "var",
+            "true", "false",
+            "if", "else", "do", "while",
         };
 
         public KeywordScanner() {
@@ -242,10 +244,10 @@ public class JavaScriptLineStyler implements LineStyleListener {
     void initializeColors() {
         Display display = Display.getDefault();
         colors = new Color[] {
-                new Color(display, new RGB(0, 0, 0)), // black
-                new Color(display, new RGB(63, 127, 95)), // green
-                new Color(display, new RGB(42, 0, 255)), // blue
-                new Color(display, new RGB(127, 0, 85))
+            new Color(display, new RGB(0, 0, 0)), // black
+            new Color(display, new RGB(63, 127, 95)), // green
+            new Color(display, new RGB(42, 0, 255)), // blue
+            new Color(display, new RGB(127, 0, 85))
         };
         tokenColors = new int[MAXIMUM_TOKEN];
         tokenColors[WORD] = 0;

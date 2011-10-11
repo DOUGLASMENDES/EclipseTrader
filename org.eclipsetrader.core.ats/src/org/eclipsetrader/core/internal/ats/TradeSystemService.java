@@ -31,18 +31,18 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.ats.ITradeStrategy;
-import org.eclipsetrader.core.ats.ITradeSystem;
-import org.eclipsetrader.core.ats.ITradeSystemContext;
+import org.eclipsetrader.core.ats.ITradingSystemContext;
 import org.eclipsetrader.core.ats.ITradeSystemListener;
 import org.eclipsetrader.core.ats.ITradeSystemMonitor;
 import org.eclipsetrader.core.ats.ITradeSystemService;
+import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.TradeSystemEvent;
 import org.eclipsetrader.core.internal.ats.repository.TradeSystem;
 import org.eclipsetrader.core.internal.ats.repository.TradeSystemRepository;
 
 public class TradeSystemService implements ITradeSystemService, IAdapterFactory {
 
-    private Map<ITradeSystem, TradeSystemContext> tradeSystems = new HashMap<ITradeSystem, TradeSystemContext>();
+    private Map<ITradingSystem, TradingSystemContext> tradeSystems = new HashMap<ITradingSystem, TradingSystemContext>();
     private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
 
     private TradeSystemRepository repository;
@@ -88,16 +88,16 @@ public class TradeSystemService implements ITradeSystemService, IAdapterFactory 
      * @see org.eclipsetrader.core.ats.ITradeSystemService#getTradeSystems()
      */
     @Override
-    public ITradeSystem[] getTradeSystems() {
-        Set<ITradeSystem> s = tradeSystems.keySet();
-        return s.toArray(new ITradeSystem[s.size()]);
+    public ITradingSystem[] getTradeSystems() {
+        Set<ITradingSystem> s = tradeSystems.keySet();
+        return s.toArray(new ITradingSystem[s.size()]);
     }
 
     /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemService#addTradeSystem(org.eclipsetrader.core.ats.ITradeSystem)
      */
     @Override
-    public void addTradeSystem(ITradeSystem system) {
+    public void addTradeSystem(ITradingSystem system) {
         if (!tradeSystems.containsKey(system)) {
             tradeSystems.put(system, null);
             if (system instanceof TradeSystem) {
@@ -116,7 +116,7 @@ public class TradeSystemService implements ITradeSystemService, IAdapterFactory 
      * @see org.eclipsetrader.core.ats.ITradeSystemService#removeTradeSystem(org.eclipsetrader.core.ats.ITradeSystem)
      */
     @Override
-    public void removeTradeSystem(ITradeSystem system) {
+    public void removeTradeSystem(ITradingSystem system) {
         if (tradeSystems.containsKey(system)) {
             TradeSystemEvent event = new TradeSystemEvent();
             event.kind = TradeSystemEvent.KIND_REMOVED;
@@ -137,41 +137,15 @@ public class TradeSystemService implements ITradeSystemService, IAdapterFactory 
      * @see org.eclipsetrader.core.ats.ITradeSystemService#start(org.eclipsetrader.core.ats.ITradeSystem)
      */
     @Override
-    public ITradeSystemMonitor start(ITradeSystem system) {
-        if (!tradeSystems.containsKey(system)) {
-            addTradeSystem(system);
-        }
-
-        TradeSystemContext context = new TradeSystemContext(this, system);
-        tradeSystems.put(system, context);
-
-        TradeSystemEvent event = new TradeSystemEvent();
-        event.kind = TradeSystemEvent.KIND_STARTED;
-        event.service = this;
-        event.tradeSystem = system;
-        event.tradeSystemContext = context;
-        notifyListeners(event);
-
-        return context.start();
+    public ITradeSystemMonitor start(ITradingSystem system) {
+        return null;
     }
 
     /* (non-Javadoc)
      * @see org.eclipsetrader.core.ats.ITradeSystemService#stop(org.eclipsetrader.core.ats.ITradeSystem)
      */
     @Override
-    public void stop(ITradeSystem system) {
-        TradeSystemContext context = tradeSystems.get(system);
-        if (context != null) {
-            context.stop();
-            tradeSystems.put(system, null);
-
-            TradeSystemEvent event = new TradeSystemEvent();
-            event.kind = TradeSystemEvent.KIND_STOPPED;
-            event.service = this;
-            event.tradeSystem = system;
-            event.tradeSystemContext = context;
-            notifyListeners(event);
-        }
+    public void stop(ITradingSystem system) {
     }
 
     /* (non-Javadoc)
@@ -180,7 +154,7 @@ public class TradeSystemService implements ITradeSystemService, IAdapterFactory 
     @Override
     @SuppressWarnings("unchecked")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
-        if (adaptableObject instanceof ITradeSystem && adapterType.isAssignableFrom(ITradeSystemContext.class)) {
+        if (adaptableObject instanceof ITradingSystem && adapterType.isAssignableFrom(ITradingSystemContext.class)) {
             return tradeSystems.get(adaptableObject);
         }
         return null;
@@ -193,7 +167,7 @@ public class TradeSystemService implements ITradeSystemService, IAdapterFactory 
     @SuppressWarnings("unchecked")
     public Class[] getAdapterList() {
         return new Class[] {
-            ITradeSystemContext.class,
+            ITradingSystemContext.class,
         };
     }
 

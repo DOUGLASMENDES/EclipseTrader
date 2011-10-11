@@ -38,5 +38,5 @@ public interface ITradeStrategy {
      * @param context the context to start.
      * @return the trade system monitor instance.
      */
-    public ITradeSystemMonitor start(ITradeSystemContext context);
+    public ITradeSystemMonitor start(ITradingSystemContext context);
 }

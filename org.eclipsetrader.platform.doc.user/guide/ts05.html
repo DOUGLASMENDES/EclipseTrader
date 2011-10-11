@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("schema.css");</style>
+</HEAD>
+<BODY>
+<H1>Script classes and functions</H1>
+
+<p>The following classes and functions can be used within a script strategy to perform operations. The engine runs an
+independent and isolated script for each strategy instrument, all these classes and functions operates with the
+default instrument assigned to the running script instance.</p>
+
+<TABLE width="90%" border="1">
+  <caption><b>Classes</b></caption>
+
+  <TBODY>
+    <tr> 
+      <th width="33%"><b>Class</b></th>
+      <th width="65%"><b>Description</b></th>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b>LimitOrder(side, qty, price, text)</b></td>
+      <td width="65%">Class to prepare a new limit order. Side can be set to the constants Buy or Sell. The text parameter is
+      optional and can be used to describe the event that triggered the limit order. Use the send function to submit the order
+      to the broker. Submitted orders can be canceled, if not yet executed, using the cancel function.</td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b>MarketOrder(side, qty, text)</b></td>
+      <td width="65%">Class to prepare a new order at market price. Side can be set to the constants Buy or Sell. The text parameter is
+      optional and can be used to describe the event that triggered the limit order. Use the send function to submit the order
+      to the broker. Submitted orders can be canceled, if not yet executed, using the cancel function.</td>
+    </tr>
+  </TBODY>
+</TABLE>
+
+<p></p>
+
+<TABLE width="90%" border="1">
+  <caption><b>Functions</b></caption>
+
+  <TBODY>
+    <tr> 
+      <th width="33%"><b>Function</b></th>
+      <th width="65%"><b>Description</b></th>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b>hasPosition()</b></td>
+      <td width="65%">Returns true if a position is opened, false otherwise.</td>
+    </tr>
+  </TBODY>
+</TABLE>
+
+
+</BODY>
+</HTML>

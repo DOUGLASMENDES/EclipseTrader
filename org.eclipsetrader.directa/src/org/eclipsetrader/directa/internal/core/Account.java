@@ -31,6 +31,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IOrderSide;
@@ -72,6 +73,15 @@ public class Account implements IAccount {
     @Override
     public String getDescription() {
         return name != null ? name : id;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAccount#getBalance()
+     */
+    @Override
+    public Cash getBalance() {
+        // TODO
+        return null;
     }
 
     /* (non-Javadoc)

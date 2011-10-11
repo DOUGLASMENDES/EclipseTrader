@@ -51,11 +51,11 @@ public class AccountPropertyPage extends PropertyPage implements IWorkbenchPrope
     Spinner balance;
 
     private IExpenseScheme[] availableSchemes = new IExpenseScheme[] {
-            new NoExpensesScheme(),
-            new SimpleFixedScheme(),
-            new LimitedProportional1Scheme(),
-            new LimitedProportional2Scheme(),
-            new TwoLevelsPerShareScheme(),
+        new NoExpensesScheme(),
+        new SimpleFixedScheme(),
+        new LimitedProportional1Scheme(),
+        new LimitedProportional2Scheme(),
+        new TwoLevelsPerShareScheme(),
     };
 
     private ModifyListener modifyListener = new ModifyListener() {
@@ -146,7 +146,7 @@ public class AccountPropertyPage extends PropertyPage implements IWorkbenchPrope
         if (account.getCurrency() != null) {
             currency.setSelection(new StructuredSelection(account.getCurrency()));
         }
-        balance.setSelection((int) (account.getBalance() * Math.pow(10, balance.getDigits())));
+        balance.setSelection((int) (account.getBalance().getAmount() * Math.pow(10, balance.getDigits())));
         if (account.getExpenseScheme() != null) {
             expenses.setSelection(new StructuredSelection(account.getExpenseScheme()));
         }

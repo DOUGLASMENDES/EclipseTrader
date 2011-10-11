@@ -11,11 +11,15 @@
 
 package org.eclipsetrader.core.trading;
 
+import org.eclipsetrader.core.Cash;
+
 public interface IAccount {
 
     public String getId();
 
     public String getDescription();
+
+    public Cash getBalance();
 
     public ITransaction[] getTransactions();
 

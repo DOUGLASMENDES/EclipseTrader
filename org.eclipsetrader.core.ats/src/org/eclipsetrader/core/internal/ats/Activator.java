@@ -16,7 +16,7 @@ import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipsetrader.core.ats.ITradeSystem;
+import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradeSystemService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -49,7 +49,7 @@ public class Activator extends Plugin {
         }, tradeSystemService, new Hashtable<String, Object>());
         //tradeSystemService.startUp();
 
-        Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradeSystem.class);
+        Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradingSystem.class);
     }
 
     /*

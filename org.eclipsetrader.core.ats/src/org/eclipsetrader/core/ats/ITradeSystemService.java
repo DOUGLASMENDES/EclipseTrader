@@ -15,15 +15,15 @@ public interface ITradeSystemService {
 
     public ITradeStrategy getStrategy(String id);
 
-    public ITradeSystem[] getTradeSystems();
+    public ITradingSystem[] getTradeSystems();
 
-    public void addTradeSystem(ITradeSystem system);
+    public void addTradeSystem(ITradingSystem system);
 
-    public void removeTradeSystem(ITradeSystem system);
+    public void removeTradeSystem(ITradingSystem system);
 
-    public ITradeSystemMonitor start(ITradeSystem system);
+    public ITradeSystemMonitor start(ITradingSystem system);
 
-    public void stop(ITradeSystem system);
+    public void stop(ITradingSystem system);
 
     public void addTradeSystemListener(ITradeSystemListener listener);
 

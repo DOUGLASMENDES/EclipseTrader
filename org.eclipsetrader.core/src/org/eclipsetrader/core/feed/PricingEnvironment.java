@@ -230,6 +230,30 @@ public class PricingEnvironment implements IPricingEnvironment {
         }
     }
 
+    public void setBarOpen(ISecurity security, IBarOpen bar) {
+        PricingStatus status = map.get(security);
+        if (status == null) {
+            status = new PricingStatus();
+            map.put(security, status);
+        }
+        status.deltas.add(new PricingDelta(security, null, bar));
+        if (doNotify) {
+            notifyListeners();
+        }
+    }
+
+    public void setBar(ISecurity security, IBar bar) {
+        PricingStatus status = map.get(security);
+        if (status == null) {
+            status = new PricingStatus();
+            map.put(security, status);
+        }
+        status.deltas.add(new PricingDelta(security, null, bar));
+        if (doNotify) {
+            notifyListeners();
+        }
+    }
+
     /**
      * Updates a set of quotes in a single batch. Events are notified to the listeners
      * when the runnable returns.

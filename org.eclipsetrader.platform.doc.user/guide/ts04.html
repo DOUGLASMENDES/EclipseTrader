@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- default platform documentation stylesheets -->
+<style>@import url("book.css");</style>
+<!-- default schema documentation stylesheets -->
+<style>@import url("schema.css");</style>
+</HEAD>
+<BODY>
+<H1>Strategy events</H1>
+
+<TABLE width="90%" border="1">
+  <caption><b>Strategy events</b></caption>
+
+  <TBODY>
+    <tr> 
+      <th width="33%"><b>Command</b></th>
+      <th width="65%"><b>Description</b></th>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onStrategyStart</b></b></td>
+      <td width="65%">Called when the strategy starts running</td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onBarOpen(bar)</b></b></td>
+      <td width="65%">Called on the leading edge of all bars.<p>The bar argument exposes the <b>date</b> and
+      <b>open</b> properties</p></td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onBar(bar)</b></b></td>
+      <td width="65%">Called on the trailing edge of all bars.<p>The bar argument exposes the <b>date</b>, <b>open</b>,
+      <b>high</b>, <b>low</b>, <b>close</b> and <b>volume</b> properties</p></td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onPositionOpened</b></b></td>
+      <td width="65%">Called whenever a new position is opened.</td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onPositionChanged</b></b></td>
+      <td width="65%">Called whenever an existing position is increased or decreased.</td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onPositionClosed</b></b></td>
+      <td width="65%">Called whenever position is closed.</td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onTrade(trade)</b></b></td>
+      <td width="65%">Called when a new trade is received.<p>The trade argument exposes the <b>price</b>,
+      <b>size</b> and <b>volume</b> properties</p></td>
+    </tr>
+    <tr> 
+      <td valign=top width="33%"><b><b>onQuote(quote)</b></b></td>
+      <td width="65%">Called when a new quote (bid/ask) is received.<p>The quote parameter exposes the <b>bid</b>,
+      <b>bidSize</b>, <b>ask</b> and <b>askSize</b> properties</p></td>
+    </tr>
+  </TBODY>
+</TABLE>
+
+
+</BODY>
+</HTML>

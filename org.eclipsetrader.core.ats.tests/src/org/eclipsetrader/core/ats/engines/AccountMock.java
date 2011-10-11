@@ -12,6 +12,7 @@
 package org.eclipsetrader.core.ats.engines;
 
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.trading.IPositionListener;
@@ -40,6 +41,14 @@ public class AccountMock implements IAccount {
     @Override
     public String getDescription() {
         return "AccountMock";
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.trading.IAccount#getBalance()
+     */
+    @Override
+    public Cash getBalance() {
+        return null;
     }
 
     /* (non-Javadoc)
