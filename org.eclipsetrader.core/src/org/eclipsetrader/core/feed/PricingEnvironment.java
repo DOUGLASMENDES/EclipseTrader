@@ -306,7 +306,7 @@ public class PricingEnvironment implements IPricingEnvironment {
                     @Override
                     public void handleException(Throwable exception) {
                         Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running pricing environment listener", exception); //$NON-NLS-1$
-                        CoreActivator.getDefault().getLog().log(status);
+                        CoreActivator.log(status);
                     }
                 });
             }

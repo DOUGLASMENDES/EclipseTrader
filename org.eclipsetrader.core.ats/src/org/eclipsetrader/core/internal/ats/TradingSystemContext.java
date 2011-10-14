@@ -11,19 +11,26 @@
 
 package org.eclipsetrader.core.internal.ats;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipsetrader.core.ats.BarFactoryEvent;
 import org.eclipsetrader.core.ats.IBarFactoryListener;
 import org.eclipsetrader.core.ats.IStrategy;
 import org.eclipsetrader.core.ats.ITradingSystemContext;
 import org.eclipsetrader.core.feed.Bar;
 import org.eclipsetrader.core.feed.BarOpen;
+import org.eclipsetrader.core.feed.IBook;
+import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
+import org.eclipsetrader.core.feed.IPricingListener;
+import org.eclipsetrader.core.feed.IQuote;
+import org.eclipsetrader.core.feed.ITodayOHL;
+import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEnvironment;
+import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.IMarketDay;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.IAccount;
@@ -31,12 +38,13 @@ import org.eclipsetrader.core.trading.IBroker;
 
 public class TradingSystemContext implements ITradingSystemContext {
 
+    private final IMarketService marketService;
     private final IBroker broker;
     private final IAccount account;
     private final PricingEnvironment pricingEnvironment;
 
     private final MarketPricingEnvironment marketPricingEnvironment;
-    private final List<BarFactory> barFactory = new ArrayList<BarFactory>();
+    private final BarFactory barFactory;
 
     public IBarFactoryListener barFactoryListener = new IBarFactoryListener() {
 
@@ -52,21 +60,55 @@ public class TradingSystemContext implements ITradingSystemContext {
         }
     };
 
-    public TradingSystemContext(IStrategy strategy, IBroker broker, IAccount account, IMarketService marketService) {
+    private final IPricingListener pricingListener = new IPricingListener() {
+
+        @Override
+        public void pricingUpdate(PricingEvent event) {
+            IMarket market = marketService.getMarketForSecurity(event.getSecurity());
+            if (market != null) {
+                IMarketDay day = market.getToday();
+                if (day != null && !day.isOpen()) {
+                    return;
+                }
+            }
+            for (PricingDelta delta : event.getDelta()) {
+                if (delta.getNewValue() instanceof ITrade) {
+                    pricingEnvironment.setTrade(event.getSecurity(), (ITrade) delta.getNewValue());
+                }
+                if (delta.getNewValue() instanceof IQuote) {
+                    pricingEnvironment.setQuote(event.getSecurity(), (IQuote) delta.getNewValue());
+                }
+                if (delta.getNewValue() instanceof ITodayOHL) {
+                    pricingEnvironment.setTodayOHL(event.getSecurity(), (ITodayOHL) delta.getNewValue());
+                }
+                if (delta.getNewValue() instanceof ILastClose) {
+                    pricingEnvironment.setLastClose(event.getSecurity(), (ILastClose) delta.getNewValue());
+                }
+                if (delta.getNewValue() instanceof IBook) {
+                    pricingEnvironment.setBook(event.getSecurity(), (IBook) delta.getNewValue());
+                }
+            }
+        }
+    };
+
+    public TradingSystemContext(IMarketService marketService, IStrategy strategy, IBroker broker, IAccount account) {
+        this.marketService = marketService;
         this.broker = broker;
         this.account = account;
-        this.pricingEnvironment = new PricingEnvironment();
+
+        pricingEnvironment = new PricingEnvironment();
 
         marketPricingEnvironment = new MarketPricingEnvironment(marketService);
         marketPricingEnvironment.addSecurities(strategy.getInstruments());
+        marketPricingEnvironment.addPricingListener(pricingListener);
 
+        barFactory = new BarFactory(marketPricingEnvironment);
         for (ISecurity security : strategy.getInstruments()) {
             for (TimeSpan timeSpan : strategy.getBarsTimeSpan()) {
-                BarFactory factory = new BarFactory(security, timeSpan, marketPricingEnvironment);
-                factory.addBarFactoryListener(barFactoryListener);
-                barFactory.add(factory);
+                barFactory.add(security, timeSpan);
             }
         }
+        barFactory.addBarFactoryListener(barFactoryListener);
     }
 
     /* (non-Javadoc)
@@ -98,6 +140,7 @@ public class TradingSystemContext implements ITradingSystemContext {
      */
     @Override
     public void dispose() {
+        barFactory.dispose();
         marketPricingEnvironment.dispose();
     }
 }

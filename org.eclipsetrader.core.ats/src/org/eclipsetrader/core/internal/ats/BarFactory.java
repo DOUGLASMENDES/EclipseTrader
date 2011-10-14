@@ -13,52 +13,67 @@ package org.eclipsetrader.core.internal.ats;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipsetrader.core.ats.BarFactoryEvent;
-import org.eclipsetrader.core.ats.IBarFactory;
 import org.eclipsetrader.core.ats.IBarFactoryListener;
-import org.eclipsetrader.core.feed.IHistory;
-import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.TimeSpan;
-import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
-public class BarFactory implements IBarFactory {
+public class BarFactory {
 
-    private ISecurity security;
-    private TimeSpan timeSpan;
-    private IPricingEnvironment pricingEnvironment;
+    private final IPricingEnvironment pricingEnvironment;
 
-    private ListenerList listeners = new ListenerList();
+    final Map<ISecurity, Set<Data>> map = new HashMap<ISecurity, Set<Data>>();
+    private final Timer timer;
 
-    private Date dateOpen;
+    private final ListenerList listeners = new ListenerList();
 
-    private Double open;
-    private Double high;
-    private Double low;
-    private Double close;
-    private Long volume;
+    class Data {
 
-    private Date dateClose;
+        final ISecurity security;
+        final TimeSpan timeSpan;
+
+        Date dateOpen;
+
+        Double open;
+        Double high;
+        Double low;
+        Double close;
+        Long volume;
+
+        Date dateClose;
+
+        public Data(ISecurity security, TimeSpan timeSpan) {
+            this.security = security;
+            this.timeSpan = timeSpan;
+        }
+    }
 
     private IPricingListener pricingListener = new IPricingListener() {
 
         @Override
         public void pricingUpdate(PricingEvent event) {
+            Set<Data> set = map.get(event.getSecurity());
+            if (set == null) {
+                return;
+            }
             for (PricingDelta delta : event.getDelta()) {
-                if (delta.getSecurity() == security && delta.getNewValue() instanceof ITrade) {
-                    processTrade((ITrade) delta.getNewValue());
+                if (delta.getNewValue() instanceof ITrade) {
+                    for (Data data : set) {
+                        processTrade(data, (ITrade) delta.getNewValue());
+                    }
                 }
             }
         }
@@ -66,178 +81,116 @@ public class BarFactory implements IBarFactory {
 
     private class BarCloseTimerTask extends TimerTask {
 
-        private Date date;
+        private final Data data;
+        private final Date date;
 
-        public BarCloseTimerTask(Date date) {
-            this.date = date;
+        public BarCloseTimerTask(Data data) {
+            this.data = data;
+            this.date = data.dateOpen;
         }
 
-        /* (non-Javadoc)
-         * @see java.util.TimerTask#run()
-         */
         @Override
         public void run() {
-            if (BarFactory.this.dateOpen == date) {
-                fireBarCloseEvent();
+            if (data.dateOpen == date) {
+                fireBarCloseEvent(data);
             }
         }
     }
 
-    private Timer timer;
-
-    public BarFactory(ISecurity security, TimeSpan timeSpan, IPricingEnvironment pricingEnvironment) {
-        this.security = security;
-        this.timeSpan = timeSpan;
+    public BarFactory(IPricingEnvironment pricingEnvironment) {
         this.pricingEnvironment = pricingEnvironment;
 
         this.pricingEnvironment.addPricingListener(pricingListener);
         this.timer = new Timer(true);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.IBarFactory#getTimeSpan()
-     */
-    @Override
-    public TimeSpan getTimeSpan() {
-        return timeSpan;
+    public void add(ISecurity security, TimeSpan timeSpan) {
+        Set<Data> set = map.get(security);
+        if (set == null) {
+            set = new HashSet<Data>();
+            map.put(security, set);
+        }
+        set.add(new Data(security, timeSpan));
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.IBarFactory#getBars(org.eclipsetrader.core.feed.TimeSpan)
-     */
-    @Override
-    public IOHLC[] getBars(TimeSpan backfillTimeSpan) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-
-        Date from = c.getTime();
-
-        if (backfillTimeSpan.getUnits() == Units.Months) {
-            c.add(Calendar.MONTH, -backfillTimeSpan.getLength());
-        }
-        else if (backfillTimeSpan.getUnits() == Units.Days) {
-            c.add(Calendar.DATE, -backfillTimeSpan.getLength());
-        }
-        else if (backfillTimeSpan.getUnits() == Units.Minutes) {
-            c.add(Calendar.MINUTE, -backfillTimeSpan.getLength());
-        }
-
-        Date to = c.getTime();
-
-        return getBars(from, to);
-    }
-
-    protected IOHLC[] getBars(Date from, Date to) {
-        IOHLC[] bars = null;
-
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-        ServiceReference<IRepositoryService> serviceReference = context.getServiceReference(IRepositoryService.class);
-        if (serviceReference != null) {
-            IRepositoryService repositoryService = context.getService(serviceReference);
-
-            IHistory history = repositoryService.getHistoryFor(security);
-            if (history != null) {
-                history = history.getSubset(from, to, timeSpan);
-                if (history != null) {
-                    bars = history.getOHLC();
-                }
-            }
-
-            context.ungetService(serviceReference);
-        }
-
-        return bars;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.IBarFactory#addBarFactoryListener(org.eclipsetrader.core.ats.IBarFactoryListener)
-     */
-    @Override
     public void addBarFactoryListener(IBarFactoryListener listener) {
         listeners.add(listener);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.IBarFactory#removeBarFactoryListener(org.eclipsetrader.core.ats.IBarFactoryListener)
-     */
-    @Override
     public void removeBarFactoryListener(IBarFactoryListener listener) {
         listeners.remove(listener);
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.ats.IBarFactory#dispose()
-     */
-    @Override
     public void dispose() {
         timer.cancel();
-        pricingEnvironment.removePricingListener(pricingListener);
         listeners.clear();
+        pricingEnvironment.removePricingListener(pricingListener);
     }
 
-    protected void processTrade(ITrade trade) {
+    private void processTrade(Data data, ITrade trade) {
+        if (trade.getTime() == null) {
+            return;
+        }
+
         Calendar c = Calendar.getInstance();
         c.setTime(trade.getTime());
         c.set(Calendar.MILLISECOND, 0);
 
-        if (timeSpan.getUnits() == TimeSpan.Units.Days) {
+        if (data.timeSpan.getUnits() == TimeSpan.Units.Days) {
             c.set(Calendar.HOUR, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
         }
 
-        if (dateOpen != null && dateClose != null) {
+        if (data.dateOpen != null && data.dateClose != null) {
             Date time = c.getTime();
-            if (!time.before(dateOpen) && time.before(dateClose)) {
-                if (high == null || trade.getPrice() > high) {
-                    high = trade.getPrice();
+            if (!time.before(data.dateOpen) && time.before(data.dateClose)) {
+                if (data.high == null || trade.getPrice() > data.high) {
+                    data.high = trade.getPrice();
                 }
-                if (low == null || trade.getPrice() < low) {
-                    low = trade.getPrice();
+                if (data.low == null || trade.getPrice() < data.low) {
+                    data.low = trade.getPrice();
                 }
-                close = trade.getPrice();
+                data.close = trade.getPrice();
                 if (trade.getSize() != null) {
-                    volume = volume != null ? volume + trade.getSize() : trade.getSize();
+                    data.volume = data.volume != null ? data.volume + trade.getSize() : trade.getSize();
                 }
             }
 
-            if (!time.before(dateClose)) {
-                fireBarCloseEvent();
+            if (!time.before(data.dateClose)) {
+                fireBarCloseEvent(data);
             }
         }
 
-        if (dateOpen == null) {
-            if (timeSpan.getUnits() == TimeSpan.Units.Minutes) {
-                int round = c.get(Calendar.MINUTE) % timeSpan.getLength();
+        if (data.dateOpen == null) {
+            if (data.timeSpan.getUnits() == TimeSpan.Units.Minutes) {
+                int round = c.get(Calendar.MINUTE) % data.timeSpan.getLength();
                 c.add(Calendar.MINUTE, -round);
-                dateOpen = c.getTime();
-                c.add(Calendar.MINUTE, timeSpan.getLength());
-                dateClose = c.getTime();
+                data.dateOpen = c.getTime();
+                c.add(Calendar.MINUTE, data.timeSpan.getLength());
+                data.dateClose = c.getTime();
             }
-            else if (timeSpan.getUnits() == TimeSpan.Units.Days) {
-                int round = c.get(Calendar.DAY_OF_MONTH) % timeSpan.getLength();
+            else if (data.timeSpan.getUnits() == TimeSpan.Units.Days) {
+                int round = c.get(Calendar.DAY_OF_MONTH) % data.timeSpan.getLength();
                 c.add(Calendar.DAY_OF_MONTH, -round);
-                dateOpen = c.getTime();
-                c.add(Calendar.DAY_OF_MONTH, timeSpan.getLength());
-                dateClose = c.getTime();
+                data.dateOpen = c.getTime();
+                c.add(Calendar.DAY_OF_MONTH, data.timeSpan.getLength());
+                data.dateClose = c.getTime();
             }
-            open = trade.getPrice();
-            high = trade.getPrice();
-            low = trade.getPrice();
-            close = trade.getPrice();
-            volume = trade.getSize();
+            data.open = trade.getPrice();
+            data.high = trade.getPrice();
+            data.low = trade.getPrice();
+            data.close = trade.getPrice();
+            data.volume = trade.getSize();
 
-            fireBarOpenEvent();
+            fireBarOpenEvent(data);
 
-            timer.schedule(new BarCloseTimerTask(dateOpen), dateClose);
+            timer.schedule(new BarCloseTimerTask(data), data.dateClose);
         }
     }
 
-    protected void fireBarOpenEvent() {
-        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, dateOpen, open);
-        event.factory = this;
+    protected void fireBarOpenEvent(Data data) {
+        BarFactoryEvent event = new BarFactoryEvent(data.security, data.timeSpan, data.dateOpen, data.open);
 
         Object[] l = listeners.getListeners();
         for (int i = 0; i < l.length; i++) {
@@ -245,10 +198,9 @@ public class BarFactory implements IBarFactory {
         }
     }
 
-    protected void fireBarCloseEvent() {
-        BarFactoryEvent event = new BarFactoryEvent(security, timeSpan, dateOpen, open, high, low, close, volume);
-        event.factory = this;
-        dateOpen = null;
+    protected void fireBarCloseEvent(Data data) {
+        BarFactoryEvent event = new BarFactoryEvent(data.security, data.timeSpan, data.dateOpen, data.open, data.high, data.low, data.close, data.volume);
+        data.dateOpen = null;
 
         Object[] l = listeners.getListeners();
         for (int i = 0; i < l.length; i++) {
