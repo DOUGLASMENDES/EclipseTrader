@@ -81,8 +81,8 @@ public class TradingServiceLauncher implements ILauncher, IExecutableExtension {
     protected ITradingService getTradingService() {
         try {
             BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
-            ITradingService service = (ITradingService) context.getService(serviceReference);
+            ServiceReference<ITradingService> serviceReference = context.getServiceReference(ITradingService.class);
+            ITradingService service = context.getService(serviceReference);
             context.ungetService(serviceReference);
             return service;
         } catch (Exception e) {

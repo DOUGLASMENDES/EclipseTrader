@@ -166,7 +166,7 @@ public class StopFeedAction implements IWorkbenchWindowActionDelegate, IWorkbenc
 
         ILauncher[] launchers = getLaunchers();
         for (int i = 0; i < launchers.length; i++) {
-            item = new ActionContributionItem(new LauncherStartAction(launchers[i]));
+            item = new ActionContributionItem(new LauncherTerminateAction(launchers[i]));
             item.fill(menu, -1);
         }
     }

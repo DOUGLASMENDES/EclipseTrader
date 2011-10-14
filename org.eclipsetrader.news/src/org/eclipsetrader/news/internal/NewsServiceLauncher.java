@@ -81,9 +81,9 @@ public class NewsServiceLauncher implements ILauncher, IExecutableExtension {
 
         try {
             BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(NewsService.class.getName());
+            ServiceReference<NewsService> serviceReference = context.getServiceReference(NewsService.class);
             if (serviceReference != null) {
-                NewsService newsService = (NewsService) context.getService(serviceReference);
+                NewsService newsService = context.getService(serviceReference);
 
                 newsService.addNewsServiceListener(new INewsServiceListener() {
 
@@ -98,9 +98,9 @@ public class NewsServiceLauncher implements ILauncher, IExecutableExtension {
                         if (count != 0) {
                             try {
                                 BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-                                ServiceReference serviceReference = context.getServiceReference(INotificationService.class.getName());
+                                ServiceReference<INotificationService> serviceReference = context.getServiceReference(INotificationService.class);
                                 if (serviceReference != null) {
-                                    INotificationService notificationService = (INotificationService) context.getService(serviceReference);
+                                    INotificationService notificationService = context.getService(serviceReference);
                                     notificationService.popupNotification(new INotification[] {
                                         new HeadLineCountNotification(count)
                                     });

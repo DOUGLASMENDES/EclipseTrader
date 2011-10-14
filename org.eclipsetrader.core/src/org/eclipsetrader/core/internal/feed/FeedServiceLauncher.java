@@ -63,9 +63,9 @@ public class FeedServiceLauncher implements ILauncher, IExecutableExtension {
     public void launch(IProgressMonitor monitor) {
         try {
             BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(FeedService.class.getName());
+            ServiceReference<FeedService> serviceReference = context.getServiceReference(FeedService.class);
             if (serviceReference != null) {
-                FeedService service = (FeedService) context.getService(serviceReference);
+                FeedService service = context.getService(serviceReference);
 
                 IFeedConnector[] connector = service.getConnectors();
                 for (int i = 0; i < connector.length; i++) {
@@ -92,9 +92,9 @@ public class FeedServiceLauncher implements ILauncher, IExecutableExtension {
     public void terminate(IProgressMonitor monitor) {
         try {
             BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(FeedService.class.getName());
+            ServiceReference<FeedService> serviceReference = context.getServiceReference(FeedService.class);
             if (serviceReference != null) {
-                FeedService service = (FeedService) context.getService(serviceReference);
+                FeedService service = context.getService(serviceReference);
 
                 IFeedConnector[] connector = service.getConnectors();
                 for (int i = 0; i < connector.length; i++) {
