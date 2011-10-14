@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -61,7 +62,17 @@ public class BarsPage extends WizardPage {
         viewer = new ListViewer(content, SWT.BORDER | SWT.MULTI);
         viewer.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
         viewer.setContentProvider(new ArrayContentProvider());
-        viewer.setLabelProvider(new LabelProvider());
+        viewer.setLabelProvider(new LabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                TimeSpan timeSpan = (TimeSpan) element;
+                return NLS.bind("{0} {1}", new Object[] {
+                    String.valueOf(timeSpan.getLength()), timeSpan.getUnits()
+                });
+            }
+
+        });
         viewer.setComparator(new ViewerComparator() {
 
             @Override

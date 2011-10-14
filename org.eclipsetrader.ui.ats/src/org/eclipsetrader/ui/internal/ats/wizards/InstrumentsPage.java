@@ -29,7 +29,7 @@ public class InstrumentsPage extends WizardPage {
 
     public InstrumentsPage() {
         super("instruments", "Instruments", null);
-        setDescription("Sets the instruments");
+        setDescription("Sets the instruments to manage");
     }
 
     /* (non-Javadoc)

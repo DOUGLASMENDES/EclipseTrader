@@ -31,6 +31,7 @@ public class Activator extends AbstractUIPlugin {
     public static final String IMG_REMOVE_DISABLED_ICON = "remove-disabled";
     public static final String IMG_DELETE_ICON = "delete";
     public static final String IMG_DELETE_DISABLED_ICON = "delete-disabled";
+    public static final String IMG_TRADING_SYSTEM = "trading-system";
 
     public static final String K_VIEWS_SECTION = "Views";
     public static final String K_URI = "uri";
@@ -89,6 +90,7 @@ public class Activator extends AbstractUIPlugin {
         reg.put(IMG_REMOVE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/remove_exc.gif")));
         reg.put(IMG_DELETE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/delete.gif")));
         reg.put(IMG_DELETE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/delete.gif")));
+        reg.put(IMG_TRADING_SYSTEM, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/cog.png")));
     }
 
     public static Image getImageFromRegistry(String key) {

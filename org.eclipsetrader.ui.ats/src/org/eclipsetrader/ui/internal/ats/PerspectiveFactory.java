@@ -18,6 +18,7 @@ import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
 import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewPart;
+import org.eclipsetrader.ui.internal.ats.monitor.TradingSystemsViewPart;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
 
@@ -34,6 +35,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 
         // Our editor area
         IFolderLayout editors = layout.createFolder(UIConstants.EDITOR_AREA, IPageLayout.LEFT, (float) 100.0, layout.getEditorArea());
+        editors.addView(TradingSystemsViewPart.VIEW_ID);
         editors.addPlaceholder(ScriptEditor.VIEW_ID);
         editors.addPlaceholder(ScriptEditor.VIEW_ID + ":*"); //$NON-NLS-1$
         editors.addPlaceholder(ReportViewPart.VIEW_ID);

@@ -13,9 +13,10 @@ package org.eclipsetrader.core.ats.engines;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 
 import org.eclipsetrader.core.ats.IScriptStrategy;
-import org.eclipsetrader.core.ats.ITradingInstrument;
+import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IBarOpen;
@@ -35,10 +36,11 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.ScriptableObject;
 
-public class JavaScriptEngine {
+public class JavaScriptEngine extends Observable {
 
     public static final String PROPERTY_INSTRUMENTS = "instruments";
     public static final String PROPERTY_POSITIONS = "positions";
+    public static final String PROPERTY_MARKET = "market";
 
     private final ITradingSystem tradingSystem;
     private final IScriptStrategy strategy;
@@ -48,7 +50,7 @@ public class JavaScriptEngine {
 
     private ScriptableObject scope;
     private Map<String, ISecurity> instrumentsMap = new HashMap<String, ISecurity>();
-    private Map<String, IPosition> positionsMap = new HashMap<String, IPosition>();
+    private Map<Object, IPosition> positionsMap = new HashMap<Object, IPosition>();
     private Map<ISecurity, JavaScriptEngineInstrument> contextsMap = new HashMap<ISecurity, JavaScriptEngineInstrument>();
 
     public IPricingListener pricingListener = new IPricingListener() {
@@ -69,6 +71,8 @@ public class JavaScriptEngine {
             }
             context.onPositionOpen(e.position);
             updatePositionsMap();
+            setChanged();
+            notifyObservers(new EngineEvent(e.position.getSecurity(), e.position));
         }
 
         @Override
@@ -79,6 +83,8 @@ public class JavaScriptEngine {
             }
             context.onPositionClosed(e.position);
             updatePositionsMap();
+            setChanged();
+            notifyObservers(new EngineEvent(e.position.getSecurity(), e.position));
         }
 
         @Override
@@ -89,6 +95,8 @@ public class JavaScriptEngine {
             }
             context.onPositionChange(e.position);
             updatePositionsMap();
+            setChanged();
+            notifyObservers(new EngineEvent(e.position.getSecurity(), e.position));
         }
     };
 
@@ -124,8 +132,10 @@ public class JavaScriptEngine {
             updateInstrumentsMap();
             updatePositionsMap();
 
-            for (ITradingInstrument instrument : tradingSystem.getInstruments()) {
-                JavaScriptEngineInstrument engineInstrument = new JavaScriptEngineInstrument(scope, instrument.getInstrument(), strategy);
+            for (ITradingSystemInstrument instrument : tradingSystem.getInstruments()) {
+                ISecurity security = instrument.getInstrument();
+                JavaScriptEngineInstrument engineInstrument = new JavaScriptEngineInstrument(scope, security, strategy);
+                engineInstrument.setPosition(positionsMap.get(security));
                 engineInstrument.onStrategyStart();
                 contextsMap.put(instrument.getInstrument(), engineInstrument);
             }
@@ -147,30 +157,35 @@ public class JavaScriptEngine {
     }
 
     public void dispose() {
-
+        deleteObservers();
     }
 
     void doPricingUpdate(PricingEvent event) {
+        JavaScriptEngineInstrument instrument = contextsMap.get(event.getSecurity());
+        if (instrument == null) {
+            return;
+        }
         for (PricingDelta delta : event.getDelta()) {
-            JavaScriptEngineInstrument instrument = contextsMap.get(delta.getSecurity());
-            if (instrument == null) {
-                instrument = contextsMap.get(event.getSecurity());
-                if (instrument == null) {
-                    continue;
-                }
-            }
             Object value = delta.getNewValue();
             if (value instanceof IQuote) {
                 instrument.onQuote((IQuote) value);
+                setChanged();
+                notifyObservers(new EngineEvent(event.getSecurity(), value));
             }
             else if (value instanceof ITrade) {
                 instrument.onTrade((ITrade) value);
+                setChanged();
+                notifyObservers(new EngineEvent(event.getSecurity(), value));
             }
             else if (value instanceof IBarOpen) {
                 instrument.onBarOpen((IBarOpen) value);
+                setChanged();
+                notifyObservers(new EngineEvent(event.getSecurity(), value));
             }
             else if (value instanceof IBar) {
                 instrument.onBar((IBar) value);
+                setChanged();
+                notifyObservers(new EngineEvent(event.getSecurity(), instrument.getBars()));
             }
         }
     }
@@ -190,6 +205,7 @@ public class JavaScriptEngine {
             ISecurity security = position.getSecurity();
             if (security.getIdentifier() != null) {
                 positionsMap.put(security.getIdentifier().getSymbol(), position);
+                positionsMap.put(security, position);
             }
         }
     }

@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.ats.RepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStore;
 import org.eclipsetrader.core.repositories.IStoreObject;
@@ -163,7 +162,6 @@ public class ScriptStrategy implements IScriptStrategy, IStoreObject, IAdaptable
         }
 
         storeProperties.setProperty(IPropertyConstants.OBJECT_TYPE, IScriptStrategy.class.getName());
-        storeProperties.setProperty(IPropertyConstants.ELEMENT_FACTORY, RepositoryElementFactory.getInstance());
 
         storeProperties.setProperty(IScriptStrategy.PROP_NAME, name);
         storeProperties.setProperty(IScriptStrategy.PROP_LANGUAGE, language);

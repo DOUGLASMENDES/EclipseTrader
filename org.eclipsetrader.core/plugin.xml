@@ -11,7 +11,7 @@
       <launcher
             class="org.eclipsetrader.core.internal.feed.FeedServiceLauncher"
             id="org.eclipsetrader.feed.launcher"
-            name="Feed">
+            name="Live Data Feed">
       </launcher>
    </extension>
 

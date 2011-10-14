@@ -101,7 +101,6 @@ public class SimulationRunner {
 
         for (Iterator<BarData> iter = dataSet.iterator(); iter.hasNext() && !monitor.isCanceled();) {
             BarData data = iter.next();
-            System.out.println(data.security + ": " + data.bar);
             pricingEnvironment.setTrade(data.security, new Trade(data.bar.getDate(), data.bar.getOpen(), 0L, 0L));
             pricingEnvironment.setBarOpen(data.security, new BarOpen(data.bar.getDate(), data.timeSpan, data.bar.getOpen()));
             pricingEnvironment.setTrade(data.security, new Trade(data.bar.getDate(), data.bar.getClose(), 0L, 0L));

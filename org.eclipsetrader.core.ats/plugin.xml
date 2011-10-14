@@ -2,11 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipsetrader.core.elementFactories">
-      <factory
-            class="org.eclipsetrader.core.internal.ats.RepositoryElementFactory"
-            id="org.eclipsetrader.core.ats.factory">
-      </factory>
+         point="org.eclipsetrader.core.launchers">
+      <launcher
+            class="org.eclipsetrader.core.internal.ats.TradingSystemsLauncher"
+            id="org.eclipsetrader.core.ats.launcher"
+            name="Automated Trading Systems">
+      </launcher>
    </extension>
 
 </plugin>

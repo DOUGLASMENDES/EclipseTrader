@@ -14,7 +14,7 @@ package org.eclipsetrader.core.ats;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipsetrader.core.instruments.ISecurity;
 
-public interface ITradingInstrument extends IAdaptable {
+public interface ITradingSystemInstrument extends IAdaptable {
 
     public ISecurity getInstrument();
 }

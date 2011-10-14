@@ -11,12 +11,16 @@
 
 package org.eclipsetrader.core.internal.ats;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipsetrader.core.ats.BarFactoryEvent;
 import org.eclipsetrader.core.ats.IBarFactoryListener;
 import org.eclipsetrader.core.ats.IStrategy;
 import org.eclipsetrader.core.ats.ITradingSystemContext;
 import org.eclipsetrader.core.feed.Bar;
 import org.eclipsetrader.core.feed.BarOpen;
+import org.eclipsetrader.core.feed.IBar;
+import org.eclipsetrader.core.feed.IBarOpen;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
@@ -45,17 +49,23 @@ public class TradingSystemContext implements ITradingSystemContext {
 
     private final MarketPricingEnvironment marketPricingEnvironment;
     private final BarFactory barFactory;
+    private boolean needsDailyBars;
+
+    private Log logger = LogFactory.getLog(getClass());
 
     public IBarFactoryListener barFactoryListener = new IBarFactoryListener() {
 
         @Override
         public void barOpen(BarFactoryEvent event) {
-            pricingEnvironment.setBarOpen(event.security, new BarOpen(event.date, event.timeSpan, event.open));
+            BarOpen barOpen = new BarOpen(event.date, event.timeSpan, event.open);
+            logger.info(barOpen);
+            pricingEnvironment.setBarOpen(event.security, barOpen);
         }
 
         @Override
         public void barClose(BarFactoryEvent event) {
             Bar bar = new Bar(event.date, event.timeSpan, event.open, event.high, event.low, event.close, event.volume);
+            logger.info(bar);
             pricingEnvironment.setBar(event.security, bar);
         }
     };
@@ -87,6 +97,20 @@ public class TradingSystemContext implements ITradingSystemContext {
                 if (delta.getNewValue() instanceof IBook) {
                     pricingEnvironment.setBook(event.getSecurity(), (IBook) delta.getNewValue());
                 }
+                if (needsDailyBars) {
+                    if (delta.getNewValue() instanceof IBarOpen) {
+                        IBarOpen bar = (IBarOpen) delta.getNewValue();
+                        if (bar.getTimeSpan().getUnits() == TimeSpan.Units.Days && bar.getTimeSpan().getLength() == 1) {
+                            pricingEnvironment.setBarOpen(event.getSecurity(), bar);
+                        }
+                    }
+                    if (delta.getNewValue() instanceof IBar) {
+                        IBar bar = (IBar) delta.getNewValue();
+                        if (bar.getTimeSpan().getUnits() == TimeSpan.Units.Days && bar.getTimeSpan().getLength() == 1) {
+                            pricingEnvironment.setBar(event.getSecurity(), bar);
+                        }
+                    }
+                }
             }
         }
     };
@@ -105,7 +129,13 @@ public class TradingSystemContext implements ITradingSystemContext {
         barFactory = new BarFactory(marketPricingEnvironment);
         for (ISecurity security : strategy.getInstruments()) {
             for (TimeSpan timeSpan : strategy.getBarsTimeSpan()) {
-                barFactory.add(security, timeSpan);
+                if (timeSpan.getUnits() == TimeSpan.Units.Days && timeSpan.getLength() == 1) {
+                    needsDailyBars = true;
+                    continue;
+                }
+                if (timeSpan.getUnits() == TimeSpan.Units.Minutes) {
+                    barFactory.add(security, timeSpan);
+                }
             }
         }
         barFactory.addBarFactoryListener(barFactoryListener);

@@ -9,9 +9,17 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.core.ats;
+package org.eclipsetrader.core.ats.engines;
 
-public interface ITradeSystemListener {
+import org.eclipsetrader.core.instruments.ISecurity;
 
-    public void tradeSystemServiceUpdate(TradeSystemEvent event);
+public class EngineEvent {
+
+    public final ISecurity instrument;
+    public final Object value;
+
+    public EngineEvent(ISecurity instrument, Object value) {
+        this.instrument = instrument;
+        this.value = value;
+    }
 }

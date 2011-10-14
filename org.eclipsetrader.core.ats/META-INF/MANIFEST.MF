@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.core.internal.ats.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.databinding.observable,
  org.eclipsetrader.core,
  org.eclipsetrader.core.charts,
  org.eclipsetrader.core.trading,

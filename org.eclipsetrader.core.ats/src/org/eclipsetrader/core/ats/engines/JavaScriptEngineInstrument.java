@@ -47,6 +47,7 @@ public class JavaScriptEngineInstrument {
     public static final String PROPERTY_POSITION = "position";
 
     private final Scriptable scope;
+    private final ISecurity instrument;
     private Function onQuote;
     private Function onTrade;
     private Function onBarOpen;
@@ -60,6 +61,8 @@ public class JavaScriptEngineInstrument {
     private final Log log = LogFactory.getLog(getClass());
 
     public JavaScriptEngineInstrument(Scriptable sharedScope, ISecurity instrument, IScriptStrategy strategy) throws Exception {
+        this.instrument = instrument;
+
         Context cx = Context.enter();
         try {
             scope = cx.newObject(sharedScope);
@@ -131,6 +134,10 @@ public class JavaScriptEngineInstrument {
         }
     }
 
+    public ISecurity getInstrument() {
+        return instrument;
+    }
+
     public void onStrategyStart() {
         Context cx = Context.enter();
         try {
@@ -187,12 +194,12 @@ public class JavaScriptEngineInstrument {
     public void onBar(IBar bar) {
         Context cx = Context.enter();
         try {
-            bars.add(bar);
             if (onBar != null) {
                 onBar.call(cx, scope, scope, new Object[] {
                     bar
                 });
             }
+            bars.add(bar);
             ScriptableObject.putProperty(scope, PROPERTY_BAR, bar);
         } finally {
             Context.exit();
@@ -244,11 +251,24 @@ public class JavaScriptEngineInstrument {
         }
     }
 
+    public void setPosition(IPosition position) {
+        Context.enter();
+        try {
+            ScriptableObject.putProperty(scope, PROPERTY_POSITION, position);
+        } finally {
+            Context.exit();
+        }
+    }
+
     public Object get(String name) {
         return scope.get(name, scope);
     }
 
     public Scriptable getScope() {
         return scope;
+    }
+
+    public IBar[] getBars() {
+        return bars.toArray(new IBar[bars.size()]);
     }
 }

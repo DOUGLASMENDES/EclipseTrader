@@ -5,10 +5,11 @@ Bundle-SymbolicName: org.eclipsetrader.ui.ats;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.ui.internal.ats.Activator
 Bundle-Vendor: EclipseTrader.org
-Require-Bundle: org.eclipse.core.databinding,
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.expressions,
+ org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.core.databinding.observable,
- org.eclipse.core.runtime,
  org.eclipse.jface.databinding,
  org.eclipse.ui,
  org.eclipse.nebula.widgets.cdatetime,

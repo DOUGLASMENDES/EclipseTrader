@@ -15,6 +15,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.views.Holding;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
@@ -51,13 +52,15 @@ public class PositionFactory extends AbstractProviderFactory {
          */
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-            IHolding element = (IHolding) adaptable.getAdapter(IHolding.class);
-            if (element != null) {
-                final Long value = element.getPosition();
+            IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);
+            if (holding != null) {
+                final Long value = holding.getPosition();
                 return new IAdaptable() {
 
                     @Override
-                    @SuppressWarnings("unchecked")
+                    @SuppressWarnings({
+                        "unchecked", "rawtypes"
+                    })
                     public Object getAdapter(Class adapter) {
                         if (adapter.isAssignableFrom(String.class)) {
                             return value != null ? formatter.format(value) : "";
@@ -78,7 +81,60 @@ public class PositionFactory extends AbstractProviderFactory {
                     }
                 };
             }
-            return null;
+            IPosition position = (IPosition) adaptable.getAdapter(IPosition.class);
+            if (position != null) {
+                final Long value = position.getQuantity();
+                return new IAdaptable() {
+
+                    @Override
+                    @SuppressWarnings({
+                        "unchecked", "rawtypes"
+                    })
+                    public Object getAdapter(Class adapter) {
+                        if (adapter.isAssignableFrom(String.class)) {
+                            return value != null ? formatter.format(value) : "";
+                        }
+                        if (adapter.isAssignableFrom(Long.class)) {
+                            return value;
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public boolean equals(Object obj) {
+                        if (!(obj instanceof IAdaptable)) {
+                            return false;
+                        }
+                        Long s = (Long) ((IAdaptable) obj).getAdapter(Long.class);
+                        return s == value || value != null && value.equals(s);
+                    }
+                };
+            }
+            return new IAdaptable() {
+
+                @Override
+                @SuppressWarnings({
+                    "unchecked", "rawtypes"
+                })
+                public Object getAdapter(Class adapter) {
+                    if (adapter.isAssignableFrom(String.class)) {
+                        return "";
+                    }
+                    if (adapter.isAssignableFrom(Long.class)) {
+                        return null;
+                    }
+                    return null;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    if (!(obj instanceof IAdaptable)) {
+                        return false;
+                    }
+                    Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
+                    return s == null;
+                }
+            };
         }
 
         /* (non-Javadoc)
@@ -133,7 +189,7 @@ public class PositionFactory extends AbstractProviderFactory {
     @SuppressWarnings("unchecked")
     public Class[] getType() {
         return new Class[] {
-                Long.class, String.class,
+            Long.class, String.class,
         };
     }
 }

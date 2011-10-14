@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.Script;
+import org.eclipsetrader.core.ats.IScriptStrategy;
+import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.feed.History;
 import org.eclipsetrader.core.feed.IHistory;
 import org.eclipsetrader.core.instruments.CurrencyExchange;
@@ -75,7 +77,7 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
      */
     @Override
     @SuppressWarnings({
-            "rawtypes", "unchecked"
+        "rawtypes", "unchecked"
     })
     public IStoreObject createElement(IStore store, IStoreProperties properties) {
         String type = (String) properties.getProperty(IPropertyConstants.OBJECT_TYPE);
@@ -100,6 +102,9 @@ public class DefaultElementFactory implements IRepositoryElementFactory, IExecut
             }
             if (IScript.class.getName().equals(type)) {
                 return new Script(store, properties);
+            }
+            if (IScriptStrategy.class.getName().equals(type)) {
+                return new ScriptStrategy(store, properties);
             }
 
             // Attempt to construct the referenced class object directly

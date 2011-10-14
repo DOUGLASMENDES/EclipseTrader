@@ -18,6 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.eclipsetrader.core.views.IHolding;
@@ -54,9 +55,12 @@ public class GainFactory extends AbstractProviderFactory {
          */
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
+            final ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
+            if (trade == null || trade.getPrice() == null) {
+                return null;
+            }
             IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);
-            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (holding != null && holding.getPosition() != null && holding.getPurchasePrice() != null && trade != null && trade.getPrice() != null) {
+            if (holding != null && holding.getPosition() != null && holding.getPurchasePrice() != null) {
                 Double purchaseValue = holding.getPosition() * holding.getPurchasePrice();
                 Double marketValue = holding.getPosition() * trade.getPrice();
                 final Double value = marketValue - purchaseValue;
@@ -65,7 +69,9 @@ public class GainFactory extends AbstractProviderFactory {
                 return new IAdaptable() {
 
                     @Override
-                    @SuppressWarnings("unchecked")
+                    @SuppressWarnings({
+                        "unchecked", "rawtypes"
+                    })
                     public Object getAdapter(Class adapter) {
                         if (adapter.isAssignableFrom(String.class)) {
                             return (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
@@ -89,7 +95,67 @@ public class GainFactory extends AbstractProviderFactory {
                     }
                 };
             }
-            return null;
+            final IPosition position = (IPosition) adaptable.getAdapter(IPosition.class);
+            if (position != null && position.getQuantity() != null && position.getPrice() != null) {
+                Double purchaseValue = position.getQuantity() * position.getPrice();
+                Double marketValue = position.getQuantity() * trade.getPrice();
+                final Double value = marketValue - purchaseValue;
+                final Double percentage = value / purchaseValue * 100.0;
+                final Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
+                return new IAdaptable() {
+
+                    @Override
+                    @SuppressWarnings({
+                        "unchecked", "rawtypes"
+                    })
+                    public Object getAdapter(Class adapter) {
+                        if (adapter.isAssignableFrom(String.class)) {
+                            return (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
+                        }
+                        if (adapter.isAssignableFrom(Double.class)) {
+                            return value;
+                        }
+                        if (adapter.isAssignableFrom(Color.class)) {
+                            return color;
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public boolean equals(Object obj) {
+                        if (!(obj instanceof IAdaptable)) {
+                            return false;
+                        }
+                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
+                        return s == value || value != null && value.equals(s);
+                    }
+                };
+            }
+            return new IAdaptable() {
+
+                @Override
+                @SuppressWarnings({
+                    "unchecked", "rawtypes"
+                })
+                public Object getAdapter(Class adapter) {
+                    if (adapter.isAssignableFrom(String.class)) {
+                        return "";
+                    }
+                    if (adapter.isAssignableFrom(Double.class)) {
+                        return null;
+                    }
+                    return null;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    if (!(obj instanceof IAdaptable)) {
+                        return false;
+                    }
+                    Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
+                    return s == null;
+                }
+            };
         }
 
         /* (non-Javadoc)
@@ -127,7 +193,7 @@ public class GainFactory extends AbstractProviderFactory {
     @SuppressWarnings("unchecked")
     public Class[] getType() {
         return new Class[] {
-                Long.class, String.class,
+            Long.class, String.class,
         };
     }
 }

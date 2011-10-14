@@ -136,12 +136,6 @@ public class BarFactory {
         c.setTime(trade.getTime());
         c.set(Calendar.MILLISECOND, 0);
 
-        if (data.timeSpan.getUnits() == TimeSpan.Units.Days) {
-            c.set(Calendar.HOUR, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
-        }
-
         if (data.dateOpen != null && data.dateClose != null) {
             Date time = c.getTime();
             if (!time.before(data.dateOpen) && time.before(data.dateClose)) {
@@ -163,25 +157,16 @@ public class BarFactory {
         }
 
         if (data.dateOpen == null) {
-            if (data.timeSpan.getUnits() == TimeSpan.Units.Minutes) {
-                int round = c.get(Calendar.MINUTE) % data.timeSpan.getLength();
-                c.add(Calendar.MINUTE, -round);
-                data.dateOpen = c.getTime();
-                c.add(Calendar.MINUTE, data.timeSpan.getLength());
-                data.dateClose = c.getTime();
-            }
-            else if (data.timeSpan.getUnits() == TimeSpan.Units.Days) {
-                int round = c.get(Calendar.DAY_OF_MONTH) % data.timeSpan.getLength();
-                c.add(Calendar.DAY_OF_MONTH, -round);
-                data.dateOpen = c.getTime();
-                c.add(Calendar.DAY_OF_MONTH, data.timeSpan.getLength());
-                data.dateClose = c.getTime();
-            }
+            data.dateOpen = c.getTime();
+
             data.open = trade.getPrice();
             data.high = trade.getPrice();
             data.low = trade.getPrice();
             data.close = trade.getPrice();
             data.volume = trade.getSize();
+
+            c.add(Calendar.MINUTE, data.timeSpan.getLength());
+            data.dateClose = c.getTime();
 
             fireBarOpenEvent(data);
 
@@ -189,7 +174,7 @@ public class BarFactory {
         }
     }
 
-    protected void fireBarOpenEvent(Data data) {
+    private void fireBarOpenEvent(Data data) {
         BarFactoryEvent event = new BarFactoryEvent(data.security, data.timeSpan, data.dateOpen, data.open);
 
         Object[] l = listeners.getListeners();
@@ -198,7 +183,7 @@ public class BarFactory {
         }
     }
 
-    protected void fireBarCloseEvent(Data data) {
+    private void fireBarCloseEvent(Data data) {
         BarFactoryEvent event = new BarFactoryEvent(data.security, data.timeSpan, data.dateOpen, data.open, data.high, data.low, data.close, data.volume);
         data.dateOpen = null;
 

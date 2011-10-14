@@ -11,29 +11,87 @@
 
 package org.eclipsetrader.core.internal.ats;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.eclipsetrader.core.ats.IStrategy;
-import org.eclipsetrader.core.ats.ITradingInstrument;
+import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradingSystemContext;
+import org.eclipsetrader.core.ats.engines.EngineEvent;
 import org.eclipsetrader.core.ats.engines.JavaScriptEngine;
+import org.eclipsetrader.core.feed.IQuote;
+import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.trading.IPosition;
 
 public class TradingSystem implements ITradingSystem {
 
     private final IStrategy strategy;
-    private final List<TradingInstrument> instruments = new ArrayList<TradingInstrument>();
+    private TradingSystemProperties properties;
 
+    private final Map<ISecurity, TradingSystemInstrument> instruments = new HashMap<ISecurity, TradingSystemInstrument>();
     private JavaScriptEngine engine;
+
+    private int status = STATUS_UNKNOWN;
+
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    private final Observer observer = new Observer() {
+
+        @Override
+        public void update(Observable o, Object arg) {
+            EngineEvent event = (EngineEvent) arg;
+            TradingSystemInstrument instrument = instruments.get(event.instrument);
+            if (instrument == null) {
+                return;
+            }
+            if (event.value instanceof IPosition) {
+                IPosition position = (IPosition) event.value;
+                instrument.setPosition(position.getQuantity() != 0 ? position : null);
+            }
+            if (event.value instanceof IQuote) {
+                instrument.setQuote((IQuote) event.value);
+            }
+            if (event.value instanceof ITrade) {
+                instrument.setTrade((ITrade) event.value);
+            }
+        }
+    };
 
     public TradingSystem(IStrategy strategy) {
         this.strategy = strategy;
+        this.properties = new TradingSystemProperties();
 
         for (ISecurity security : strategy.getInstruments()) {
-            instruments.add(new TradingInstrument(security));
+            instruments.put(security, new TradingSystemInstrument(security));
         }
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradingSystem#getStatus()
+     */
+    @Override
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        changeSupport.firePropertyChange(PROPERTY_STATUS, this.status, this.status = status);
     }
 
     /* (non-Javadoc)
@@ -48,8 +106,9 @@ public class TradingSystem implements ITradingSystem {
      * @see org.eclipsetrader.core.ats.ITradingSystem#getInstruments()
      */
     @Override
-    public ITradingInstrument[] getInstruments() {
-        return instruments.toArray(new ITradingInstrument[instruments.size()]);
+    public ITradingSystemInstrument[] getInstruments() {
+        Collection<TradingSystemInstrument> c = new ArrayList<TradingSystemInstrument>(instruments.values());
+        return c.toArray(new ITradingSystemInstrument[c.size()]);
     }
 
     /* (non-Javadoc)
@@ -57,7 +116,18 @@ public class TradingSystem implements ITradingSystem {
      */
     @Override
     public void start(ITradingSystemContext context) throws Exception {
+        for (TradingSystemInstrument instrument : instruments.values()) {
+            instrument.setQuote(null);
+            instrument.setTrade(null);
+        }
+        for (IPosition position : context.getAccount().getPositions()) {
+            TradingSystemInstrument instrument = instruments.get(position.getSecurity());
+            if (instrument != null) {
+                instrument.setPosition(position);
+            }
+        }
         engine = new JavaScriptEngine(this, context.getPricingEnvironment(), context.getAccount(), context.getBroker());
+        engine.addObserver(observer);
         engine.start();
     }
 
@@ -67,10 +137,23 @@ public class TradingSystem implements ITradingSystem {
     @Override
     public void stop() {
         if (engine != null) {
+            engine.deleteObserver(observer);
             engine.stop();
             engine.dispose();
             engine = null;
         }
+        for (TradingSystemInstrument instrument : instruments.values()) {
+            instrument.setQuote(null);
+            instrument.setTrade(null);
+        }
+    }
+
+    public TradingSystemProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(TradingSystemProperties properties) {
+        this.properties = properties;
     }
 
     /* (non-Javadoc)
@@ -83,6 +166,12 @@ public class TradingSystem implements ITradingSystem {
     public Object getAdapter(Class adapter) {
         if (adapter.isAssignableFrom(strategy.getClass())) {
             return strategy;
+        }
+        if (adapter.isAssignableFrom(properties.getClass())) {
+            return properties;
+        }
+        if (adapter.isAssignableFrom(changeSupport.getClass())) {
+            return changeSupport;
         }
         if (adapter.isAssignableFrom(getClass())) {
             return this;

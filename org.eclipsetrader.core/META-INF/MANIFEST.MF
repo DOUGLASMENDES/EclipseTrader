@@ -5,9 +5,11 @@ Bundle-SymbolicName: org.eclipsetrader.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.core.internal.CoreActivator
 Bundle-Vendor: Eclipsetrader.org
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.databinding.observable
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.core,
+ org.eclipsetrader.core.ats,
  org.eclipsetrader.core.feed,
  org.eclipsetrader.core.instruments,
  org.eclipsetrader.core.internal;x-friends:="org.eclipsetrader.ui",

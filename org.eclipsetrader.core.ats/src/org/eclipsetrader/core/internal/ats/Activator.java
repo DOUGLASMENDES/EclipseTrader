@@ -14,20 +14,25 @@ package org.eclipsetrader.core.internal.ats;
 import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipsetrader.core.ats.ITradingSystem;
-import org.eclipsetrader.core.ats.ITradeSystemService;
+import org.eclipsetrader.core.ats.ITradingSystemService;
+import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class Activator extends Plugin {
 
     public static final String PLUGIN_ID = "org.eclipsetrader.core.ats";
-
     public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.ats.systems";
 
     private static Activator plugin;
+
+    private IRepositoryService repositoryService;
+    private IMarketService marketService;
+
+    private ServiceReference<IRepositoryService> repositoryServiceRef;
+    private ServiceReference<IMarketService> marketServiceRef;
 
     public static Activator getDefault() {
         return plugin;
@@ -42,14 +47,18 @@ public class Activator extends Plugin {
         super.start(context);
         plugin = this;
 
-        final TradeSystemService tradeSystemService = new TradeSystemService();
-        context.registerService(new String[] {
-            ITradeSystemService.class.getName(),
-            TradeSystemService.class.getName()
-        }, tradeSystemService, new Hashtable<String, Object>());
-        //tradeSystemService.startUp();
+        repositoryServiceRef = context.getServiceReference(IRepositoryService.class);
+        repositoryService = context.getService(repositoryServiceRef);
 
-        Platform.getAdapterManager().registerAdapters(tradeSystemService, ITradingSystem.class);
+        marketServiceRef = context.getServiceReference(IMarketService.class);
+        marketService = context.getService(marketServiceRef);
+
+        TradingSystemService service = new TradingSystemService(repositoryService, marketService);
+        context.registerService(new String[] {
+            ITradingSystemService.class.getName(),
+            TradingSystemService.class.getName()
+        }, service, new Hashtable<String, Object>());
+        service.startUp();
     }
 
     /*
@@ -58,13 +67,20 @@ public class Activator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        ServiceReference serviceReference = context.getServiceReference(TradeSystemService.class.getName());
+        ServiceReference<TradingSystemService> serviceReference = context.getServiceReference(TradingSystemService.class);
         if (serviceReference != null) {
-            TradeSystemService service = (TradeSystemService) context.getService(serviceReference);
+            TradingSystemService service = context.getService(serviceReference);
             if (service != null) {
-                //service.shutDown();
+                service.shutDown();
             }
             context.ungetService(serviceReference);
+        }
+
+        if (repositoryServiceRef != null) {
+            context.ungetService(repositoryServiceRef);
+        }
+        if (marketServiceRef != null) {
+            context.ungetService(marketServiceRef);
         }
 
         context = null;

@@ -11,21 +11,15 @@
 
 package org.eclipsetrader.core.ats;
 
-public interface ITradeSystemService {
-
-    public ITradeStrategy getStrategy(String id);
+public interface ITradingSystemService {
 
     public ITradingSystem[] getTradeSystems();
 
-    public void addTradeSystem(ITradingSystem system);
+    public void start();
 
-    public void removeTradeSystem(ITradingSystem system);
+    public void stop();
 
-    public ITradeSystemMonitor start(ITradingSystem system);
+    public void start(ITradingSystem system);
 
     public void stop(ITradingSystem system);
-
-    public void addTradeSystemListener(ITradeSystemListener listener);
-
-    public void removeTradeSystemListener(ITradeSystemListener listener);
 }

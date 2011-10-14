@@ -51,6 +51,14 @@
             name="Report"
             restorable="false">
       </view>
+      <view
+            category="org.eclipsetrader.ui.ats"
+            class="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemsViewPart"
+            icon="icons/eview16/server.png"
+            id="org.eclipsetrader.ui.views.ats.monitor"
+            name="Trading Systems Monitor"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -103,6 +111,16 @@
                type="org.eclipsetrader.core.IScript">
          </adapter>
       </factory>
+      <factory
+            adaptableType="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemItem"
+            class="org.eclipsetrader.ui.internal.ats.ViewItemAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.internal.ats.TradingSystem">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.ats.ITradingSystem">
+         </adapter>
+      </factory>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -143,6 +161,88 @@
             </and>
          </activeWhen>
       </handler>
+      <handler
+            commandId="org.eclipse.ui.file.properties">
+         <class
+               class="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemPropertiesHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="1">
+               </count>
+               <iterate>
+                  <adapt
+                        type="org.eclipsetrader.core.internal.ats.TradingSystem">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
+      <handler
+            commandId="org.eclipsetrader.ui.ats.commands.start">
+         <class
+               class="org.eclipsetrader.ui.internal.ats.monitor.StartStrategyHandler">
+         </class>
+         <enabledWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <not>
+                  <or>
+                     <iterate>
+                        <test
+                              property="org.eclipsetrader.ui.ats.system.status"
+                              value="1">
+                        </test>
+                     </iterate>
+                     <iterate>
+                        <test
+                              property="org.eclipsetrader.ui.ats.system.status"
+                              value="2">
+                        </test>
+                     </iterate>
+                  </or>
+               </not>
+            </and>
+         </enabledWhen>
+      </handler>
+      <handler
+            commandId="org.eclipsetrader.ui.ats.commands.stop">
+         <class
+               class="org.eclipsetrader.ui.internal.ats.monitor.StopStrategyHandler">
+         </class>
+         <enabledWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <not>
+                  <or>
+                     <iterate>
+                        <test
+                              property="org.eclipsetrader.ui.ats.system.status"
+                              value="0">
+                        </test>
+                     </iterate>
+                     <iterate>
+                        <test
+                              property="org.eclipsetrader.ui.ats.system.status"
+                              value="3">
+                        </test>
+                     </iterate>
+                     <iterate>
+                        <test
+                              property="org.eclipsetrader.ui.ats.system.status"
+                              value="4">
+                        </test>
+                     </iterate>
+                  </or>
+               </not>
+            </and>
+         </enabledWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -181,6 +281,41 @@
             </visibleWhen>
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+         <command
+               commandId="org.eclipsetrader.ui.ats.commands.start"
+               icon="icons/etool16/control_play.png">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="+">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemItem">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+         <command
+               commandId="org.eclipsetrader.ui.ats.commands.stop"
+               icon="icons/etool16/control_stop.png">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="+">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemItem">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
@@ -190,6 +325,14 @@
          <defaultHandler
                class="org.eclipsetrader.ui.internal.ats.RunSimulationHandler">
          </defaultHandler>
+      </command>
+      <command
+            id="org.eclipsetrader.ui.ats.commands.start"
+            name="Start">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.ats.commands.stop"
+            name="Stop">
       </command>
    </extension>
    <extension
@@ -202,6 +345,16 @@
             activityId="org.eclipsetrader.activities.hideContributions"
             pattern="org.eclipsetrader.ui.ats/org.eclipsetrader.ui.ats.views.report">
       </activityPatternBinding>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipsetrader.ui.internal.ats.TradingSystemPropertyTester"
+            id="org.eclipsetrader.ui.ats.propertyTester1"
+            namespace="org.eclipsetrader.ui.ats.system"
+            properties="status"
+            type="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemItem">
+      </propertyTester>
    </extension>
 
 </plugin>

@@ -15,9 +15,12 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -68,8 +71,26 @@ public class TimeSpanDialog extends Dialog {
         units = new ComboViewer(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
         units.setContentProvider(new ArrayContentProvider());
         units.setLabelProvider(new LabelProvider());
-        units.setInput(TimeSpan.Units.values());
+        units.setSorter(new ViewerSorter());
+        units.setInput(new Object[] {
+            TimeSpan.Units.Minutes,
+            TimeSpan.Units.Days
+        });
         units.setSelection(new StructuredSelection(TimeSpan.Units.Minutes));
+
+        units.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                TimeSpan.Units units = (TimeSpan.Units) ((IStructuredSelection) event.getSelection()).getFirstElement();
+                if (units == TimeSpan.Units.Days) {
+                    value.setValues(1, 1, 1, 0, 1, 10);
+                }
+                else {
+                    value.setValues(1, 1, 9999, 0, 1, 10);
+                }
+            }
+        });
 
         return composite;
     }

@@ -102,11 +102,11 @@ public class SecuritySelectionControl {
 
     protected void createLabels(Composite parent) {
         Label label = new Label(parent, SWT.NONE);
-        label.setText("Available columns");
+        label.setText("Available instruments");
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         label = new Label(parent, SWT.NONE);
-        label.setText("Shown columns");
+        label.setText("Selected instruments");
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
     }
 

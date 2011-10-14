@@ -50,4 +50,30 @@ public class BarFactoryEvent {
         this.close = close;
         this.volume = volume;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[BarFactoryEvent:");
+        sb.append(" instrument=" + security.getName());
+        sb.append(" date=" + date);
+        if (open != null) {
+            sb.append(" open=" + open);
+        }
+        if (high != null) {
+            sb.append(" high=" + high);
+        }
+        if (low != null) {
+            sb.append(" low=" + low);
+        }
+        if (close != null) {
+            sb.append(" close=" + close);
+        }
+        if (volume != null) {
+            sb.append(" volume=" + volume);
+        }
+        return sb.toString();
+    }
 }

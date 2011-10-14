@@ -129,7 +129,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
         public void marketStatusChanged(MarketStatusEvent event) {
             IMarket market = event.getMarket();
             if (!market.isOpen()) {
-                fireTodayBarCloseEvent();
+                // fireTodayBarCloseEvent();
             }
         }
     };
@@ -556,10 +556,20 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             }
                         }
                         if (d.getNewValue() instanceof IBarOpen) {
-                            pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                            Object oldValue = pricingStatus.todayBarOpen;
+                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
+                                pricingStatus.todayBarOpen = (IBarOpen) d.getNewValue();
+                                pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                                System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
+                            }
                         }
                         if (d.getNewValue() instanceof IBar) {
-                            pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                            Object oldValue = pricingStatus.todayBar;
+                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
+                                pricingStatus.todayBar = (IBar) d.getNewValue();
+                                pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                                System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
+                            }
                         }
                     }
                 }
