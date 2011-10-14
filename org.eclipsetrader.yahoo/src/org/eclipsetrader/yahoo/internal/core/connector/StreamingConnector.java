@@ -235,7 +235,9 @@ public class StreamingConnector extends SnapshotConnector {
             if (valueMap.containsKey(K_VOLUME)) {
                 priceData.setVolume(getLongValue(valueMap.get(K_VOLUME)));
             }
-            subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            if (priceData.getOpen() != null && priceData.getOpen() != 0.0 && priceData.getHigh() != null && priceData.getHigh() != 0.0 && priceData.getLow() != null && priceData.getLow() != 0.0) {
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
 
             subscription.fireNotification();
         }

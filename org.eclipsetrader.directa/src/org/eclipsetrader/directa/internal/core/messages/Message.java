@@ -11,6 +11,9 @@
 
 package org.eclipsetrader.directa.internal.core.messages;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class Message {
 
     public static final int TIP_PRICE = 1;
@@ -27,6 +30,8 @@ public class Message {
     public static final int TIP_BOOK_15 = 13;
     public static final int TIP_BOOK_20 = 14;
     public static final int TIP_ECHO = 0x6E;
+
+    private static Log logger = LogFactory.getLog(Message.class);
 
     public static DataMessage decodeMessage(byte[] arr) {
         HeaderRecord head = decodeHeader(arr);
@@ -84,6 +89,19 @@ public class Message {
                 byte data[] = new byte[9];
                 System.arraycopy(arr, head.lenHeader, data, 0, data.length);
                 return decodeAllPricesMessage(head, data);
+            }
+            default: {
+                if (!logger.isDebugEnabled()) {
+                    break;
+                }
+                logger.debug(String.format("Unknown message type: %d", head.tipo));
+                for (int i = 0; i < arr.length;) {
+                    StringBuilder sb = new StringBuilder();
+                    for (; i < arr.length; i++) {
+                        sb.append(String.format(" %02X", arr[i]));
+                    }
+                    logger.debug(sb.toString());
+                }
             }
         }
 

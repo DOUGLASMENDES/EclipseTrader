@@ -236,15 +236,9 @@ public class MarketService extends Observable implements IMarketService, Runnabl
                     String newMessage = market.getToday().getMessage();
 
                     if (oldStatus != newStatus || newMessage != null && !newMessage.equals(oldMessage) || oldMessage != null && !oldMessage.equals(newMessage)) {
-                        if (newStatus) {
-                            fireMarketStatusEvent(market);
-                        }
-                        else {
-                            fireMarketStatusEvent(market);
-                        }
-
                         statusMap.put(market, newStatus);
                         messageMap.put(market, newMessage);
+                        fireMarketStatusEvent(market);
                     }
                 }
 

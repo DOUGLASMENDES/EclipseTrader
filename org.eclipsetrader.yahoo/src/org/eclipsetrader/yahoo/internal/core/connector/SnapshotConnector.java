@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -83,7 +81,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     protected Thread thread;
     private boolean stopping = false;
     private boolean subscriptionsChanged = false;
-    private Timer barTimer;
 
     public SnapshotConnector() {
         symbolSubscriptions = new HashMap<String, FeedSubscription>();
@@ -186,29 +183,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             thread = new Thread(this, name + " - Data Reader");
             thread.start();
         }
-
-        if (barTimer == null) {
-            barTimer = new Timer(name + " - Bar Timer", true);
-            barTimer.scheduleAtFixedRate(new TimerTask() {
-
-                @Override
-                public void run() {
-                    FeedSubscription[] subscriptions;
-                    synchronized (symbolSubscriptions) {
-                        Collection<FeedSubscription> c = symbolSubscriptions.values();
-                        subscriptions = c.toArray(new FeedSubscription[c.size()]);
-                    }
-
-                    for (int i = 0; i < subscriptions.length; i++) {
-                        subscriptions[i].forceBarClose();
-                    }
-
-                    for (int i = 0; i < subscriptions.length; i++) {
-                        subscriptions[i].fireNotification();
-                    }
-                }
-            }, 1000, 1000);
-        }
     }
 
     /* (non-Javadoc)
@@ -217,11 +191,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     @Override
     public void disconnect() {
         stopping = true;
-
-        if (barTimer != null) {
-            barTimer.cancel();
-            barTimer = null;
-        }
 
         if (thread != null) {
             try {
@@ -349,7 +318,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             priceData.setOpen(getDoubleValue(elements[I_OPEN]));
             priceData.setHigh(getDoubleValue(elements[I_HIGH]));
             priceData.setLow(getDoubleValue(elements[I_LOW]));
-            subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            if (priceData.getOpen() != null && priceData.getOpen() != 0.0 && priceData.getHigh() != null && priceData.getHigh() != 0.0 && priceData.getLow() != null && priceData.getLow() != 0.0) {
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
 
             priceData.setClose(getDoubleValue(elements[I_CLOSE]));
             subscription.setLastClose(new LastClose(priceData.getClose(), null));

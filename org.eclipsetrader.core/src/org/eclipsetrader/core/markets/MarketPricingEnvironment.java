@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,8 @@ import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.feed.Bar;
+import org.eclipsetrader.core.feed.BarOpen;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IBarOpen;
 import org.eclipsetrader.core.feed.IBook;
@@ -46,6 +49,7 @@ import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.QuoteEvent;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
 
@@ -68,7 +72,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
         ITodayOHL todayOHL;
         ILastClose lastClose;
         IBook book;
-        IBar bar;
+        IBarOpen todayBarOpen;
+        IBar todayBar;
         List<PricingDelta> deltas = new ArrayList<PricingDelta>();
     }
 
@@ -118,6 +123,17 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
         }
     };
 
+    private IMarketStatusListener marketStatusListener = new IMarketStatusListener() {
+
+        @Override
+        public void marketStatusChanged(MarketStatusEvent event) {
+            IMarket market = event.getMarket();
+            if (!market.isOpen()) {
+                fireTodayBarCloseEvent();
+            }
+        }
+    };
+
     protected MarketPricingEnvironment() {
     }
 
@@ -127,6 +143,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
     public MarketPricingEnvironment(IMarketService marketService, ISecurity[] securities) {
         this.marketService = marketService;
+        marketService.addMarketStatusListener(marketStatusListener);
 
         for (IMarket market : marketService.getMarkets()) {
             PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
@@ -411,6 +428,8 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
      */
     @Override
     public void dispose() {
+        marketService.removeMarketStatusListener(marketStatusListener);
+
         for (IMarket market : marketService.getMarkets()) {
             PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) market.getAdapter(PropertyChangeSupport.class);
             if (propertyChangeSupport != null) {
@@ -504,6 +523,22 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
                                 pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+
+                                Calendar c = Calendar.getInstance();
+                                if (pricingStatus.trade != null && pricingStatus.trade.getTime() != null) {
+                                    c.setTime(pricingStatus.trade.getTime());
+                                }
+                                c.set(Calendar.HOUR_OF_DAY, 0);
+                                c.set(Calendar.MINUTE, 0);
+                                c.set(Calendar.SECOND, 0);
+                                c.set(Calendar.MILLISECOND, 0);
+
+                                IBarOpen newBarOpen = new BarOpen(c.getTime(), TimeSpan.days(1), pricingStatus.todayOHL.getOpen());
+                                if (!newBarOpen.equals(pricingStatus.todayBarOpen)) {
+                                    pricingStatus.todayBarOpen = newBarOpen;
+                                    System.out.println(String.format("%s: %s", security.getName(), newBarOpen));
+                                    pricingStatus.deltas.add(new PricingDelta(security, null, newBarOpen));
+                                }
                             }
                         }
                         if (d.getNewValue() instanceof ILastClose) {
@@ -524,9 +559,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
                         }
                         if (d.getNewValue() instanceof IBar) {
-                            Object oldValue = pricingStatus.bar;
-                            pricingStatus.bar = (IBar) d.getNewValue();
-                            pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                            pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
                         }
                     }
                 }
@@ -572,5 +605,29 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
     SubscriptionStatus getSubscriptionStatus(ISecurity security) {
         IFeedIdentifier identifier = (IFeedIdentifier) security.getAdapter(IFeedIdentifier.class);
         return identifier != null ? identifiersMap.get(identifier) : null;
+    }
+
+    protected void fireTodayBarCloseEvent() {
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+
+        for (ISecurity security : securitiesMap.keySet()) {
+            PricingStatus pricingStatus = securitiesMap.get(security);
+            if (pricingStatus != null && pricingStatus.todayOHL != null && pricingStatus.trade != null) {
+                IBar newValue = new Bar(c.getTime(), TimeSpan.days(1),
+                    pricingStatus.todayOHL.getOpen(), pricingStatus.todayOHL.getHigh(), pricingStatus.todayOHL.getLow(),
+                    pricingStatus.trade.getPrice(), pricingStatus.trade.getVolume());
+                if (!newValue.equals(pricingStatus.todayBar)) {
+                    pricingStatus.todayBar = newValue;
+                    System.out.println(String.format("%s: %s", security.getName(), newValue));
+                    pricingStatus.deltas.add(new PricingDelta(security, null, newValue));
+                }
+            }
+        }
+
+        notifyListeners();
     }
 }

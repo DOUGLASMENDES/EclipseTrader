@@ -110,7 +110,9 @@ public class IdentifierType {
     public ITodayOHL getTodayOHL() {
         if (todayOHL == null) {
             getPriceData();
-            todayOHL = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
+            if (priceData.getOpen() != null && priceData.getOpen() != 0.0 && priceData.getHigh() != null && priceData.getHigh() != 0.0 && priceData.getLow() != null && priceData.getLow() != 0.0) {
+                todayOHL = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
+            }
         }
         return todayOHL;
     }

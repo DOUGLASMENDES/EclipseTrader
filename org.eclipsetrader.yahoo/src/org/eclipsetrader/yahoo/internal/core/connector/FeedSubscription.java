@@ -13,13 +13,10 @@ package org.eclipsetrader.yahoo.internal.core.connector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
-import org.eclipsetrader.core.feed.BarGenerator;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
@@ -30,7 +27,6 @@ import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.QuoteDelta;
 import org.eclipsetrader.core.feed.QuoteEvent;
-import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.yahoo.internal.YahooActivator;
 import org.eclipsetrader.yahoo.internal.core.repository.IdentifierType;
 
@@ -43,7 +39,6 @@ public class FeedSubscription implements IFeedSubscription {
     private ITodayOHL todayOHL;
     private ILastClose lastClose;
     private IBar bar;
-    private BarGenerator barGenerator;
     private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
     private IdentifierType identifierType;
     private List<QuoteDelta> deltaList = new ArrayList<QuoteDelta>();
@@ -57,21 +52,6 @@ public class FeedSubscription implements IFeedSubscription {
         this.quote = identifierType.getQuote();
         this.todayOHL = identifierType.getTodayOHL();
         this.lastClose = identifierType.getLastClose();
-
-        this.barGenerator = new BarGenerator(TimeSpan.minutes(1));
-        this.barGenerator.addObserver(new Observer() {
-
-            @Override
-            public void update(Observable o, Object arg) {
-                if (arg instanceof IBar) {
-                    addDelta(new QuoteDelta(FeedSubscription.this.identifierType.getIdentifier(), bar, arg));
-                    bar = (IBar) arg;
-                }
-                else {
-                    addDelta(new QuoteDelta(FeedSubscription.this.identifierType.getIdentifier(), null, arg));
-                }
-            }
-        });
     }
 
     public IdentifierType getIdentifierType() {
@@ -181,8 +161,6 @@ public class FeedSubscription implements IFeedSubscription {
             this.trade = trade;
             this.identifierType.setTrade(trade);
         }
-
-        barGenerator.addTrade(trade);
     }
 
     /* (non-Javadoc)
@@ -232,12 +210,6 @@ public class FeedSubscription implements IFeedSubscription {
                 Status status = new Status(IStatus.ERROR, YahooActivator.PLUGIN_ID, 0, "Error notifying a quote update", e);
                 YahooActivator.log(status);
             }
-        }
-    }
-
-    public void forceBarClose() {
-        if (barGenerator.isBarExpired()) {
-            barGenerator.forceBarClose();
         }
     }
 }

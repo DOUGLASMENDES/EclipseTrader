@@ -63,10 +63,10 @@ public class BarOpen implements IBarOpen, Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof IBar)) {
+        if (!(obj instanceof IBarOpen)) {
             return false;
         }
-        IBar other = (IBar) obj;
+        IBarOpen other = (IBarOpen) obj;
         return (getDate() == other.getDate() || getDate() != null && getDate().equals(other.getDate())) && (getTimeSpan() == other.getTimeSpan() || getTimeSpan() != null && getTimeSpan().equals(other.getTimeSpan())) && (getOpen() == other.getOpen() || getOpen() != null && getOpen().equals(other.getOpen()));
     }
 

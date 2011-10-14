@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -103,7 +101,6 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     private boolean connected;
     private boolean stopping;
     private int requiredDelay = 15;
-    private Timer barTimer;
 
     private Log logger = LogFactory.getLog(getClass());
 
@@ -205,38 +202,10 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             thread = new Thread(this, name + " - Data Reader"); //$NON-NLS-1$
             thread.start();
         }
-
-        if (barTimer == null) {
-            barTimer = new Timer(name + " - Bar Timer", true); //$NON-NLS-1$
-            barTimer.scheduleAtFixedRate(new TimerTask() {
-
-                @Override
-                public void run() {
-                    FeedSubscription[] subscriptions;
-                    synchronized (symbolSubscriptions) {
-                        Collection<FeedSubscription> c = symbolSubscriptions.values();
-                        subscriptions = c.toArray(new FeedSubscription[c.size()]);
-                    }
-
-                    for (int i = 0; i < subscriptions.length; i++) {
-                        subscriptions[i].forceBarClose();
-                    }
-
-                    for (int i = 0; i < subscriptions.length; i++) {
-                        subscriptions[i].fireNotification();
-                    }
-                }
-            }, 1000, 1000);
-        }
     }
 
     protected void stopThread() {
         stopping = true;
-
-        if (barTimer != null) {
-            barTimer.cancel();
-            barTimer = null;
-        }
 
         if (thread != null) {
             try {
@@ -494,7 +463,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             priceData.setOpen(numberFormat.parse(item[I_OPEN]).doubleValue());
             priceData.setHigh(numberFormat.parse(item[I_HIGH]).doubleValue());
             priceData.setLow(numberFormat.parse(item[I_LOW]).doubleValue());
-            subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
 
             priceData.setClose(numberFormat.parse(item[I_CLOSE]).doubleValue());
             subscription.setLastClose(new LastClose(priceData.getClose(), null));

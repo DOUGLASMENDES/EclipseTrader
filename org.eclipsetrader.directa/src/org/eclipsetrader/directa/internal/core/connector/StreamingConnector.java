@@ -37,8 +37,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -129,7 +127,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
     private Thread thread;
     private Thread notificationThread;
-    private Timer barTimer;
     private boolean stopping = false;
 
     private String streamingServer = "213.92.13.41"; //$NON-NLS-1$
@@ -385,27 +382,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             thread = new Thread(this, name + " - Data Reader"); //$NON-NLS-1$
             thread.start();
         }
-
-        if (barTimer == null) {
-            barTimer = new Timer(name + " - Bar Timer", true); //$NON-NLS-1$
-            barTimer.scheduleAtFixedRate(new TimerTask() {
-
-                @Override
-                public void run() {
-                    FeedSubscription[] subscriptions;
-                    synchronized (symbolSubscriptions) {
-                        Collection<FeedSubscription> c = symbolSubscriptions.values();
-                        subscriptions = c.toArray(new FeedSubscription[c.size()]);
-                    }
-
-                    for (int i = 0; i < subscriptions.length; i++) {
-                        subscriptions[i].forceBarClose();
-                    }
-
-                    wakeupNotifyThread();
-                }
-            }, 1000, 1000);
-        }
     }
 
     /* (non-Javadoc)
@@ -414,11 +390,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     @Override
     public synchronized void disconnect() {
         stopping = true;
-
-        if (barTimer != null) {
-            barTimer.cancel();
-            barTimer = null;
-        }
 
         if (thread != null) {
             try {
@@ -453,7 +424,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
      */
     @Override
     @SuppressWarnings({
-            "rawtypes", "unchecked"
+        "rawtypes", "unchecked"
     })
     public void run() {
         int n = 0;
@@ -580,12 +551,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 else if (h.tipo == Message.TIP_ECHO) {
                     try {
                         os.write(new byte[] {
-                                bHeader[0],
-                                bHeader[1],
-                                bHeader[2],
-                                bHeader[3],
-                                mes[0],
-                                mes[1]
+                            bHeader[0],
+                            bHeader[1],
+                            bHeader[2],
+                            bHeader[3],
+                            mes[0],
+                            mes[1]
                         });
                         os.flush();
                     } catch (Exception e) {
@@ -752,7 +723,10 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
             priceData.setHigh(pm.max);
             priceData.setLow(pm.min);
-            subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+
+            if (priceData.getOpen() != null && priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
         }
         else if (obj instanceof Book) {
             Book bm = (Book) obj;
@@ -1003,10 +977,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 priceData.setOpen(Double.parseDouble(sVal[APERTURA]));
                 priceData.setHigh(Double.parseDouble(sVal[MASSIMO]));
                 priceData.setLow(Double.parseDouble(sVal[MINIMO]));
-                newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-                if (!newValue.equals(oldValue)) {
-                    subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-                    identifierType.setTodayOHL((ITodayOHL) newValue);
+                if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
+                    newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
+                    if (!newValue.equals(oldValue)) {
+                        subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
+                        identifierType.setTodayOHL((ITodayOHL) newValue);
+                    }
                 }
 
                 oldValue = identifierType.getLastClose();
@@ -1042,12 +1018,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         }
 
         method.setQueryString(new NameValuePair[] {
-                new NameValuePair("modo", mode), //$NON-NLS-1$
-                new NameValuePair("u", urt), //$NON-NLS-1$
-                new NameValuePair("p", prt), //$NON-NLS-1$
-                new NameValuePair("out", "p"), //$NON-NLS-1$ //$NON-NLS-2$
-                new NameValuePair("listaid", s.toString()), //$NON-NLS-1$
-                new NameValuePair("lb", "20"), //$NON-NLS-1$ //$NON-NLS-2$
+            new NameValuePair("modo", mode), //$NON-NLS-1$
+            new NameValuePair("u", urt), //$NON-NLS-1$
+            new NameValuePair("p", prt), //$NON-NLS-1$
+            new NameValuePair("out", "p"), //$NON-NLS-1$ //$NON-NLS-2$
+            new NameValuePair("listaid", s.toString()), //$NON-NLS-1$
+            new NameValuePair("lb", "20"), //$NON-NLS-1$ //$NON-NLS-2$
         });
 
         return method;
@@ -1063,17 +1039,17 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         }
 
         method.setQueryString(new NameValuePair[] {
-                new NameValuePair("modo", mode), //$NON-NLS-1$
-                new NameValuePair("stcmd", s.toString()), //$NON-NLS-1$
-                new NameValuePair("u", urt), //$NON-NLS-1$
-                new NameValuePair("p", prt), //$NON-NLS-1$
+            new NameValuePair("modo", mode), //$NON-NLS-1$
+            new NameValuePair("stcmd", s.toString()), //$NON-NLS-1$
+            new NameValuePair("u", urt), //$NON-NLS-1$
+            new NameValuePair("p", prt), //$NON-NLS-1$
         });
 
         return method;
     }
 
     @SuppressWarnings({
-            "rawtypes", "unchecked"
+        "rawtypes", "unchecked"
     })
     private void setupProxy(HttpClient client, String host) throws URISyntaxException {
         if (Activator.getDefault() != null) {
