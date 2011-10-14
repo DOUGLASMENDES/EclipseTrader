@@ -53,8 +53,8 @@ public class AlertServiceTest extends TestCase {
             }
         };
         PricingEvent pricingEvent = new PricingEvent(security, new PricingDelta[] {
-                new PricingDelta(security, null, new Trade(10.0)),
-                new PricingDelta(security, null, new Trade(10.1))
+            new PricingDelta(null, new Trade(10.0)),
+            new PricingDelta(null, new Trade(10.1))
         });
 
         final List<AlertEvent> events = new ArrayList<AlertEvent>();

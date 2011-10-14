@@ -389,10 +389,10 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
 
                             PricingStatus pricingStatus = securitiesMap.get(security);
 
-                            pricingStatus.deltas.add(new PricingDelta(security, pricingStatus.trade, subscription.getTrade()));
-                            pricingStatus.deltas.add(new PricingDelta(security, pricingStatus.quote, subscription.getQuote()));
-                            pricingStatus.deltas.add(new PricingDelta(security, pricingStatus.todayOHL, subscription.getTodayOHL()));
-                            pricingStatus.deltas.add(new PricingDelta(security, pricingStatus.lastClose, subscription.getLastClose()));
+                            pricingStatus.deltas.add(new PricingDelta(pricingStatus.trade, subscription.getTrade()));
+                            pricingStatus.deltas.add(new PricingDelta(pricingStatus.quote, subscription.getQuote()));
+                            pricingStatus.deltas.add(new PricingDelta(pricingStatus.todayOHL, subscription.getTodayOHL()));
+                            pricingStatus.deltas.add(new PricingDelta(pricingStatus.lastClose, subscription.getLastClose()));
 
                             pricingStatus.trade = subscription.getTrade();
                             pricingStatus.quote = subscription.getQuote();
@@ -508,21 +508,21 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             Object oldValue = pricingStatus.trade;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.trade = (ITrade) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
                             }
                         }
                         if (d.getNewValue() instanceof IQuote) {
                             Object oldValue = pricingStatus.quote;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.quote = (IQuote) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
                             }
                         }
                         if (d.getNewValue() instanceof ITodayOHL) {
                             Object oldValue = pricingStatus.todayOHL;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
 
                                 Calendar c = Calendar.getInstance();
                                 if (pricingStatus.trade != null && pricingStatus.trade.getTime() != null) {
@@ -537,7 +537,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                                 if (!newBarOpen.equals(pricingStatus.todayBarOpen)) {
                                     pricingStatus.todayBarOpen = newBarOpen;
                                     System.out.println(String.format("%s: %s", security.getName(), newBarOpen));
-                                    pricingStatus.deltas.add(new PricingDelta(security, null, newBarOpen));
+                                    pricingStatus.deltas.add(new PricingDelta(null, newBarOpen));
                                 }
                             }
                         }
@@ -545,21 +545,21 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             Object oldValue = pricingStatus.lastClose;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.lastClose = (ILastClose) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
                             }
                         }
                         if (d.getNewValue() instanceof IBook) {
                             Object oldValue = pricingStatus.book;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.book = (IBook) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, oldValue, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
                             }
                         }
                         if (d.getNewValue() instanceof IBarOpen) {
                             Object oldValue = pricingStatus.todayBarOpen;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayBarOpen = (IBarOpen) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
                                 System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
                             }
                         }
@@ -567,7 +567,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             Object oldValue = pricingStatus.todayBar;
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayBar = (IBar) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(security, null, d.getNewValue()));
+                                pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
                                 System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
                             }
                         }
@@ -633,7 +633,7 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                 if (!newValue.equals(pricingStatus.todayBar)) {
                     pricingStatus.todayBar = newValue;
                     System.out.println(String.format("%s: %s", security.getName(), newValue));
-                    pricingStatus.deltas.add(new PricingDelta(security, null, newValue));
+                    pricingStatus.deltas.add(new PricingDelta(null, newValue));
                 }
             }
         }

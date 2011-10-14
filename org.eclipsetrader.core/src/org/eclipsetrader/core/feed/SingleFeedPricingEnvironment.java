@@ -221,7 +221,7 @@ public class SingleFeedPricingEnvironment implements IPricingEnvironment {
                         if (d.getNewValue() instanceof IBook) {
                             pricingStatus.book = (IBook) d.getNewValue();
                         }
-                        pricingStatus.deltas.add(new PricingDelta(security, d.getOldValue(), d.getNewValue()));
+                        pricingStatus.deltas.add(new PricingDelta(d.getOldValue(), d.getNewValue()));
                     }
                 }
             }

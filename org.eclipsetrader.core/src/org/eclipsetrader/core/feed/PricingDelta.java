@@ -11,7 +11,6 @@
 
 package org.eclipsetrader.core.feed;
 
-import org.eclipsetrader.core.instruments.ISecurity;
 
 /**
  * Represent a change of pricing values.
@@ -20,30 +19,18 @@ import org.eclipsetrader.core.instruments.ISecurity;
  */
 public class PricingDelta {
 
-    private ISecurity security;
     private Object oldValue;
     private Object newValue;
 
     /**
      * Constructor.
      *
-     * @param security the referenced security.
      * @param oldValue the old pricing value.
      * @param newValue the new pricing value.
      */
-    public PricingDelta(ISecurity security, Object oldValue, Object newValue) {
-        this.security = security;
+    public PricingDelta(Object oldValue, Object newValue) {
         this.oldValue = oldValue;
         this.newValue = newValue;
-    }
-
-    /**
-     * Returns the security this delta is refererring to.
-     *
-     * @return the security.
-     */
-    public ISecurity getSecurity() {
-        return security;
     }
 
     /**

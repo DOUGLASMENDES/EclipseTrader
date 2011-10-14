@@ -72,16 +72,16 @@ public class Report {
 
         @Override
         public void pricingUpdate(PricingEvent event) {
+            List<IBar> bars = barsData.get(event.getSecurity());
+            if (bars == null) {
+                bars = new ArrayList<IBar>();
+                barsData.put(event.getSecurity(), bars);
+            }
             for (PricingDelta delta : event.getDelta()) {
                 if (!(delta.getNewValue() instanceof IBar)) {
                     continue;
                 }
 
-                List<IBar> bars = barsData.get(delta.getSecurity());
-                if (bars == null) {
-                    bars = new ArrayList<IBar>();
-                    barsData.put(delta.getSecurity(), bars);
-                }
                 bars.add((IBar) delta.getNewValue());
 
                 double amount = calculateCurrentEquity();

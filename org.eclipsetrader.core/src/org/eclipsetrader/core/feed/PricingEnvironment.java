@@ -103,7 +103,7 @@ public class PricingEnvironment implements IPricingEnvironment {
         Object oldValue = status.trade;
         if (oldValue == null && trade != null || oldValue != null && !oldValue.equals(trade)) {
             status.trade = trade;
-            status.deltas.add(new PricingDelta(security, oldValue, trade));
+            status.deltas.add(new PricingDelta(oldValue, trade));
             if (doNotify) {
                 notifyListeners();
             }
@@ -133,7 +133,7 @@ public class PricingEnvironment implements IPricingEnvironment {
         Object oldValue = status.quote;
         if (oldValue == null && quote != null || oldValue != null && !oldValue.equals(quote)) {
             status.quote = quote;
-            status.deltas.add(new PricingDelta(security, oldValue, quote));
+            status.deltas.add(new PricingDelta(oldValue, quote));
             if (doNotify) {
                 notifyListeners();
             }
@@ -163,7 +163,7 @@ public class PricingEnvironment implements IPricingEnvironment {
         Object oldValue = status.todayOHL;
         if (oldValue == null && todayOHL != null || oldValue != null && !oldValue.equals(todayOHL)) {
             status.todayOHL = todayOHL;
-            status.deltas.add(new PricingDelta(security, oldValue, todayOHL));
+            status.deltas.add(new PricingDelta(oldValue, todayOHL));
             if (doNotify) {
                 notifyListeners();
             }
@@ -193,7 +193,7 @@ public class PricingEnvironment implements IPricingEnvironment {
         Object oldValue = status.lastClose;
         if (oldValue == null && lastClose != null || oldValue != null && !oldValue.equals(lastClose)) {
             status.lastClose = lastClose;
-            status.deltas.add(new PricingDelta(security, oldValue, lastClose));
+            status.deltas.add(new PricingDelta(oldValue, lastClose));
             if (doNotify) {
                 notifyListeners();
             }
@@ -223,7 +223,7 @@ public class PricingEnvironment implements IPricingEnvironment {
         Object oldValue = status.book;
         if (oldValue == null && book != null || oldValue != null && !oldValue.equals(book)) {
             status.book = book;
-            status.deltas.add(new PricingDelta(security, oldValue, book));
+            status.deltas.add(new PricingDelta(oldValue, book));
             if (doNotify) {
                 notifyListeners();
             }
@@ -236,7 +236,7 @@ public class PricingEnvironment implements IPricingEnvironment {
             status = new PricingStatus();
             map.put(security, status);
         }
-        status.deltas.add(new PricingDelta(security, null, bar));
+        status.deltas.add(new PricingDelta(null, bar));
         if (doNotify) {
             notifyListeners();
         }
@@ -248,7 +248,7 @@ public class PricingEnvironment implements IPricingEnvironment {
             status = new PricingStatus();
             map.put(security, status);
         }
-        status.deltas.add(new PricingDelta(security, null, bar));
+        status.deltas.add(new PricingDelta(null, bar));
         if (doNotify) {
             notifyListeners();
         }
