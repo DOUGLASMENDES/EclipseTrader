@@ -24,7 +24,8 @@ Import-Package: javax.xml.bind;version="[2.1.6,2.2.0)",
  org.apache.commons.httpclient.methods.multipart,
  org.apache.commons.httpclient.params,
  org.apache.commons.httpclient.protocol,
- org.apache.commons.httpclient.util
+ org.apache.commons.httpclient.util,
+ org.apache.commons.logging
 Export-Package: org.eclipsetrader.directaworld.internal;x-internal:=true,
  org.eclipsetrader.directaworld.internal.core.connector;x-internal:=true,
  org.eclipsetrader.directaworld.internal.core.repository;x-internal:=true

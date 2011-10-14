@@ -31,6 +31,8 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.net.proxy.IProxyData;
 import org.eclipse.core.net.proxy.IProxyService;
 import org.eclipse.core.runtime.CoreException;
@@ -102,6 +104,8 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     private boolean stopping;
     private int requiredDelay = 15;
     private Timer barTimer;
+
+    private Log logger = LogFactory.getLog(getClass());
 
     public SnapshotConnector() {
         symbolSubscriptions = new HashMap<String, FeedSubscription>();
@@ -351,9 +355,9 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
     private void setupProxy(HttpClient client, String host) throws URISyntaxException {
         if (Activator.getDefault() != null) {
             BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-            ServiceReference reference = context.getServiceReference(IProxyService.class.getName());
+            ServiceReference<IProxyService> reference = context.getServiceReference(IProxyService.class);
             if (reference != null) {
-                IProxyService proxyService = (IProxyService) context.getService(reference);
+                IProxyService proxyService = context.getService(reference);
                 IProxyData[] proxyData = proxyService.select(new URI(null, host, null, null));
                 for (int i = 0; i < proxyData.length; i++) {
                     if (IProxyData.HTTP_PROXY_TYPE.equals(proxyData[i].getType())) {
@@ -397,14 +401,17 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
             HttpMethod method = new GetMethod(url.toString());
             method.setFollowRedirects(true);
 
+            logger.debug(method.getURI().toString());
             client.executeMethod(method);
             requiredDelay = 15;
 
             String inputLine;
             in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
+                logger.debug(inputLine);
                 if (inputLine.indexOf("<!--QT START HERE-->") != -1) { //$NON-NLS-1$
                     while ((inputLine = in.readLine()) != null) {
+                        logger.debug(inputLine);
                         if (inputLine.indexOf("<!--QT STOP HERE-->") != -1) { //$NON-NLS-1$
                             break;
                         }
@@ -464,7 +471,7 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                 if (item[I_TIME].length() == 7) {
                     item[I_TIME] = item[I_TIME].charAt(0) + ":" + item[I_TIME].charAt(1) + item[I_TIME].charAt(3) + ":" + item[5].charAt(4) + item[I_TIME].charAt(6); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                if ("".equals(item[I_DATE]) || " ".equals(item[I_DATE])) { //$NON-NLS-1$ //$NON-NLS-2$
+                if ("".equals(item[I_DATE]) || " ".equals(item[I_DATE]) || " 0/  /0".equals(item[I_DATE])) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     priceData.setTime(timeParser.parse(item[I_TIME]));
                 }
                 else {
