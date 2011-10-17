@@ -8,7 +8,6 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.charts,
- org.eclipsetrader.core.trading,
  org.mozilla.rhino,
  com.tictactec.ta.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

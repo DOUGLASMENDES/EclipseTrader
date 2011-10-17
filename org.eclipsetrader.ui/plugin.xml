@@ -86,6 +86,20 @@
             name="Script"
             restorable="true">
       </view>
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.trading.OrdersView"
+            icon="icons/eview16/orders.png"
+            id="org.eclipsetrader.ui.views.orders"
+            name="%orders.view.name">
+      </view>
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.trading.portfolio.PortfolioViewPart"
+            icon="icons/eview16/portfolio.png"
+            id="org.eclipsetrader.ui.views.portfolio"
+            name="Portfolio">
+      </view>
    </extension>
    <extension
          point="org.eclipsetrader.core.providers">
@@ -295,6 +309,20 @@
             Create a new script.
          </description>
       </wizard>
+      <category
+            id="org.eclipsetrader.ui.trading.alerts"
+            name="%alerts.wizard.category.name">
+      </category>
+      <wizard
+            category="org.eclipsetrader.ui.trading.alerts"
+            class="org.eclipsetrader.ui.internal.trading.TargetPriceWizard"
+            icon="icons/eview16/bell.png"
+            id="org.eclipsetrader.ui.trading.targetprice.alert"
+            name="%targetprice.wizard.name">
+         <description>
+            %targetprice.alerts.description
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -440,6 +468,66 @@
                commandId="org.eclipse.ui.file.properties">
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.trade">
+         <command
+               commandId="org.eclipsetrader.ui.file.trade"
+               label="%trade.menu.label">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.ISecurity">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.tradeWith">
+         <menu
+               id="org.eclipsetrader.ui.file.trade"
+               label="%tradewith.menu.label">
+            <separator
+                  name="additions">
+            </separator>
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.ISecurity">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+               commandId="org.eclipsetrader.ui.alerts.reset"
+               label="%resetalerts.menu.label">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.ISecurity">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.activities">
@@ -502,11 +590,46 @@
             id="org.eclipsetrader.ui.level2.open"
             name="Open Level II">
       </command>
+      <category
+            id="org.eclipsetrader.ui.trade.category"
+            name="%trade.category.name">
+      </category>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            defaultHandler="org.eclipsetrader.ui.internal.trading.TradeHandler"
+            description="%trade.command.description"
+            id="org.eclipsetrader.ui.file.trade"
+            name="%trade.command.name">
+         <commandParameter
+               id="broker"
+               name="%trade.command.broker.parameter.name"
+               optional="true">
+         </commandParameter>
+         <commandParameter
+               id="limitPrice"
+               name="Limit Price"
+               optional="true">
+         </commandParameter>
+         <commandParameter
+               id="side"
+               name="Side"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            defaultHandler="org.eclipsetrader.ui.internal.trading.ResetTriggeredAlerts"
+            description="%resetalerts.command.description"
+            id="org.eclipsetrader.ui.alerts.reset"
+            name="%resetalerts.command.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.startup">
       <startup
             class="org.eclipsetrader.ui.internal.LaunchersStartup">
+      </startup>
+      <startup
+            class="org.eclipsetrader.ui.internal.trading.EarlyStartup">
       </startup>
    </extension>
    <extension
@@ -581,6 +704,36 @@
             </instanceof>
          </enabledWhen>
       </page>
+      <page
+            class="org.eclipsetrader.ui.internal.trading.AlertPropertyPage"
+            id="org.eclipsetrader.ui.trading.propertypages.alerts"
+            name="%alerts.propertypage.name">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipsetrader.core.instruments.Security">
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.trading.MarketTradingPage"
+            id="org.eclipsetrader.ui.trading.market"
+            name="%markettrading.propertypage.name">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipsetrader.core.markets.IMarket">
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.trading.TargetPricePropertyPage"
+            id="org.eclipsetrader.ui.trading.alertpropertypages.targetprice"
+            name="%targetprice.propertypage.name">
+         <enabledWhen>
+            <instanceof
+                  value="org.eclipsetrader.core.internal.trading.TargetPrice">
+            </instanceof>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -590,6 +743,160 @@
                id="org.eclipsetrader.ui.traderPerspective">
          </perspectiveShortcut>
       </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipsetrader.ui.internal.trading.WatchlistAlertDecorator"
+            id="org.eclipsetrader.ui.alerts.decorator"
+            label="%alerts.decorator.label"
+            lightweight="true"
+            state="true">
+         <enablement>
+            <objectClass
+                  name="org.eclipsetrader.ui.internal.views.WatchListViewItem">
+            </objectClass>
+         </enablement>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipsetrader.ui.viewLabelProviders">
+      <viewContribution
+            id="org.eclipsetrader.ui.orders.viewContribution"
+            targetID="org.eclipsetrader.ui.views.orders">
+         <provider
+               class="org.eclipsetrader.ui.trading.AccountColumn"
+               id="org.eclipsetrader.ui.trading.orders.account"
+               name="%account.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.AveragePriceColumn"
+               id="org.eclipsetrader.ui.trading.orders.averageprice"
+               name="%averageprice.provider.name"
+               orientation="right">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.BrokerMessageColumn"
+               id="org.eclipsetrader.ui.trading.orders.message"
+               name="%message.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.BrokerNameColumn"
+               id="org.eclipsetrader.ui.trading.orders.broker"
+               name="%broker.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.DateTimeColumn"
+               id="org.eclipsetrader.ui.trading.orders.datetime"
+               name="%datetime.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.ExpireDateColumn"
+               id="org.eclipsetrader.ui.trading.orders.expire"
+               name="%expire.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.FilledQuantityColumn"
+               id="org.eclipsetrader.ui.trading.orders.filledqty"
+               name="%filledqty.provider.name"
+               orientation="right">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.OrderIdColumn"
+               id="org.eclipsetrader.ui.trading.orders.orderid"
+               name="%orderid.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.PriceColumn"
+               id="org.eclipsetrader.ui.trading.orders.price"
+               name="%price.provider.name"
+               orientation="right">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.QuantityColumn"
+               id="org.eclipsetrader.ui.trading.orders.qty"
+               name="%qty.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.ReferenceColumn"
+               id="org.eclipsetrader.ui.trading.orders.reference"
+               name="%reference.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.RouteColumn"
+               id="org.eclipsetrader.ui.trading.orders.route"
+               name="%route.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.SecurityNameColumn"
+               id="org.eclipsetrader.ui.trading.orders.security"
+               name="%security.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.SideColumn"
+               id="org.eclipsetrader.ui.trading.orders.side"
+               name="%side.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.StatusColumn"
+               id="org.eclipsetrader.ui.trading.orders.status"
+               name="%status.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.StopPriceColumn"
+               id="org.eclipsetrader.ui.trading.orders.stopprice"
+               name="%stopprice.provider.name"
+               orientation="right">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.SymbolColumn"
+               id="org.eclipsetrader.ui.trading.orders.symbol"
+               name="%symbol.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.TypeColumn"
+               id="org.eclipsetrader.ui.trading.orders.type"
+               name="%type.provider.name">
+         </provider>
+         <provider
+               class="org.eclipsetrader.ui.trading.ValidityColumn"
+               id="org.eclipsetrader.ui.trading.orders.validity"
+               name="%validity.provider.name">
+         </provider>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipsetrader.ui.internal.trading.portfolio.BrokerElement"
+            class="org.eclipsetrader.ui.internal.trading.portfolio.BrokerElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IBroker">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipsetrader.ui.internal.trading.portfolio.AccountElement"
+            class="org.eclipsetrader.ui.internal.trading.portfolio.AccountElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IAccount">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="org.eclipsetrader.ui.internal.trading.portfolio.PositionElement"
+            class="org.eclipsetrader.ui.internal.trading.portfolio.PositionElementAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.trading.IPosition">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.instruments.ISecurity">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.instruments.Security">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.feed.ITrade">
+         </adapter>
+      </factory>
    </extension>
 
 </plugin>

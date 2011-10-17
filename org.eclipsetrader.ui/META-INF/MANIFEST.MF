@@ -10,8 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.nebula.jface.cdatetime,
  org.eclipsetrader.core,
- org.eclipse.ui.forms,
- org.eclipsetrader.core.trading
+ org.eclipse.ui.forms
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.ui,
  org.eclipsetrader.ui.internal;x-internal:=true,

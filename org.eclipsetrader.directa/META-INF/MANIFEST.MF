@@ -9,7 +9,6 @@ Require-Bundle: org.eclipse.core.net,
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipsetrader.core,
- org.eclipsetrader.core.trading,
  org.eclipse.core.expressions,
  org.eclipse.equinox.security
 Bundle-ActivationPolicy: lazy

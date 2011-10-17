@@ -16,7 +16,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.ats,
  org.eclipsetrader.core.charts,
- org.eclipsetrader.core.trading,
  org.eclipsetrader.ui,
  org.eclipsetrader.ui.charts,
  org.eclipsetrader.ui.charts.indicators
