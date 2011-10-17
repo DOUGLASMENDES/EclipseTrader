@@ -51,7 +51,7 @@ import org.eclipsetrader.ui.charts.BaseChartViewer;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.LineChart;
 import org.eclipsetrader.ui.charts.LineChart.LineStyle;
-import org.eclipsetrader.ui.charts.indicators.VOLUME;
+import org.eclipsetrader.ui.internal.charts.VOLUME;
 
 public class ReportViewPart extends ViewPart {
 

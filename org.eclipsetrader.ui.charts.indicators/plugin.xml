@@ -239,12 +239,6 @@
             name="ULTOSC">
       </indicator>
       <indicator
-            class="org.eclipsetrader.ui.charts.indicators.VOLUME"
-            description="Volume"
-            id="org.eclipsetrader.indicators.volume"
-            name="VOL">
-      </indicator>
-      <indicator
             category="org.eclipsetrader.ui.charts.indicators.bottom"
             class="org.eclipsetrader.ui.charts.indicators.VAR"
             description="Variance"

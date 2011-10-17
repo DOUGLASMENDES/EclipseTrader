@@ -8,7 +8,6 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipsetrader.core,
- org.eclipsetrader.core.ats,
  org.eclipse.core.variables,
  org.eclipse.core.expressions
 Bundle-ActivationPolicy: lazy

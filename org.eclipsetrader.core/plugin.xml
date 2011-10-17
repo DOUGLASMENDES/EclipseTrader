@@ -21,6 +21,11 @@
             id="org.eclipsetrader.trading.launcher"
             name="Trading Service">
       </launcher>
+      <launcher
+            class="org.eclipsetrader.core.internal.ats.TradingSystemsLauncher"
+            id="org.eclipsetrader.core.ats.launcher"
+            name="Automated Trading Systems">
+      </launcher>
    </extension>
    <extension
          point="org.eclipsetrader.core.trading.alerts">
