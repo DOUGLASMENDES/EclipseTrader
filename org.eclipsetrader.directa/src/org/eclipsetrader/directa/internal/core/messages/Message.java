@@ -27,8 +27,10 @@ public class Message {
     public static final int TIP_ASTACHIUSURA = 9;
     public static final int TIP_TUTTIPREZZI = 10;
     public static final int TIP_BOOK_10 = 11;
+    public static final int TIP_LABEL = 12;
     public static final int TIP_BOOK_15 = 13;
     public static final int TIP_BOOK_20 = 14;
+    public static final int TIP_HEARTBEAT = 200;
     public static final int TIP_ECHO = 0x6E;
 
     private static Log logger = LogFactory.getLog(Message.class);
@@ -89,6 +91,14 @@ public class Message {
                 byte data[] = new byte[9];
                 System.arraycopy(arr, head.lenHeader, data, 0, data.length);
                 return decodeAllPricesMessage(head, data);
+            }
+            case TIP_LABEL: {
+                // Ignore
+                break;
+            }
+            case TIP_HEARTBEAT: {
+                // Ignore
+                break;
             }
             default: {
                 if (!logger.isDebugEnabled()) {

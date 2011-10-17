@@ -15,10 +15,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -55,6 +58,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipsetrader.core.feed.Bar;
+import org.eclipsetrader.core.feed.BarOpen;
 import org.eclipsetrader.core.feed.BookEntry;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IBookEntry;
@@ -70,6 +75,7 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.LastClose;
 import org.eclipsetrader.core.feed.Quote;
 import org.eclipsetrader.core.feed.QuoteDelta;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TodayOHL;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.directa.internal.Activator;
@@ -724,6 +730,19 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             priceData.setHigh(pm.max);
             priceData.setLow(pm.min);
 
+            if ((priceData.getOpen() == null || priceData.getOpen() == 0.0) && pm.val_ult != 0.0) {
+                priceData.setOpen(pm.val_ult);
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(priceData.getTime());
+                c.set(Calendar.HOUR_OF_DAY, 0);
+                c.set(Calendar.MINUTE, 0);
+                c.set(Calendar.SECOND, 0);
+                c.set(Calendar.MILLISECOND, 0);
+                BarOpen bar = new BarOpen(c.getTime(), TimeSpan.days(1), priceData.getOpen());
+                subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), null, bar));
+            }
+
             if (priceData.getOpen() != null && priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
                 subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
             }
@@ -784,6 +803,18 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             priceData.setVolume(ap.qta_aper);
             priceData.setTime(new Date(ap.ora_aper));
             subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
+
+            if (priceData.getClose() != null) {
+                priceData.setLastClose(priceData.getClose());
+                priceData.setClose(null);
+                subscription.setLastClose(new LastClose(priceData.getLastClose(), null));
+            }
+            if (priceData.getOpen() != null) {
+                priceData.setOpen(null);
+                priceData.setHigh(null);
+                priceData.setLow(null);
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
         }
         else if (obj instanceof AstaChiusura) {
             AstaChiusura ac = (AstaChiusura) obj;
@@ -791,6 +822,19 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             priceData.setLast(ac.val_chiu);
             priceData.setTime(new Date(ac.ora_chiu));
             subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
+
+            if (priceData.getClose() == null) {
+                priceData.setClose(ac.val_chiu);
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(priceData.getTime());
+                c.set(Calendar.HOUR_OF_DAY, 0);
+                c.set(Calendar.MINUTE, 0);
+                c.set(Calendar.SECOND, 0);
+                c.set(Calendar.MILLISECOND, 0);
+                Bar bar = new Bar(c.getTime(), TimeSpan.days(1), priceData.getOpen(), priceData.getHigh(), priceData.getLow(), priceData.getClose(), priceData.getVolume());
+                subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), null, bar));
+            }
         }
 
         if (subscription.hasPendingChanges()) {
@@ -876,14 +920,18 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 client.executeMethod(method);
 
                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("snapshot.data")));
 
                 String s5;
                 while ((s5 = bufferedreader.readLine()) != null && !s5.startsWith(s)) {
-                    ;
+                    bufferedWriter.write(s5);
+                    bufferedWriter.write("\r\n");
                 }
 
                 if (s5 != null) {
                     do {
+                        bufferedWriter.write(s5);
+                        bufferedWriter.write("\r\n");
                         if (s5.startsWith(s)) {
                             String as[] = new String[43];
                             for (int i = 0; i < 43; i++) {
@@ -917,6 +965,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                         }
                     } while ((s5 = bufferedreader.readLine()) != null);
                 }
+
+                bufferedWriter.close();
             } catch (Exception e) {
                 Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e); //$NON-NLS-1$
                 Activator.log(status);
@@ -986,8 +1036,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 }
 
                 oldValue = identifierType.getLastClose();
-                priceData.setClose(Double.parseDouble(sVal[PRECEDENTE]));
-                newValue = new LastClose(priceData.getClose(), null);
+                priceData.setLastClose(Double.parseDouble(sVal[PRECEDENTE]));
+                newValue = new LastClose(priceData.getLastClose(), null);
                 if (!newValue.equals(oldValue)) {
                     subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
                     identifierType.setLastClose((ILastClose) newValue);

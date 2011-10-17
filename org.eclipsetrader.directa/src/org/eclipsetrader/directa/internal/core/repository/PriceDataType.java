@@ -15,6 +15,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -34,6 +35,7 @@ public class PriceDataType {
     private Double high;
     private Double low;
     private Double close;
+    private Double lastClose;
 
     public PriceDataType() {
     }
@@ -138,12 +140,21 @@ public class PriceDataType {
         this.low = low;
     }
 
-    @XmlAttribute(name = "close")
+    @XmlTransient
     public Double getClose() {
         return close;
     }
 
     public void setClose(Double close) {
         this.close = close;
+    }
+
+    @XmlAttribute(name = "last-close")
+    public Double getLastClose() {
+        return lastClose;
+    }
+
+    public void setLastClose(Double lastClose) {
+        this.lastClose = lastClose;
     }
 }

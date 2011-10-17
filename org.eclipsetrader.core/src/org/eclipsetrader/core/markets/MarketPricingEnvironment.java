@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.Bar;
-import org.eclipsetrader.core.feed.BarOpen;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IBarOpen;
 import org.eclipsetrader.core.feed.IBook;
@@ -523,22 +522,6 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
                                 pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-
-                                Calendar c = Calendar.getInstance();
-                                if (pricingStatus.trade != null && pricingStatus.trade.getTime() != null) {
-                                    c.setTime(pricingStatus.trade.getTime());
-                                }
-                                c.set(Calendar.HOUR_OF_DAY, 0);
-                                c.set(Calendar.MINUTE, 0);
-                                c.set(Calendar.SECOND, 0);
-                                c.set(Calendar.MILLISECOND, 0);
-
-                                IBarOpen newBarOpen = new BarOpen(c.getTime(), TimeSpan.days(1), pricingStatus.todayOHL.getOpen());
-                                if (!newBarOpen.equals(pricingStatus.todayBarOpen)) {
-                                    pricingStatus.todayBarOpen = newBarOpen;
-                                    System.out.println(String.format("%s: %s", security.getName(), newBarOpen));
-                                    pricingStatus.deltas.add(new PricingDelta(null, newBarOpen));
-                                }
                             }
                         }
                         if (d.getNewValue() instanceof ILastClose) {
@@ -560,7 +543,6 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayBarOpen = (IBarOpen) d.getNewValue();
                                 pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
-                                System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
                             }
                         }
                         if (d.getNewValue() instanceof IBar) {
@@ -568,7 +550,6 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
                             if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
                                 pricingStatus.todayBar = (IBar) d.getNewValue();
                                 pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
-                                System.out.println(String.format("%s: %s", security.getName(), d.getNewValue()));
                             }
                         }
                     }

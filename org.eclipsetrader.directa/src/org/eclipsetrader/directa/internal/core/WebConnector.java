@@ -199,6 +199,7 @@ public class WebConnector {
                     new NameValuePair("TAPPO", "X"), //$NON-NLS-1$ //$NON-NLS-2$
                 });
 
+                logger.debug(method.getURI().toString());
                 client.executeMethod(method);
 
                 Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$
@@ -363,12 +364,12 @@ public class WebConnector {
             query.add(new NameValuePair("MODO", "C")); //$NON-NLS-1$ //$NON-NLS-2$
             method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
-            logger.trace(method.getURI().toString());
+            logger.debug(method.getURI().toString());
             client.executeMethod(method);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
-                logger.trace(inputLine);
+                logger.debug(inputLine);
                 if (inputLine.indexOf("VI TRASMETTO L'ORDINE DI") != -1) { //$NON-NLS-1$
                     ok = true;
                     confirm = true;
@@ -403,12 +404,12 @@ public class WebConnector {
                 query.add(new NameValuePair("MODO", "V")); //$NON-NLS-1$ //$NON-NLS-2$
                 method.setQueryString(query.toArray(new NameValuePair[query.size()]));
 
-                logger.trace(method.getURI().toString());
+                logger.debug(method.getURI().toString());
                 client.executeMethod(method);
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
                 while ((inputLine = in.readLine()) != null) {
-                    logger.trace(inputLine);
+                    logger.debug(inputLine);
                     if (inputLine.indexOf("ORDINE IMMESSO") != -1) { //$NON-NLS-1$
                         ok = true;
                     }
@@ -467,12 +468,12 @@ public class WebConnector {
                 new NameValuePair("FILL", "REVOCA"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
-            logger.trace(method.getURI().toString());
+            logger.debug(method.getURI().toString());
             client.executeMethod(method);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
             while ((inputLine = in.readLine()) != null) {
-                logger.trace(inputLine);
+                logger.debug(inputLine);
                 if (inputLine.indexOf("INOLTRATA LA RICHIESTA DI REVOCA") != -1 || inputLine.indexOf("RICH.ANN.") != -1) { //$NON-NLS-1$ //$NON-NLS-2$
                     ok = true;
                 }
