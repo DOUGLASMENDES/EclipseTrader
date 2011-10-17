@@ -7,7 +7,6 @@ Bundle-Activator: org.eclipsetrader.core.internal.ats.Activator
 Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipsetrader.core,
- org.eclipsetrader.core.charts,
  org.mozilla.rhino,
  com.tictactec.ta.lib
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

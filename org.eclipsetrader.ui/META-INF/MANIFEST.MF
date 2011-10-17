@@ -6,15 +6,20 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.ui.internal.UIActivator
 Bundle-Vendor: %bundleVendor
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.expressions,
  org.eclipse.ui,
+ org.eclipse.ui.forms,
  org.eclipse.nebula.widgets.cdatetime,
+ org.eclipse.nebula.widgets.pshelf,
  org.eclipse.nebula.jface.cdatetime,
- org.eclipsetrader.core,
- org.eclipse.ui.forms
+ org.eclipsetrader.core
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.ui,
+ org.eclipsetrader.ui.charts,
  org.eclipsetrader.ui.internal;x-internal:=true,
  org.eclipsetrader.ui.internal.adapters;x-internal:=true,
+ org.eclipsetrader.ui.internal.charts;x-internal:=true,
+ org.eclipsetrader.ui.internal.charts.views;x-internal:=true,
  org.eclipsetrader.ui.internal.editors;x-internal:=true,
  org.eclipsetrader.ui.internal.handlers;x-internal:=true,
  org.eclipsetrader.ui.internal.markets;x-internal:=true,

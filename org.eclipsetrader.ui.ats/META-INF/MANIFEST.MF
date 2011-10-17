@@ -15,9 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipsetrader.core,
  org.eclipsetrader.core.ats,
- org.eclipsetrader.core.charts,
  org.eclipsetrader.ui,
- org.eclipsetrader.ui.charts,
  org.eclipsetrader.ui.charts.indicators
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

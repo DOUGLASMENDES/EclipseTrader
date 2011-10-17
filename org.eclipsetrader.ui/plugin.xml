@@ -2,6 +2,7 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="org.eclipsetrader.ui.viewLabelProviders" name="View Label Providers" schema="schema/viewLabelProviders.exsd"/>
+   <extension-point id="org.eclipsetrader.ui.indicators" name="Chart Indicators" schema="schema/indicators.exsd"/>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -9,6 +10,12 @@
             icon="icons/eview16/trader_persp.png"
             id="org.eclipsetrader.ui.traderPerspective"
             name="%traderPerspectiveName">
+      </perspective>
+      <perspective
+            class="org.eclipsetrader.ui.internal.charts.ChartsPerspective"
+            icon="icons/eview16/chart_persp.png"
+            id="org.eclipsetrader.ui.charts"
+            name="%charts.perspective.name">
       </perspective>
    </extension>
    <extension
@@ -27,6 +34,17 @@
             class="org.eclipsetrader.ui.internal.preferences.LaunchersPreferences"
             id="org.eclipsetrader.ui.preferences.launchers"
             name="%launchersPreferencesPageName">
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.views.GeneralPreferencesPage"
+            id="org.eclipsetrader.ui.charts.general"
+            name="%charts.preferencepage.name">
+      </page>
+      <page
+            category="org.eclipsetrader.ui.charts.general"
+            class="org.eclipsetrader.ui.internal.charts.DefaultsPage"
+            id="org.eclipsetrader.ui.charts.defaults"
+            name="Default Values">
       </page>
    </extension>
    <extension
@@ -99,6 +117,21 @@
             icon="icons/eview16/portfolio.png"
             id="org.eclipsetrader.ui.views.portfolio"
             name="Portfolio">
+      </view>
+      <view
+            allowMultiple="true"
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.charts.views.ChartViewPart"
+            icon="icons/eview16/chart.png"
+            id="org.eclipsetrader.ui.chart"
+            name="%charts.view.name">
+      </view>
+      <view
+            category="org.eclipsetrader.ui"
+            class="org.eclipsetrader.ui.internal.charts.views.PaletteView"
+            icon="icons/eview16/palette.png"
+            id="org.eclipsetrader.ui.charts.palette"
+            name="%charts.palette.name">
       </view>
    </extension>
    <extension
@@ -418,6 +451,51 @@
             </and>
          </activeWhen>
       </handler>
+      <handler
+            commandId="org.eclipsetrader.ui.file.open.chart">
+         <class
+               class="org.eclipsetrader.ui.internal.charts.views.ChartOpenHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate
+                     operator="and">
+                  <adapt
+                        type="org.eclipsetrader.core.instruments.Security">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
+      <handler
+            commandId="org.eclipse.ui.file.open">
+         <class class="org.eclipsetrader.ui.internal.charts.views.ChartOpenHandler"></class>
+         <activeWhen>
+            <and>
+               <iterate
+                     operator="and">
+                  <adapt
+                        type="org.eclipsetrader.core.instruments.Security">
+                  </adapt>
+               </iterate>
+               <with
+                     variable="activeContexts">
+                  <iterate
+                        operator="or">
+                     <equals
+                           value="org.eclipsetrader.ui.charts.trigger">
+                     </equals>
+                  </iterate>
+               </with>
+               <count
+                     value="+">
+               </count>
+            </and>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -528,6 +606,25 @@
             </visibleWhen>
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
+         <command
+               commandId="org.eclipsetrader.ui.file.open.chart">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="+">
+                  </count>
+                  <iterate
+                        operator="and">
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.Security">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.activities">
@@ -542,6 +639,10 @@
       <activityPatternBinding
             activityId="org.eclipsetrader.activities.hideContributions"
             pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.editors.script">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui.charts/org.eclipsetrader.ui.chart">
       </activityPatternBinding>
    </extension>
    <extension
@@ -558,6 +659,16 @@
             id="org.eclipse.ui.Basic"
             name="General">
       </category>
+      <wizard
+            category="org.eclipse.ui.Basic"
+            class="org.eclipsetrader.ui.internal.charts.DataUpdateWizard"
+            icon="icons/eview16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.update"
+            name="%importdata.wizard.name">
+         <description>
+            %importdata.wizard.description
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -580,6 +691,76 @@
                id="org.eclipsetrader.ui.launcher.run"
                label="Start"
                style="pulldown"
+               toolbarPath="additions">
+         </action>
+      </actionSet>
+      <actionSet
+            id="org.eclipsetrader.ui.charts.trigger"
+            label="Trigger Action Set">
+      </actionSet>
+      <actionSet
+            description="%drawingtools.actionset.description"
+            id="org.eclipsetrader.ui.charts.tools"
+            label="%tools.actionset.label">
+         <action
+               icon="icons/etool16/fiboarc.gif"
+               id="org.eclipsetrader.ui.charts.tools.fiboarc"
+               label="%fiboarc.action.label"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/fanline.gif"
+               id="org.eclipsetrader.ui.charts.tools.fanline"
+               label="%fanline.action.label"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/fiboline.gif"
+               id="org.eclipsetrader.ui.charts.tools.fiboline"
+               label="%fiboline.action.label"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/line.gif"
+               id="org.eclipsetrader.ui.charts.tools.line"
+               label="%linea.action.label"
+               retarget="true"
+               style="toggle"
+               toolbarPath="additions">
+         </action>
+      </actionSet>
+      <actionSet
+            description="%zoomtools.actionset.description"
+            id="org.eclipsetrader.ui.charts.zoom"
+            label="%zoomtools.actionset.label">
+         <action
+               icon="icons/etool16/zoom_out.gif"
+               id="org.eclipsetrader.ui.charts.zoomOut"
+               label="%zoomout.action.label"
+               retarget="true"
+               style="push"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/zoom_reset.gif"
+               id="org.eclipsetrader.ui.charts.zoomReset"
+               label="%normalsize.action.label"
+               retarget="true"
+               style="push"
+               toolbarPath="additions">
+         </action>
+         <action
+               icon="icons/etool16/zoom_in.gif"
+               id="org.eclipsetrader.ui.charts.zoomIn"
+               label="%zoomin.action.label"
+               retarget="true"
+               style="push"
                toolbarPath="additions">
          </action>
       </actionSet>
@@ -622,6 +803,24 @@
             id="org.eclipsetrader.ui.alerts.reset"
             name="%resetalerts.command.name">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%openchart.command.description"
+            id="org.eclipsetrader.ui.file.open.chart"
+            name="%openchart.command.name">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomIn"
+            name="%zoomin.command.name">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomOut"
+            name="%zoomout.command.name">
+      </command>
+      <command
+            id="org.eclipsetrader.ui.charts.zoomReset"
+            name="%normalsize.command.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.startup">
@@ -630,6 +829,9 @@
       </startup>
       <startup
             class="org.eclipsetrader.ui.internal.trading.EarlyStartup">
+      </startup>
+      <startup
+            class="org.eclipsetrader.ui.internal.charts.EarlyStartup">
       </startup>
    </extension>
    <extension
@@ -734,6 +936,28 @@
             </instanceof>
          </enabledWhen>
       </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.tools.LinePropertiesPage"
+            id="org.eclipsetrader.ui.charts.tools.line"
+            name="%line.propertypage.name">
+         <enabledWhen>
+               <test
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.internal.charts.tools.LineToolFactory">
+               </test>
+         </enabledWhen>
+      </page>
+      <page
+            class="org.eclipsetrader.ui.internal.charts.views.MainPropertiesPage"
+            id="org.eclipsetrader.ui.charts.default.general"
+            name="General">
+         <enabledWhen>
+               <test
+                     property="org.eclipsetrader.ui.adapts"
+                     value="org.eclipsetrader.ui.internal.charts.views.MainChartFactory">
+               </test>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -741,6 +965,9 @@
             targetID="*">
          <perspectiveShortcut
                id="org.eclipsetrader.ui.traderPerspective">
+         </perspectiveShortcut>
+         <perspectiveShortcut
+               id="org.eclipsetrader.ui.charts">
          </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
@@ -897,6 +1124,93 @@
                type="org.eclipsetrader.core.feed.ITrade">
          </adapter>
       </factory>
+   </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <category
+            icon="icons/obj16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.indicators.top"
+            name="%topindicators.category.name">
+      </category>
+      <category
+            icon="icons/obj16/linecharticon.gif"
+            id="org.eclipsetrader.ui.charts.indicators.bottom"
+            name="%bottomindicators.category.name">
+      </category>
+      <category
+            icon="icons/obj16/build_exec.png"
+            id="org.eclipsetrader.ui.charts.tools"
+            name="%tools.category.name">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipsetrader.ui.indicators">
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.LineToolFactory"
+            icon="icons/etool16/line.gif"
+            id="org.eclipsetrader.ui.charts.tools.line"
+            name="%line.indicator.name">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FibolineToolFactory"
+            icon="icons/etool16/fiboline.gif"
+            id="org.eclipsetrader.ui.charts.tools.fiboline"
+            name="%fiboline.indicator.name">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FanlineToolFactory"
+            icon="icons/etool16/fanline.gif"
+            id="org.eclipsetrader.ui.charts.tools.fanline"
+            name="%fanline.indicator.name">
+      </indicator>
+      <indicator
+            category="org.eclipsetrader.ui.charts.tools"
+            class="org.eclipsetrader.ui.internal.charts.tools.FiboarcToolFactory"
+            icon="icons/etool16/fiboarc.gif"
+            id="org.eclipsetrader.ui.charts.tools.fiboarc"
+            name="%fiboarc.indicator.name">
+      </indicator>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
+            id="org.eclipsetrader.ui.charts.propertyTester1"
+            namespace="org.eclipsetrader.ui"
+            properties="id,chartObjectFactory,adapts"
+            type="org.eclipsetrader.ui.charts.ChartViewItem">
+      </propertyTester>
+      <propertyTester
+            class="org.eclipsetrader.ui.internal.charts.ChartViewItemPropertyTester"
+            id="org.eclipsetrader.ui.charts.propertyTester2"
+            namespace="org.eclipsetrader.ui"
+            properties="id,chartObjectFactory,adapts"
+            type="org.eclipse.core.runtime.IAdaptable">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomIn"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_ADD">
+      </key>
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomOut"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_SUBTRACT">
+      </key>
+      <key
+            commandId="org.eclipsetrader.ui.charts.zoomReset"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="NUMPAD_EQUAL">
+      </key>
    </extension>
 
 </plugin>
