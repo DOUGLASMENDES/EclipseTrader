@@ -23,7 +23,7 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.TimeSpan.Units;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartLoadJob extends Job {
 
@@ -57,8 +57,8 @@ public class ChartLoadJob extends Job {
         try {
             buildHistory();
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.ChartLoadJob_ExceptionMessage + security.getName(), e);
-            ChartsUIActivator.log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.ChartLoadJob_ExceptionMessage + security.getName(), e);
+            UIActivator.log(status);
         } finally {
             monitor.done();
         }
@@ -114,7 +114,7 @@ public class ChartLoadJob extends Job {
     }
 
     IHistory getHistoryFor(ISecurity security) {
-        IRepositoryService repository = ChartsUIActivator.getDefault().getRepositoryService();
+        IRepositoryService repository = UIActivator.getDefault().getRepositoryService();
         return repository.getHistoryFor(security);
     }
 

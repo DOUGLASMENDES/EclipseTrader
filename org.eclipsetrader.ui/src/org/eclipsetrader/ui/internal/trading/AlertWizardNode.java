@@ -21,7 +21,7 @@ import org.eclipse.jface.wizard.IWizardNode;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipsetrader.core.internal.trading.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class AlertWizardNode implements IWizardNode {
 
@@ -67,8 +67,8 @@ public class AlertWizardNode implements IWizardNode {
                 }
             }
         } catch (CoreException e) {
-            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, Messages.AlertWizardNode_CreateErrorMessage, e);
-            Activator.log(status);
+            Status status = new Status(IStatus.WARNING, UIActivator.PLUGIN_ID, 0, Messages.AlertWizardNode_CreateErrorMessage, e);
+            UIActivator.log(status);
         }
         return wizard;
     }

@@ -17,6 +17,7 @@ import org.eclipsetrader.core.trading.IAlert;
 import org.eclipsetrader.core.trading.IAlertListener;
 import org.eclipsetrader.ui.INotification;
 import org.eclipsetrader.ui.INotificationService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -46,7 +47,7 @@ public class AlertNotificationListener implements IAlertListener {
         }
         notification.setDescription(description);
 
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
         ServiceReference serviceReference = context.getServiceReference(INotificationService.class.getName());
         if (serviceReference != null) {
             INotificationService notificationService = (INotificationService) context.getService(serviceReference);

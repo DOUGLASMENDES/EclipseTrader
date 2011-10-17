@@ -34,7 +34,7 @@ import org.eclipsetrader.core.internal.ats.TradingSystemProperties;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -121,7 +121,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
         TradingSystem system = (TradingSystem) getElement().getAdapter(TradingSystem.class);
         TradingSystemProperties properties = system.getProperties();
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
         ServiceReference<ITradingService> serviceReference = bundleContext.getServiceReference(ITradingService.class);
         ITradingService tradingService = bundleContext.getService(serviceReference);
 

@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipsetrader.ui.Util;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SimulationParametersDialog extends Dialog {
 
@@ -45,7 +46,7 @@ public class SimulationParametersDialog extends Dialog {
     public SimulationParametersDialog(Shell parentShell) {
         super(parentShell);
 
-        rootDialogSettings = Activator.getDefault().getDialogSettings();
+        rootDialogSettings = UIActivator.getDefault().getDialogSettings();
     }
 
     /* (non-Javadoc)

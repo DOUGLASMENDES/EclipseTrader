@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.ats.Activator;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IPosition;
@@ -139,8 +139,8 @@ public class Account implements IAccount {
             try {
                 ((IPositionListener) l[i]).positionOpened(event);
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error notifying listeners", t);
+                CoreActivator.log(status);
             }
         }
     }
@@ -153,8 +153,8 @@ public class Account implements IAccount {
             try {
                 ((IPositionListener) l[i]).positionClosed(event);
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error notifying listeners", t);
+                CoreActivator.log(status);
             }
         }
     }
@@ -167,8 +167,8 @@ public class Account implements IAccount {
             try {
                 ((IPositionListener) l[i]).positionChanged(event);
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error notifying listeners", t);
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error notifying listeners", t);
+                CoreActivator.log(status);
             }
         }
     }

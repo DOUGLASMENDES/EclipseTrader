@@ -39,3 +39,4 @@ Export-Package: org.eclipsetrader.ui,
  org.eclipsetrader.ui.navigator
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: global

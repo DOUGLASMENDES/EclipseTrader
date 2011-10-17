@@ -7,6 +7,8 @@ Bundle-Activator: org.eclipsetrader.core.internal.CoreActivator
 Bundle-Vendor: Eclipsetrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.databinding.observable,
+ javax.xml.bind,
+ org.apache.commons.logging,
  org.mozilla.rhino,
  com.tictactec.ta.lib
 Bundle-ActivationPolicy: lazy
@@ -21,7 +23,6 @@ Export-Package: org.eclipsetrader.core,
  org.eclipsetrader.core.internal;x-friends:="org.eclipsetrader.ui",
  org.eclipsetrader.core.internal.ats;x-friends:="org.eclipsetrader.ui.ats",
  org.eclipsetrader.core.internal.ats.repository;x-friends:="org.eclipsetrader.ui.ats",
- org.eclipsetrader.core.internal.charts;x-internal:=true,
  org.eclipsetrader.core.internal.charts.repository,
  org.eclipsetrader.core.internal.feed;x-internal:=true,
  org.eclipsetrader.core.internal.markets;x-friends:="org.eclipsetrader.ui",
@@ -31,14 +32,4 @@ Export-Package: org.eclipsetrader.core,
  org.eclipsetrader.core.repositories,
  org.eclipsetrader.core.trading,
  org.eclipsetrader.core.views
-Import-Package: javax.xml.bind;version="[2.1.0,3.0.0)",
- javax.xml.bind.annotation;version="[2.1.0,3.0.0)",
- javax.xml.bind.annotation.adapters;version="[2.1.0,3.0.0)",
- javax.xml.bind.attachment;version="[2.1.0,3.0.0)",
- javax.xml.bind.helpers;version="[2.1.0,3.0.0)",
- javax.xml.bind.util;version="[2.1.0,3.0.0)",
- javax.xml.stream;version="[2.1.0,3.0.0)",
- javax.xml.stream.events;version="[2.1.0,3.0.0)",
- javax.xml.stream.util;version="[2.1.0,3.0.0)",
- org.apache.commons.logging;version="[1.1.0,1.2.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

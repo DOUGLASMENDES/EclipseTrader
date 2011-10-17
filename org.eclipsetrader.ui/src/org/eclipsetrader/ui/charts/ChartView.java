@@ -27,7 +27,7 @@ import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.core.views.ViewEvent;
 import org.eclipsetrader.core.views.ViewItemDelta;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartView implements IView {
 
@@ -117,8 +117,8 @@ public class ChartView implements IView {
             try {
                 ((IViewChangeListener) l[i]).viewChanged(event);
             } catch (Throwable e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartView_NotificationErrorMessage, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartView_NotificationErrorMessage, e);
+                UIActivator.log(status);
             }
         }
     }

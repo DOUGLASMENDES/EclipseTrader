@@ -38,6 +38,7 @@ import org.eclipsetrader.core.internal.trading.MarketBrokerAdapterFactory;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -144,35 +145,35 @@ public class MarketTradingPage extends PropertyPage implements IWorkbenchPropert
     }
 
     protected IFeedService getFeedService() {
-        if (Activator.getDefault() == null) {
+        if (UIActivator.getDefault() == null) {
             return null;
         }
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
             ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
             IFeedService service = (IFeedService) context.getService(serviceReference);
             context.ungetService(serviceReference);
             return service;
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingFeedService, e);
-            Activator.getDefault().getLog().log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingFeedService, e);
+            UIActivator.getDefault().getLog().log(status);
         }
         return null;
     }
 
     protected ITradingService getTradingService() {
-        if (Activator.getDefault() == null) {
+        if (UIActivator.getDefault() == null) {
             return null;
         }
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
             ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
             ITradingService service = (ITradingService) context.getService(serviceReference);
             context.ungetService(serviceReference);
             return service;
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingTradingService, e);
-            Activator.getDefault().getLog().log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.MarketTradingPage_ErrorReadingTradingService, e);
+            UIActivator.getDefault().getLog().log(status);
         }
         return null;
     }

@@ -16,7 +16,7 @@ import java.net.URI;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipsetrader.core.ats.IStrategy;
-import org.eclipsetrader.core.internal.ats.Activator;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.osgi.framework.BundleContext;
@@ -55,7 +55,7 @@ public class StrategyAdapter extends XmlAdapter<String, IStrategy> {
             return null;
         }
 
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
         ServiceReference serviceRef = context.getServiceReference(IRepositoryService.class);
         try {
             IRepositoryService repositoryService = (IRepositoryService) context.getService(serviceRef);

@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
@@ -187,7 +188,7 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
 
         IBroker connector = null;
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference serviceReference = context.getServiceReference(ITradingService.class.getName());
 
             ITradingService tradingService = (ITradingService) context.getService(serviceReference);
@@ -195,13 +196,13 @@ public class BrokerAdapter extends XmlAdapter<String, IBroker> {
 
             context.ungetService(serviceReference);
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading feed service", e);
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
+            CoreActivator.log(status);
         }
 
         if (connector == null) {
-            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load broker " + v, null);
-            Activator.log(status);
+            Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load broker " + v, null);
+            CoreActivator.log(status);
             return new FailsafeBroker(v);
         }
 

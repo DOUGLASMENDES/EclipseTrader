@@ -49,6 +49,7 @@ import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 @SuppressWarnings("restriction")
 public class DataImportJob extends Job {
@@ -94,19 +95,19 @@ public class DataImportJob extends Job {
         ISecurity[] filteredList = getFilteredSecurities(securities);
         monitor.beginTask(getName(), filteredList.length);
 
-        preferences = ChartsUIActivator.getDefault().getPreferenceStore();
+        preferences = UIActivator.getDefault().getPreferenceStore();
 
         IBackfillConnector defaultBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
         IBackfillConnector defaultIntradayBackfillConnector = CoreActivator.getDefault().getDefaultBackfillConnector();
 
         try {
-            IRepositoryService repositoryService = ChartsUIActivator.getDefault().getRepositoryService();
-            IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
+            IRepositoryService repositoryService = UIActivator.getDefault().getRepositoryService();
+            IMarketService marketService = UIActivator.getDefault().getMarketService();
 
             for (ISecurity security : filteredList) {
                 if (monitor.isCanceled()) {
                     if (results.size() != 0) {
-                        return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
+                        return new MultiStatus(UIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
                     }
                     return Status.CANCEL_STATUS;
                 }
@@ -169,7 +170,7 @@ public class DataImportJob extends Job {
                     for (TimeSpan currentTimeSpan : timeSpan) {
                         if (monitor.isCanceled()) {
                             if (results.size() != 0) {
-                                return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
+                                return new MultiStatus(UIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
                             }
                             return Status.CANCEL_STATUS;
                         }
@@ -192,10 +193,10 @@ public class DataImportJob extends Job {
 
                         if (!dataMap.containsKey(currentTimeSpan)) {
                             String message = NLS.bind(Messages.DataImportJob_DownloadDataErrorMessage, new Object[] {
-                                    currentTimeSpan.toString(),
-                                    security.getName()
+                                currentTimeSpan.toString(),
+                                security.getName()
                             });
-                            Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, message, null);
+                            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, message, null);
                             results.add(status);
                         }
                     }
@@ -252,7 +253,7 @@ public class DataImportJob extends Job {
                                         ((HistoryDay) intradayHistory).setOHLC(ohlc);
                                     }
                                     repositoryService.saveAdaptable(new IHistory[] {
-                                            history, intradayHistory
+                                        history, intradayHistory
                                     }, defaultRepository);
                                 }
                                 else {
@@ -293,36 +294,36 @@ public class DataImportJob extends Job {
                         }
                     }
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.DataImportJob_SecurityDownloadErrorMessage + security.getName(), e);
+                    Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.DataImportJob_SecurityDownloadErrorMessage + security.getName(), e);
                     results.add(status);
                 }
 
                 monitor.worked(1);
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, Messages.DataImportJob_DataErrorMessage, e);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.DataImportJob_DataErrorMessage, e);
             results.add(status);
         } finally {
             monitor.done();
         }
 
         if (results.size() != 0) {
-            return new MultiStatus(ChartsUIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
+            return new MultiStatus(UIActivator.PLUGIN_ID, 0, results.toArray(new IStatus[results.size()]), Messages.DataImportJob_DownloadErrorMessage, null);
         }
         return Status.OK_STATUS;
     }
 
     Date getDefaultStartDate() throws ParseException {
-        int method = preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD);
+        int method = preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_METHOD);
 
         if (method == 0) {
-            String s = preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE);
+            String s = preferences.getString(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE);
             return new SimpleDateFormat("yyyyMMdd").parse(s);
         }
         else if (method == 1) {
             Calendar c = Calendar.getInstance();
             c.set(Calendar.MILLISECOND, 0);
-            c.add(Calendar.YEAR, -preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+            c.add(Calendar.YEAR, -preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_YEARS));
             return c.getTime();
         }
 

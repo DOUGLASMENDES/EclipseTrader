@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class NewAlertWizard extends Wizard {
 
@@ -42,7 +43,7 @@ public class NewAlertWizard extends Wizard {
      */
     @Override
     public Image getDefaultPageImage() {
-        return Activator.getDefault().getImageRegistry().get(Activator.ALERT_WIZARD_IMAGE);
+        return UIActivator.getDefault().getImageRegistry().get(UIActivator.ALERT_WIZARD_IMAGE);
     }
 
     /* (non-Javadoc)

@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipsetrader.ui.Util;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class DefaultsPage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -51,7 +52,7 @@ public class DefaultsPage extends PreferencePage implements IWorkbenchPreference
      */
     @Override
     public void init(IWorkbench workbench) {
-        setPreferenceStore(ChartsUIActivator.getDefault().getPreferenceStore());
+        setPreferenceStore(UIActivator.getDefault().getPreferenceStore());
     }
 
     /* (non-Javadoc)
@@ -96,22 +97,22 @@ public class DefaultsPage extends PreferencePage implements IWorkbenchPreference
     protected void performDefaults() {
         IPreferenceStore preferences = getPreferenceStore();
 
-        int v = preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD);
+        int v = preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_METHOD);
         useStartDate.setSelection(v == 0);
         useYears.setSelection(v == 1);
 
-        String s = preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE);
+        String s = preferences.getString(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE);
         if (!s.equals("")) {
             try {
                 Date date = prefsDateFormat.parse(s);
                 startDate.setSelection(date);
             } catch (ParseException e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error parsing start date " + s, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error parsing start date " + s, e);
+                UIActivator.log(status);
             }
         }
 
-        years.setSelection(preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+        years.setSelection(preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_YEARS));
 
         super.performDefaults();
     }
@@ -124,20 +125,20 @@ public class DefaultsPage extends PreferencePage implements IWorkbenchPreference
         IPreferenceStore preferences = getPreferenceStore();
 
         if (useStartDate.getSelection()) {
-            preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 0);
+            preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_METHOD, 0);
         }
         else if (useYears.getSelection()) {
-            preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
+            preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
         }
 
         if (startDate.getSelection() != null) {
-            preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, prefsDateFormat.format(startDate.getSelection()));
+            preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE, prefsDateFormat.format(startDate.getSelection()));
         }
         else {
-            preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "");
+            preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "");
         }
 
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS, years.getSelection());
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_YEARS, years.getSelection());
 
         return super.performOk();
     }

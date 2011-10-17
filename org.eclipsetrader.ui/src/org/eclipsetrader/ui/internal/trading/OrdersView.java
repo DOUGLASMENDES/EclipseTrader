@@ -66,6 +66,7 @@ import org.eclipsetrader.core.trading.IOrderStatus;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.trading.AveragePriceColumn;
 import org.eclipsetrader.ui.trading.DateTimeColumn;
 import org.eclipsetrader.ui.trading.FilledQuantityColumn;
@@ -193,21 +194,21 @@ public class OrdersView extends ViewPart {
         }
         this.memento = memento;
 
-        IDialogSettings pluginDialogSettings = Activator.getDefault().getDialogSettings();
+        IDialogSettings pluginDialogSettings = UIActivator.getDefault().getDialogSettings();
         dialogSettings = pluginDialogSettings.getSection(VIEW_ID);
         if (dialogSettings == null) {
             dialogSettings = pluginDialogSettings.addNewSection(VIEW_ID);
             dialogSettings.put("VISIBLE_COLUMNS", new String[] { //$NON-NLS-1$
-                    OrderIdColumn.COLUMN_ID,
-                    DateTimeColumn.COLUMN_ID,
-                    SecurityNameColumn.COLUMN_ID,
-                    SideColumn.COLUMN_ID,
-                    TypeColumn.COLUMN_ID,
-                    QuantityColumn.COLUMN_ID,
-                    PriceColumn.COLUMN_ID,
-                    FilledQuantityColumn.COLUMN_ID,
-                    AveragePriceColumn.COLUMN_ID,
-                    StatusColumn.COLUMN_ID
+                OrderIdColumn.COLUMN_ID,
+                DateTimeColumn.COLUMN_ID,
+                SecurityNameColumn.COLUMN_ID,
+                SideColumn.COLUMN_ID,
+                TypeColumn.COLUMN_ID,
+                QuantityColumn.COLUMN_ID,
+                PriceColumn.COLUMN_ID,
+                FilledQuantityColumn.COLUMN_ID,
+                AveragePriceColumn.COLUMN_ID,
+                StatusColumn.COLUMN_ID
             });
         }
 
@@ -352,8 +353,8 @@ public class OrdersView extends ViewPart {
 
         getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
 
-        if (Activator.getDefault() != null) {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        if (UIActivator.getDefault() != null) {
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
             serviceReference = context.getServiceReference(ITradingService.class.getName());
             if (serviceReference != null) {
                 service = (ITradingService) context.getService(serviceReference);
@@ -381,7 +382,7 @@ public class OrdersView extends ViewPart {
         }
 
         if (serviceReference != null) {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
             context.ungetService(serviceReference);
         }
 
@@ -554,8 +555,8 @@ public class OrdersView extends ViewPart {
                     }
                     viewerColumn.setLabelProvider(labelProvider);
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, Messages.OrdersView_ErrorCreatingLabelProvider + enabledId[i], e);
-                    Activator.log(status);
+                    Status status = new Status(IStatus.WARNING, UIActivator.PLUGIN_ID, Messages.OrdersView_ErrorCreatingLabelProvider + enabledId[i], e);
+                    UIActivator.log(status);
                 }
             }
         } finally {

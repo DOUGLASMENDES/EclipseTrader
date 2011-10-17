@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.ILauncher;
 import org.eclipsetrader.core.ats.ITradingSystemService;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -61,7 +62,7 @@ public class TradingSystemsLauncher implements ILauncher, IExecutableExtension {
     @Override
     public void launch(IProgressMonitor monitor) {
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference<ITradingSystemService> serviceReference = context.getServiceReference(ITradingSystemService.class);
             if (serviceReference != null) {
                 ITradingSystemService service = context.getService(serviceReference);
@@ -69,8 +70,8 @@ public class TradingSystemsLauncher implements ILauncher, IExecutableExtension {
                 context.ungetService(serviceReference);
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error starting trading system service", e);
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error starting trading system service", e);
+            CoreActivator.log(status);
         }
     }
 
@@ -80,7 +81,7 @@ public class TradingSystemsLauncher implements ILauncher, IExecutableExtension {
     @Override
     public void terminate(IProgressMonitor monitor) {
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference<ITradingSystemService> serviceReference = context.getServiceReference(ITradingSystemService.class);
             if (serviceReference != null) {
                 ITradingSystemService service = context.getService(serviceReference);
@@ -88,8 +89,8 @@ public class TradingSystemsLauncher implements ILauncher, IExecutableExtension {
                 context.ungetService(serviceReference);
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error stopping trading system service", e);
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error stopping trading system service", e);
+            CoreActivator.log(status);
         }
     }
 }

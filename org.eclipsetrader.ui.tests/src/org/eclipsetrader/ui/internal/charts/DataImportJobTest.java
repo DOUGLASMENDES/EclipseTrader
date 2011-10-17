@@ -22,13 +22,14 @@ import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.FeedProperties;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class DataImportJobTest extends TestCase {
 
     public void testFilterSecuritiesWithoutFeed() throws Exception {
         ISecurity[] security = new ISecurity[] {
-                new Security("Test1", null),
-                new Security("Test2", new FeedIdentifier("TEST", new FeedProperties())),
+            new Security("Test1", null),
+            new Security("Test2", new FeedIdentifier("TEST", new FeedProperties())),
         };
 
         DataImportJob job = new DataImportJob(security, 0, null, null, null);
@@ -39,8 +40,8 @@ public class DataImportJobTest extends TestCase {
 
     public void testSortFilterSecurities() throws Exception {
         ISecurity[] security = new ISecurity[] {
-                new Security("Test2", new FeedIdentifier("TEST", new FeedProperties())),
-                new Security("Test1", new FeedIdentifier("TEST", new FeedProperties())),
+            new Security("Test2", new FeedIdentifier("TEST", new FeedProperties())),
+            new Security("Test1", new FeedIdentifier("TEST", new FeedProperties())),
         };
 
         DataImportJob job = new DataImportJob(security, 0, null, null, null);
@@ -52,12 +53,12 @@ public class DataImportJobTest extends TestCase {
 
     public void testGetDefaultYearsStartDate() throws Exception {
         PreferenceStore preferences = new PreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
 
         Calendar c = Calendar.getInstance();
         c.set(Calendar.MILLISECOND, 0);
-        c.add(Calendar.YEAR, -preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+        c.add(Calendar.YEAR, -preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_YEARS));
 
         DataImportJob job = new DataImportJob(new Security("Test", null), 0, null, null, null);
         job.preferences = preferences;
@@ -67,10 +68,10 @@ public class DataImportJobTest extends TestCase {
 
     public void testGetDefaultStartDate() throws Exception {
         PreferenceStore preferences = new PreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 0);
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20010512");
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_METHOD, 0);
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20010512");
 
-        Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
+        Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
 
         DataImportJob job = new DataImportJob(new Security("Test", null), 0, null, null, null);
         job.preferences = preferences;

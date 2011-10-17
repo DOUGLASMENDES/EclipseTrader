@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.IUserProperties;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStore;
@@ -194,20 +195,20 @@ public class SecurityAdapter extends XmlAdapter<String, ISecurity> {
         URI uri = new URI(v);
         if (repositoryService == null) {
             try {
-                BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+                BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
                 ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
                 repositoryService = (IRepositoryService) context.getService(serviceReference);
                 context.ungetService(serviceReference);
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading repository service", e);
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading repository service", e);
+                CoreActivator.log(status);
             }
         }
 
         ISecurity security = repositoryService != null ? repositoryService.getSecurityFromURI(uri) : null;
         if (security == null) {
-            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
-            Activator.log(status);
+            Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load security " + uri.toString(), null);
+            CoreActivator.log(status);
             return new FailsafeSecurity(uri);
         }
 

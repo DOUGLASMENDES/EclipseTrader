@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.trading.IBroker;
@@ -59,7 +60,7 @@ public class TradingService implements ITradingService {
     }
 
     public void startUp() {
-        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.BROKERS_EXTENSION_ID);
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.BROKERS_EXTENSION_ID);
         if (extensionPoint != null) {
             IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
             for (int j = 0; j < configElements.length; j++) {
@@ -67,8 +68,8 @@ public class TradingService implements ITradingService {
                     IBroker connector = (IBroker) configElements[j].createExecutableExtension("class");
                     brokers.put(connector.getId(), connector);
                 } catch (CoreException e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
-                    Activator.log(status);
+                    Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error creating broker instance with id " + configElements[j].getAttribute("id"), e);
+                    CoreActivator.log(status);
                 }
             }
         }
@@ -114,7 +115,7 @@ public class TradingService implements ITradingService {
         IBroker broker = null;
 
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
             if (serviceReference != null) {
                 IMarketService service = (IMarketService) context.getService(serviceReference);
@@ -127,8 +128,8 @@ public class TradingService implements ITradingService {
                 context.ungetService(serviceReference);
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading market service", e);
-            Activator.getDefault().getLog().log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading market service", e);
+            CoreActivator.getDefault().getLog().log(status);
         }
 
         if (broker == null) {
@@ -190,8 +191,8 @@ public class TradingService implements ITradingService {
                 try {
                     ((IOrderChangeListener) l[i]).orderChanged(event);
                 } catch (Throwable e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-                    Activator.log(status);
+                    Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+                    CoreActivator.log(status);
                 }
             }
         }

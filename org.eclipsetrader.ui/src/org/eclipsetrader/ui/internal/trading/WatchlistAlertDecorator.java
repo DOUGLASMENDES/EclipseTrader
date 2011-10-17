@@ -22,10 +22,10 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.trading.Activator;
 import org.eclipsetrader.core.trading.AlertEvent;
 import org.eclipsetrader.core.trading.IAlertListener;
 import org.eclipsetrader.core.trading.IAlertService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -38,7 +38,7 @@ public class WatchlistAlertDecorator implements ILightweightLabelDecorator, IAle
     private IAlertService alertService;
 
     public WatchlistAlertDecorator() {
-        this(Activator.getDefault().getBundle().getBundleContext());
+        this(UIActivator.getDefault().getBundle().getBundleContext());
     }
 
     protected WatchlistAlertDecorator(BundleContext context) {
@@ -90,7 +90,7 @@ public class WatchlistAlertDecorator implements ILightweightLabelDecorator, IAle
      */
     @Override
     public void dispose() {
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
         alertService.removeAlertListener(this);
         context.ungetService(serviceReference);
 
@@ -125,8 +125,8 @@ public class WatchlistAlertDecorator implements ILightweightLabelDecorator, IAle
                     try {
                         ((ILabelProviderListener) l[i]).labelProviderChanged(event);
                     } catch (Throwable t) {
-                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
-                        Activator.log(status);
+                        Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
+                        UIActivator.log(status);
                     }
                 }
             }

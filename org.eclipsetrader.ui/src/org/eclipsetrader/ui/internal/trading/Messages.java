@@ -15,7 +15,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "org.eclipsetrader.internal.ui.trading.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.eclipsetrader.ui.internal.trading.messages"; //$NON-NLS-1$
     public static String AlertNotification_Label;
     public static String AlertNotificationListener_MoreAlerts;
     public static String AlertPropertyPage_Title;

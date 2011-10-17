@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.trading.IBroker;
 
@@ -57,8 +58,8 @@ public class MarketBrokerAdapterFactory implements IAdapterFactory {
                     load(file);
                 }
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error loading market brokers settings", null); //$NON-NLS-1$
-                Activator.getDefault().getLog().log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error loading market brokers settings", null); //$NON-NLS-1$
+                CoreActivator.getDefault().getLog().log(status);
             }
         }
 
@@ -88,7 +89,7 @@ public class MarketBrokerAdapterFactory implements IAdapterFactory {
     @SuppressWarnings("unchecked")
     public Class[] getAdapterList() {
         return new Class[] {
-                IBroker.class, MarketBrokerAdapterFactory.class,
+            IBroker.class, MarketBrokerAdapterFactory.class,
         };
     }
 
@@ -99,8 +100,8 @@ public class MarketBrokerAdapterFactory implements IAdapterFactory {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
-                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.log(status);
                 return true;
             }
         });
@@ -148,8 +149,8 @@ public class MarketBrokerAdapterFactory implements IAdapterFactory {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
-                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                Activator.getDefault().getLog().log(status);
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.log(status);
                 return true;
             }
         });

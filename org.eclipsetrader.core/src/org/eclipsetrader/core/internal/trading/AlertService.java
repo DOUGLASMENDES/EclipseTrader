@@ -39,6 +39,7 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.AlertEvent;
@@ -69,12 +70,12 @@ public class AlertService implements IAlertService {
     }
 
     public void startUp() throws Exception {
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
         ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
         pricingEnvironment = new MarketPricingEnvironment((IMarketService) context.getService(serviceReference));
         context.ungetService(serviceReference);
 
-        load(Activator.getDefault().getStateLocation().append("alerts.xml").toFile());
+        load(CoreActivator.getDefault().getStateLocation().append("alerts.xml").toFile());
 
         for (ISecurity instrument : map.keySet()) {
             pricingEnvironment.addSecurity(instrument);
@@ -101,8 +102,8 @@ public class AlertService implements IAlertService {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
-                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.log(status);
                 return true;
             }
         });
@@ -189,8 +190,8 @@ public class AlertService implements IAlertService {
             try {
                 ((IAlertListener) l[i]).alertTriggered(alertEvent);
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
+                CoreActivator.log(status);
             }
         }
     }
@@ -243,7 +244,7 @@ public class AlertService implements IAlertService {
 
             list.add(new InstrumentElement(instrument, alertList));
         }
-        save(Activator.getDefault().getStateLocation().append("alerts.xml").toFile(), list.toArray(new InstrumentElement[list.size()]));
+        save(CoreActivator.getDefault().getStateLocation().append("alerts.xml").toFile(), list.toArray(new InstrumentElement[list.size()]));
     }
 
     void save(File file, InstrumentElement[] elements) throws JAXBException, IOException {
@@ -257,8 +258,8 @@ public class AlertService implements IAlertService {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
-                Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                CoreActivator.log(status);
                 return true;
             }
         });

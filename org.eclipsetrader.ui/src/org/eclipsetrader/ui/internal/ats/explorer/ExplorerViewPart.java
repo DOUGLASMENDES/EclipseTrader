@@ -62,7 +62,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.ui.UIConstants;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewModel.InstrumentRootItem;
 import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewModel.ScriptRootItem;
 import org.eclipsetrader.ui.navigator.RepositoryObjectTransfer;
@@ -93,12 +93,12 @@ public class ExplorerViewPart extends ViewPart {
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         super.init(site, memento);
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         repositoryService = bundleContext.getService(serviceReference);
 
-        ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
+        ImageRegistry imageRegistry = UIActivator.getDefault().getImageRegistry();
 
         collapseAllAction = new Action("Collapse All", imageRegistry.getDescriptor(UIConstants.COLLAPSEALL_ICON)) {
 
@@ -129,8 +129,8 @@ public class ExplorerViewPart extends ViewPart {
                 doDeleteAction();
             }
         };
-        deleteAction.setImageDescriptor(imageRegistry.getDescriptor(Activator.IMG_DELETE_ICON));
-        deleteAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(Activator.IMG_DELETE_DISABLED_ICON));
+        deleteAction.setImageDescriptor(imageRegistry.getDescriptor(UIActivator.IMG_DELETE_ICON));
+        deleteAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(UIActivator.IMG_DELETE_DISABLED_ICON));
         deleteAction.setId(ActionFactory.DELETE.getId());
         deleteAction.setActionDefinitionId("org.eclipse.ui.edit.delete"); //$NON-NLS-1$
         deleteAction.setEnabled(false);
@@ -148,8 +148,8 @@ public class ExplorerViewPart extends ViewPart {
                 doRemoveAction();
             }
         };
-        removeAction.setImageDescriptor(imageRegistry.getDescriptor(Activator.IMG_REMOVE_ICON));
-        removeAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(Activator.IMG_REMOVE_DISABLED_ICON));
+        removeAction.setImageDescriptor(imageRegistry.getDescriptor(UIActivator.IMG_REMOVE_ICON));
+        removeAction.setDisabledImageDescriptor(imageRegistry.getDescriptor(UIActivator.IMG_REMOVE_DISABLED_ICON));
         removeAction.setEnabled(false);
 
         IToolBarManager toolBarManager = site.getActionBars().getToolBarManager();
@@ -182,19 +182,19 @@ public class ExplorerViewPart extends ViewPart {
             @Override
             public Image getImage(Object element) {
                 if ((element instanceof StrategyItem) || (element instanceof InstrumentRootItem)) {
-                    return Activator.getImageFromRegistry(Activator.IMG_FOLDER);
+                    return UIActivator.getImageFromRegistry(UIActivator.IMG_FOLDER);
                 }
                 if (element instanceof InstrumentItem) {
-                    return Activator.getImageFromRegistry(Activator.IMG_INSTRUMENT);
+                    return UIActivator.getImageFromRegistry(UIActivator.IMG_INSTRUMENT);
                 }
                 if (element instanceof ScriptRootItem) {
-                    return Activator.getImageFromRegistry(Activator.IMG_SCRIPT_FOLDER);
+                    return UIActivator.getImageFromRegistry(UIActivator.IMG_SCRIPT_FOLDER);
                 }
                 if (element instanceof ScriptItem) {
-                    return Activator.getImageFromRegistry(Activator.IMG_SCRIPT_INCLUDE);
+                    return UIActivator.getImageFromRegistry(UIActivator.IMG_SCRIPT_INCLUDE);
                 }
                 if (element instanceof MainScriptItem) {
-                    return Activator.getImageFromRegistry(Activator.IMG_MAIN_SCRIPT);
+                    return UIActivator.getImageFromRegistry(UIActivator.IMG_MAIN_SCRIPT);
                 }
                 return super.getImage(element);
             }
@@ -329,7 +329,7 @@ public class ExplorerViewPart extends ViewPart {
      */
     @Override
     public void dispose() {
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         if (serviceReference != null && repositoryService != null) {

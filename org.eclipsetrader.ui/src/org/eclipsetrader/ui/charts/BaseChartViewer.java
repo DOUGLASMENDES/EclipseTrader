@@ -52,8 +52,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipsetrader.core.feed.TimeSpan;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.charts.ChartObjectHitVisitor;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
 
 public class BaseChartViewer implements ISelectionProvider {
 
@@ -571,8 +571,8 @@ public class BaseChartViewer implements ISelectionProvider {
             try {
                 ((ISelectionChangedListener) l[i]).selectionChanged(event);
             } catch (Throwable e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.BaseChartViewer_ExceptionErrorMessage, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.BaseChartViewer_ExceptionErrorMessage, e);
+                UIActivator.log(status);
             }
         }
     }

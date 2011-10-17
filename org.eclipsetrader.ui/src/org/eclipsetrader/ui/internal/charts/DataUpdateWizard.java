@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IImportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class DataUpdateWizard extends Wizard implements IImportWizard {
 
@@ -23,7 +23,7 @@ public class DataUpdateWizard extends Wizard implements IImportWizard {
 
     public DataUpdateWizard() {
         setWindowTitle(Messages.DataUpdateWizard_WindowTitle);
-        setDefaultPageImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(ChartsUIActivator.PLUGIN_ID, "icons/wizban/import_wiz.png")); //$NON-NLS-1$
+        setDefaultPageImageDescriptor(UIActivator.getImageDescriptor("icons/wizban/import_wiz.png")); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

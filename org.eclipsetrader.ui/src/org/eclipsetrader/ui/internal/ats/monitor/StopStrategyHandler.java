@@ -19,7 +19,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradingSystemService;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -36,7 +36,7 @@ public class StopStrategyHandler extends AbstractHandler {
         IStructuredSelection selection = (IStructuredSelection) HandlerUtil.getCurrentSelection(event);
 
         if (selection != null && !selection.isEmpty()) {
-            BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
             ServiceReference<ITradingSystemService> serviceReference = bundleContext.getServiceReference(ITradingSystemService.class);
 
             ITradingSystemService service = bundleContext.getService(serviceReference);

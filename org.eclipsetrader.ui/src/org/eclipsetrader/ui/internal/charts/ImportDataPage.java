@@ -43,6 +43,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.Util;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ImportDataPage extends WizardPage {
 
@@ -132,21 +133,21 @@ public class ImportDataPage extends WizardPage {
             public String getText(Object element) {
                 TimeSpan timeSpan = (TimeSpan) element;
                 return NLS.bind("{0} {1}", new Object[] { //$NON-NLS-1$
-                        String.valueOf(timeSpan.getLength()),
-                        timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_MinutesText : Messages.ImportDataPage_DaysText,
+                    String.valueOf(timeSpan.getLength()),
+                    timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_MinutesText : Messages.ImportDataPage_DaysText,
                 });
             }
         });
         aggregation.setInput(new TimeSpan[] {
-                TimeSpan.days(1),
-                TimeSpan.minutes(1),
-                TimeSpan.minutes(2),
-                TimeSpan.minutes(3),
-                TimeSpan.minutes(5),
-                TimeSpan.minutes(10),
-                TimeSpan.minutes(15),
-                TimeSpan.minutes(30),
-                TimeSpan.minutes(60),
+            TimeSpan.days(1),
+            TimeSpan.minutes(1),
+            TimeSpan.minutes(2),
+            TimeSpan.minutes(3),
+            TimeSpan.minutes(5),
+            TimeSpan.minutes(10),
+            TimeSpan.minutes(15),
+            TimeSpan.minutes(30),
+            TimeSpan.minutes(60),
         });
         aggregation.setChecked(((Object[]) aggregation.getInput())[0], true);
 
@@ -179,7 +180,7 @@ public class ImportDataPage extends WizardPage {
         });
         members.setContentProvider(new ArrayContentProvider());
         members.setSorter(new ViewerSorter());
-        members.setInput(ChartsUIActivator.getDefault().getRepositoryService().getSecurities());
+        members.setInput(UIActivator.getDefault().getRepositoryService().getSecurities());
 
         restoreState();
 
@@ -207,7 +208,7 @@ public class ImportDataPage extends WizardPage {
     }
 
     protected void restoreState() {
-        IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
+        IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
         if (dialogSettings != null) {
             if (dialogSettings.get(K_MODE) != null) {
                 type.select(dialogSettings.getInt(K_MODE));
@@ -237,7 +238,7 @@ public class ImportDataPage extends WizardPage {
 
             String[] selection = dialogSettings.getArray(K_SELECTION);
             if (selection != null) {
-                IRepositoryService repository = ChartsUIActivator.getDefault().getRepositoryService();
+                IRepositoryService repository = UIActivator.getDefault().getRepositoryService();
                 for (int i = 0; i < selection.length; i++) {
                     try {
                         ISecurity security = repository.getSecurityFromURI(new URI(selection[i]));
@@ -253,9 +254,9 @@ public class ImportDataPage extends WizardPage {
     }
 
     public void saveState() {
-        IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
+        IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(getClass().getName());
         if (dialogSettings == null) {
-            dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().addNewSection(getClass().getName());
+            dialogSettings = UIActivator.getDefault().getDialogSettings().addNewSection(getClass().getName());
         }
 
         dialogSettings.put(K_MODE, type.getSelectionIndex());

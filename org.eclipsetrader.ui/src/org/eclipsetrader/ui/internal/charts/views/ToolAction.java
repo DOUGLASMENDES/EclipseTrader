@@ -21,7 +21,7 @@ import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IEditableChartObject;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ToolAction extends Action {
 
@@ -62,7 +62,7 @@ public class ToolAction extends Action {
      */
     @Override
     public void run() {
-        factory = ChartsUIActivator.getDefault().getChartObjectFactory(chartObjectId);
+        factory = UIActivator.getDefault().getChartObjectFactory(chartObjectId);
         if (factory != null) {
             chartObject = factory.createObject(null);
             if (chartObject instanceof IEditableChartObject) {

@@ -178,13 +178,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipsetrader.core.charts"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipsetrader.news"
          download-size="0"
          install-size="0"
@@ -206,28 +199,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipsetrader.ui.charts"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipsetrader.ui.charts.indicators"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.core.trading"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.ui.trading"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -242,20 +214,6 @@
 
    <plugin
          id="org.eclipse.core.variables"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.core.ats"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipsetrader.ui.ats"
          download-size="0"
          install-size="0"
          version="0.0.0"

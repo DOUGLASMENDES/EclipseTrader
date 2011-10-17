@@ -46,6 +46,7 @@ import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.trading.IAlert;
 import org.eclipsetrader.core.trading.IAlertService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -71,7 +72,7 @@ public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropert
     };
 
     public AlertPropertyPage() {
-        this(Activator.getDefault().getBundle().getBundleContext());
+        this(UIActivator.getDefault().getBundle().getBundleContext());
     }
 
     protected AlertPropertyPage(BundleContext context) {
@@ -124,7 +125,7 @@ public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropert
         content.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 
         add = new Button(content, SWT.NONE);
-        add.setImage(getImageRegistry().get(Activator.ALERT_ADD_IMAGE));
+        add.setImage(getImageRegistry().get(UIActivator.ALERT_ADD_IMAGE));
         add.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -134,7 +135,7 @@ public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropert
         });
 
         delete = new Button(content, SWT.NONE);
-        delete.setImage(getImageRegistry().get(Activator.ALERT_DELETE_IMAGE));
+        delete.setImage(getImageRegistry().get(UIActivator.ALERT_DELETE_IMAGE));
         delete.setEnabled(false);
         delete.addSelectionListener(new SelectionAdapter() {
 
@@ -148,7 +149,7 @@ public class AlertPropertyPage extends PropertyPage implements IWorkbenchPropert
     }
 
     ImageRegistry getImageRegistry() {
-        return Activator.getDefault().getImageRegistry();
+        return UIActivator.getDefault().getImageRegistry();
     }
 
     /* (non-Javadoc)

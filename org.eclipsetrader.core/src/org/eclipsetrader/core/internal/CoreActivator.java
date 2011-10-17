@@ -24,19 +24,29 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.ICurrencyService;
+import org.eclipsetrader.core.ats.ITradingSystemService;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.feed.IFeedService;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.ats.TradingSystemService;
+import org.eclipsetrader.core.internal.ats.TradingSystemServiceFactory;
 import org.eclipsetrader.core.internal.feed.ConnectorOverrideAdapter;
 import org.eclipsetrader.core.internal.feed.FeedService;
 import org.eclipsetrader.core.internal.feed.FeedServiceFactory;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.markets.MarketServiceFactory;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
+import org.eclipsetrader.core.internal.trading.AlertService;
+import org.eclipsetrader.core.internal.trading.MarketBrokerAdapterFactory;
+import org.eclipsetrader.core.internal.trading.TradingService;
+import org.eclipsetrader.core.internal.trading.TradingServiceFactory;
+import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryElementFactory;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.core.trading.IAlertService;
+import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -55,6 +65,9 @@ public class CoreActivator extends Plugin {
     public static final String ELEMENT_FACTORY_ID = "org.eclipsetrader.core.elementFactories";
     public static final String REPOSITORY_ID = "org.eclipsetrader.core.repositories";
     public static final String PROVIDERS_FACTORY_ID = "org.eclipsetrader.core.providers";
+    public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.trading.brokers";
+    public static final String ALERTS_EXTENSION_ID = "org.eclipsetrader.core.trading.alerts";
+    public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.ats.systems";
 
     // Preferences IDs
     public static final String DEFAULT_CONNECTOR_ID = "DEFAULT_CONNECTOR";
@@ -72,6 +85,13 @@ public class CoreActivator extends Plugin {
     private ServiceRegistration marketServiceRegistration;
     private CurrencyServiceFactory currencyServiceFactory;
     private ServiceRegistration currencyServiceRegistration;
+    private TradingServiceFactory tradingServiceFactory;
+    private ServiceRegistration tradingServiceRegistration;
+    private AlertService alertService;
+    private ServiceRegistration alertServiceRegistration;
+
+    private MarketBrokerAdapterFactory marketBrokerFactory;
+    private TradingSystemServiceFactory tradingSystemServiceFactory;
 
     private Map<String, IRepositoryElementFactory> elementFactoryMap = new HashMap<String, IRepositoryElementFactory>();
     private Map<String, IDataProviderFactory> providersFactoryMap = new HashMap<String, IDataProviderFactory>();
@@ -95,26 +115,46 @@ public class CoreActivator extends Plugin {
 
         repositoryService = new RepositoryService();
         repositoryServiceRegistration = context.registerService(new String[] {
-                IRepositoryService.class.getName(),
-                RepositoryService.class.getName()
+            IRepositoryService.class.getName(),
+            RepositoryService.class.getName()
         }, repositoryService, new Hashtable<String, Object>());
         repositoryService.startUp();
 
         feedServiceFactory = new FeedServiceFactory();
         feedServiceRegistration = context.registerService(new String[] {
-                IFeedService.class.getName(), FeedService.class.getName()
+            IFeedService.class.getName(), FeedService.class.getName()
         }, feedServiceFactory, new Hashtable<String, Object>());
 
         marketServiceFactory = new MarketServiceFactory();
         marketServiceRegistration = context.registerService(new String[] {
-                IMarketService.class.getName(), MarketService.class.getName()
+            IMarketService.class.getName(), MarketService.class.getName()
         }, marketServiceFactory, new Hashtable<String, Object>());
 
         currencyServiceFactory = new CurrencyServiceFactory();
         currencyServiceRegistration = context.registerService(new String[] {
-                ICurrencyService.class.getName(),
-                CurrencyService.class.getName()
+            ICurrencyService.class.getName(),
+            CurrencyService.class.getName()
         }, currencyServiceFactory, new Hashtable<String, Object>());
+
+        marketBrokerFactory = new MarketBrokerAdapterFactory(getStateLocation().append("market_brokers.xml").toFile());
+        AdapterManager.getDefault().registerAdapters(marketBrokerFactory, IMarket.class);
+
+        tradingServiceFactory = new TradingServiceFactory();
+        tradingServiceRegistration = context.registerService(new String[] {
+            ITradingService.class.getName(), TradingService.class.getName()
+        }, tradingServiceFactory, new Hashtable<String, Object>());
+
+        alertService = new AlertService();
+        alertServiceRegistration = context.registerService(new String[] {
+            IAlertService.class.getName(), AlertService.class.getName()
+        }, alertService, new Hashtable<String, Object>());
+        alertService.startUp();
+
+        tradingSystemServiceFactory = new TradingSystemServiceFactory(repositoryService);
+        context.registerService(new String[] {
+            ITradingSystemService.class.getName(),
+            TradingSystemService.class.getName()
+        }, tradingSystemServiceFactory, new Hashtable<String, Object>());
 
         IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
         if (extensionPoint != null) {
@@ -146,6 +186,31 @@ public class CoreActivator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
+        ServiceReference<TradingSystemService> serviceReference = context.getServiceReference(TradingSystemService.class);
+        if (serviceReference != null) {
+            TradingSystemService service = context.getService(serviceReference);
+            if (service != null) {
+                service.shutDown();
+            }
+            context.ungetService(serviceReference);
+        }
+
+        if (tradingSystemServiceFactory != null) {
+            tradingSystemServiceFactory.dispose();
+        }
+
+        alertServiceRegistration.unregister();
+        alertService.shutDown();
+
+        if (tradingServiceRegistration != null) {
+            tradingServiceRegistration.unregister();
+        }
+        if (tradingServiceFactory != null) {
+            tradingServiceFactory.dispose();
+        }
+
+        marketBrokerFactory.save(getStateLocation().append("market_brokers.xml").toFile());
+
         try {
             if (overrideAdapter != null) {
                 overrideAdapter.save(getStateLocation().append("overrides.xml").toFile());
@@ -197,22 +262,24 @@ public class CoreActivator extends Plugin {
     }
 
     public static void log(IStatus status) {
-        if (plugin != null) {
-            plugin.getLog().log(status);
+        if (plugin == null) {
+            if (status.getException() != null) {
+                status.getException().printStackTrace();
+            }
+            return;
         }
-        else {
-            System.err.println(status);
-        }
+        plugin.getLog().log(status);
     }
 
     public static void log(String message, Throwable throwable) {
         Status status = new Status(IStatus.ERROR, PLUGIN_ID, message, throwable);
-        if (plugin != null) {
-            plugin.getLog().log(status);
+        if (plugin == null) {
+            if (status.getException() != null) {
+                status.getException().printStackTrace();
+            }
+            return;
         }
-        else {
-            System.err.println(status);
-        }
+        plugin.getLog().log(status);
     }
 
     public IRepositoryElementFactory getElementFactory(String targetID) {

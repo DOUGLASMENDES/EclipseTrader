@@ -22,7 +22,7 @@ import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IChartParameters;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class CurrentPriceLineFactory implements IChartObjectFactory {
 
@@ -46,7 +46,7 @@ public class CurrentPriceLineFactory implements IChartObjectFactory {
     };
 
     public CurrentPriceLineFactory() {
-        IMarketService marketService = ChartsUIActivator.getDefault().getMarketService();
+        IMarketService marketService = UIActivator.getDefault().getMarketService();
 
         pricingEnvironment = new MarketPricingEnvironment(marketService);
         pricingEnvironment.addPricingListener(pricingListener);

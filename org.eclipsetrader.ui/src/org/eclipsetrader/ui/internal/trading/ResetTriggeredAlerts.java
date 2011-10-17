@@ -20,8 +20,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.trading.Activator;
 import org.eclipsetrader.core.trading.IAlertService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -39,7 +39,7 @@ public class ResetTriggeredAlerts extends AbstractHandler {
         if (selection == null || selection.isEmpty()) {
             return null;
         }
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
         if (serviceReference != null) {

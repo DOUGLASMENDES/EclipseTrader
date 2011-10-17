@@ -27,7 +27,7 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.internal.ats.Activator;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.BrokerException;
 import org.eclipsetrader.core.trading.IAccount;
 import org.eclipsetrader.core.trading.IBroker;
@@ -178,8 +178,8 @@ public class Broker implements IBroker {
                 try {
                     ((IOrderChangeListener) l[i]).orderChanged(event);
                 } catch (Throwable e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
-                    Activator.log(status);
+                    Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error running listener", e); //$NON-NLS-1$
+                    CoreActivator.log(status);
                 }
             }
         }

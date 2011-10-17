@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.ILauncher;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.osgi.framework.BundleContext;
@@ -80,14 +81,14 @@ public class TradingServiceLauncher implements ILauncher, IExecutableExtension {
 
     protected ITradingService getTradingService() {
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference<ITradingService> serviceReference = context.getServiceReference(ITradingService.class);
             ITradingService service = context.getService(serviceReference);
             context.ungetService(serviceReference);
             return service;
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading trading service", e);
-            Activator.getDefault().getLog().log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading trading service", e);
+            CoreActivator.log(status);
         }
         return null;
     }

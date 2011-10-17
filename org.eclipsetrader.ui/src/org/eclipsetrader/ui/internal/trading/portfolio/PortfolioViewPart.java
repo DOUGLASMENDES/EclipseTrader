@@ -47,7 +47,6 @@ import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.ui.SelectionProvider;
 import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.trading.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -76,7 +75,7 @@ public class PortfolioViewPart extends ViewPart {
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         super.init(site, memento);
 
-        context = Activator.getDefault().getBundle().getBundleContext();
+        context = UIActivator.getDefault().getBundle().getBundleContext();
 
         tradingServiceReference = context.getServiceReference(ITradingService.class.getName());
         tradingService = (ITradingService) context.getService(tradingServiceReference);

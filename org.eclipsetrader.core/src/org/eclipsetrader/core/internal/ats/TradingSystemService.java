@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.ats.IStrategy;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradingSystemService;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.internal.ats.repository.SettingsCollection;
 import org.eclipsetrader.core.markets.IMarketService;
 import org.eclipsetrader.core.repositories.IRepositoryService;
@@ -54,7 +55,7 @@ public class TradingSystemService implements ITradingSystemService {
                 list.add(new TradingSystem((IStrategy) object));
             }
         }
-        loadSettings(Activator.getDefault().getStateLocation().append("trade_systems.xml").toFile());
+        loadSettings(CoreActivator.getDefault().getStateLocation().append("trade_systems.xml").toFile());
     }
 
     public void shutDown() {
@@ -62,11 +63,11 @@ public class TradingSystemService implements ITradingSystemService {
             try {
                 system.stop();
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error stopping trading system", t);
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error stopping trading system", t);
+                CoreActivator.log(status);
             }
         }
-        saveSettings(Activator.getDefault().getStateLocation().append("trade_systems.xml").toFile());
+        saveSettings(CoreActivator.getDefault().getStateLocation().append("trade_systems.xml").toFile());
     }
 
     /* (non-Javadoc)
@@ -120,7 +121,7 @@ public class TradingSystemService implements ITradingSystemService {
                     ((TradingSystem) system).setStatus(ITradingSystem.STATUS_STARTED);
                 } catch (Exception e) {
                     ((TradingSystem) system).setStatus(ITradingSystem.STATUS_STOPPED);
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error starting trade system", e);
+                    return new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error starting trade system", e);
                 }
 
                 return Status.OK_STATUS;
@@ -144,7 +145,7 @@ public class TradingSystemService implements ITradingSystemService {
                 try {
                     system.stop();
                 } catch (Exception e) {
-                    return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error starting trade system", e);
+                    return new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, "Error starting trade system", e);
                 } finally {
                     ((TradingSystem) system).setStatus(ITradingSystem.STATUS_STOPPED);
                 }
@@ -166,15 +167,15 @@ public class TradingSystemService implements ITradingSystemService {
 
                     @Override
                     public boolean handleEvent(ValidationEvent event) {
-                        Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                        Activator.log(status);
+                        Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                        CoreActivator.log(status);
                         return true;
                     }
                 });
                 collection = (SettingsCollection) unmarshaller.unmarshal(file);
             } catch (Exception e) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error loading repository", e); //$NON-NLS-1$
+                CoreActivator.log(status);
             }
         }
 
@@ -208,15 +209,15 @@ public class TradingSystemService implements ITradingSystemService {
 
                 @Override
                 public boolean handleEvent(ValidationEvent event) {
-                    Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
-                    Activator.log(status);
+                    Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Error validating XML: " + event.getMessage(), null); //$NON-NLS-1$
+                    CoreActivator.log(status);
                     return true;
                 }
             });
             marshaller.marshal(collection, new FileWriter(file));
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error saving repository", e); //$NON-NLS-1$
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error saving repository", e); //$NON-NLS-1$
+            CoreActivator.log(status);
         }
     }
 }

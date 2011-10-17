@@ -15,6 +15,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.ui.INotification;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class AlertNotification implements INotification, Comparable<INotification> {
 
@@ -57,7 +58,7 @@ public class AlertNotification implements INotification, Comparable<INotificatio
      */
     @Override
     public Image getNotificationImage() {
-        return Activator.getDefault().getImageRegistry().get(Activator.ALERT_NOTIFICATION_IMAGE);
+        return UIActivator.getDefault().getImageRegistry().get(UIActivator.ALERT_NOTIFICATION_IMAGE);
     }
 
     /* (non-Javadoc)

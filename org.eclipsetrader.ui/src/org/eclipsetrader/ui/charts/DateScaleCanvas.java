@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.feed.TimeSpan;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class DateScaleCanvas {
 
@@ -197,8 +197,8 @@ public class DateScaleCanvas {
                     }
                 }
             } catch (Error e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.DateScaleCanvas_HorizontalScaleRenderingError);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.DateScaleCanvas_HorizontalScaleRenderingError);
+                UIActivator.log(status);
             } finally {
                 horizontalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);
                 graphics.dispose();

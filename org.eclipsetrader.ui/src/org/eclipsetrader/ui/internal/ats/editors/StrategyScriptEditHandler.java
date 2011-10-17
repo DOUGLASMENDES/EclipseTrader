@@ -26,7 +26,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.repositories.IStoreObject;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.ats.explorer.MainScriptItem;
 
 /**
@@ -54,11 +54,11 @@ public class StrategyScriptEditHandler extends AbstractHandler {
                     ScriptStrategy strategy = (ScriptStrategy) ((MainScriptItem) target).getStrategy();
                     try {
                         IStoreObject storeObject = (IStoreObject) strategy.getAdapter(IStoreObject.class);
-                        IDialogSettings dialogSettings = Activator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
+                        IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
                         site.getPage().showView(ScriptEditor.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
                     } catch (PartInitException e) {
-                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error opening script editor", e); //$NON-NLS-1$
-                        Activator.log(status);
+                        Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening script editor", e); //$NON-NLS-1$
+                        UIActivator.log(status);
                     }
                 }
             }

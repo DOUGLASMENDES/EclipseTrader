@@ -91,7 +91,7 @@ import org.eclipsetrader.ui.charts.ChartView;
 import org.eclipsetrader.ui.charts.ChartViewItem;
 import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.charts.DataImportJob;
 
 public class ChartViewPart extends ViewPart implements ISaveablePart {
@@ -176,17 +176,17 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         @Override
         public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
             IPreferenceStore preferences = (IPreferenceStore) event.getSource();
-            if (ChartsUIActivator.PREFS_SHOW_TOOLTIPS.equals(event.getProperty())) {
-                viewer.setShowTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
+            if (UIActivator.PREFS_SHOW_TOOLTIPS.equals(event.getProperty())) {
+                viewer.setShowTooltips(preferences.getBoolean(UIActivator.PREFS_SHOW_TOOLTIPS));
             }
-            if (ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS.equals(event.getProperty())) {
-                viewer.setShowScaleTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+            if (UIActivator.PREFS_SHOW_SCALE_TOOLTIPS.equals(event.getProperty())) {
+                viewer.setShowScaleTooltips(preferences.getBoolean(UIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
             }
-            if (ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION.equals(event.getProperty())) {
-                viewer.setCrosshairMode(preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
+            if (UIActivator.PREFS_CROSSHAIR_ACTIVATION.equals(event.getProperty())) {
+                viewer.setCrosshairMode(preferences.getInt(UIActivator.PREFS_CROSSHAIR_ACTIVATION));
             }
-            if (ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP.equals(event.getProperty())) {
-                viewer.setDecoratorSummaryTooltips(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+            if (UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP.equals(event.getProperty())) {
+                viewer.setDecoratorSummaryTooltips(preferences.getBoolean(UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
             }
         }
     };
@@ -233,13 +233,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         super.init(site, memento);
 
         this.memento = memento;
-        this.preferenceStore = ChartsUIActivator.getDefault().getPreferenceStore();
+        this.preferenceStore = UIActivator.getDefault().getPreferenceStore();
 
         try {
-            dialogSettings = ChartsUIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
+            dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
             uri = new URI(dialogSettings.get(K_URI));
 
-            IRepositoryService repositoryService = ChartsUIActivator.getDefault().getRepositoryService();
+            IRepositoryService repositoryService = UIActivator.getDefault().getRepositoryService();
             security = repositoryService.getSecurityFromURI(uri);
 
             String privateTemplate = dialogSettings.get(K_PRIVATE_TEMPLATE);
@@ -248,13 +248,19 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
 
             if (template == null) {
-                IPath templatePath = new Path("data").append(dialogSettings.get(K_TEMPLATE)); //$NON-NLS-1$
-                InputStream stream = FileLocator.openStream(ChartsUIActivator.getDefault().getBundle(), templatePath, false);
+                IPath templatePath = new Path("data"); //$NON-NLS-1$
+                if (dialogSettings.get(K_TEMPLATE) != null) {
+                    templatePath = templatePath.append(dialogSettings.get(K_TEMPLATE));
+                }
+                else {
+                    templatePath = templatePath.append("basic-template.xml");
+                }
+                InputStream stream = FileLocator.openStream(UIActivator.getDefault().getBundle(), templatePath, false);
                 template = unmarshal(stream);
             }
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewPart_LoadingErrorMessage + site.getSecondaryId(), e);
-            ChartsUIActivator.getDefault().getLog().log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartViewPart_LoadingErrorMessage + site.getSecondaryId(), e);
+            UIActivator.getDefault().getLog().log(status);
         }
 
         site.setSelectionProvider(new SelectionProvider());
@@ -467,7 +473,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
         };
         updateAction.setId("update"); //$NON-NLS-1$
-        updateAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/refresh.gif")); //$NON-NLS-1$
+        updateAction.setImageDescriptor(UIActivator.getImageDescriptor("icons/etool16/refresh.gif")); //$NON-NLS-1$
         updateAction.setEnabled(true);
 
         propertiesAction = new PropertyDialogAction(new SameShellProvider(getViewSite().getShell()), getSite().getSelectionProvider()) {
@@ -546,10 +552,10 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         dropTarget.setTransfer(transferTypes);
         dropTarget.addDropListener(dropListener = new ChartViewDropTarget(viewer));
 
-        viewer.setShowTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
-        viewer.setShowScaleTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
-        viewer.setCrosshairMode(preferenceStore.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION));
-        viewer.setDecoratorSummaryTooltips(preferenceStore.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+        viewer.setShowTooltips(preferenceStore.getBoolean(UIActivator.PREFS_SHOW_TOOLTIPS));
+        viewer.setShowScaleTooltips(preferenceStore.getBoolean(UIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+        viewer.setCrosshairMode(preferenceStore.getInt(UIActivator.PREFS_CROSSHAIR_ACTIVATION));
+        viewer.setDecoratorSummaryTooltips(preferenceStore.getBoolean(UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
         preferenceStore.addPropertyChangeListener(preferenceChangeListener);
 
         if (memento != null) {
@@ -696,8 +702,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
         }
 
-        if (ChartsUIActivator.getDefault() != null) {
-            IPreferenceStore preferences = ChartsUIActivator.getDefault().getPreferenceStore();
+        if (UIActivator.getDefault() != null) {
+            IPreferenceStore preferences = UIActivator.getDefault().getPreferenceStore();
             preferences.removePropertyChangeListener(preferenceChangeListener);
         }
 

@@ -33,7 +33,7 @@ import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.charts.IEditableChartObject;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 @SuppressWarnings("restriction")
 public class ChartViewDropTarget extends DropTargetAdapter {
@@ -69,7 +69,7 @@ public class ChartViewDropTarget extends DropTargetAdapter {
 
         String[] factories = (String[]) event.data;
         for (int i = 0; i < factories.length; i++) {
-            final IChartObjectFactory factory = ChartsUIActivator.getDefault().getChartObjectFactory(factories[i]);
+            final IChartObjectFactory factory = UIActivator.getDefault().getChartObjectFactory(factories[i]);
             if (factory != null) {
                 final IChartObject chartObject = factory.createObject(null);
                 if (chartObject instanceof IEditableChartObject) {
@@ -103,7 +103,7 @@ public class ChartViewDropTarget extends DropTargetAdapter {
                 }
                 else {
                     boolean addToNewRow = false;
-                    IConfigurationElement configurationElement = ChartsUIActivator.getDefault().getChartObjectConfiguration(factories[i]);
+                    IConfigurationElement configurationElement = UIActivator.getDefault().getChartObjectConfiguration(factories[i]);
                     if (!"false".equals(configurationElement.getAttribute("exclusive"))) {
                         addToNewRow = true;
                     }

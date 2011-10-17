@@ -27,7 +27,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IStoreObject;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartOpenHandler extends AbstractHandler {
 
@@ -52,11 +52,11 @@ public class ChartOpenHandler extends AbstractHandler {
                     ISecurity watchList = (ISecurity) target;
                     try {
                         IStoreObject storeObject = (IStoreObject) watchList.getAdapter(IStoreObject.class);
-                        IDialogSettings dialogSettings = ChartsUIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
+                        IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
                         site.getPage().showView(ChartViewPart.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
                     } catch (PartInitException e) {
-                        Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, 0, "Error opening chart", e); //$NON-NLS-1$
-                        ChartsUIActivator.getDefault().getLog().log(status);
+                        Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening chart", e); //$NON-NLS-1$
+                        UIActivator.log(status);
                     }
                 }
             }

@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class DefaultsPageTest extends TestCase {
 
@@ -79,7 +80,7 @@ public class DefaultsPageTest extends TestCase {
 
     public void testSelectBackfillMethodFromPreferences() throws Exception {
         PreferenceStore preferences = new PreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_METHOD, 1);
 
         DefaultsPage page = new DefaultsPage();
         page.setPreferenceStore(preferences);
@@ -93,9 +94,9 @@ public class DefaultsPageTest extends TestCase {
 
     public void testSelectStartDateFromPreferences() throws Exception {
         PreferenceStore preferences = new PreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20090620");
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE, "20090620");
 
-        Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
+        Date expectedDate = new SimpleDateFormat("yyyyMMdd").parse(preferences.getString(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
 
         DefaultsPage page = new DefaultsPage();
         page.setPreferenceStore(preferences);
@@ -108,7 +109,7 @@ public class DefaultsPageTest extends TestCase {
 
     public void testSelectYearsFromPreferences() throws Exception {
         PreferenceStore preferences = new PreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
+        preferences.setValue(UIActivator.PREFS_INITIAL_BACKFILL_YEARS, 5);
 
         DefaultsPage page = new DefaultsPage();
         page.setPreferenceStore(preferences);
@@ -130,7 +131,7 @@ public class DefaultsPageTest extends TestCase {
         page.useYears.setSelection(false);
         page.performOk();
 
-        assertEquals(0, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
+        assertEquals(0, preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_METHOD));
     }
 
     public void testSaveYearsBackfillMethod() throws Exception {
@@ -144,7 +145,7 @@ public class DefaultsPageTest extends TestCase {
         page.useYears.setSelection(true);
         page.performOk();
 
-        assertEquals(1, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_METHOD));
+        assertEquals(1, preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_METHOD));
     }
 
     public void testSaveStartDate() throws Exception {
@@ -157,7 +158,7 @@ public class DefaultsPageTest extends TestCase {
         page.startDate.setSelection(new SimpleDateFormat("yyyyMMdd").parse("20090620"));
         page.performOk();
 
-        assertEquals("20090620", preferences.getString(ChartsUIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
+        assertEquals("20090620", preferences.getString(UIActivator.PREFS_INITIAL_BACKFILL_START_DATE));
     }
 
     public void testSaveYears() throws Exception {
@@ -170,6 +171,6 @@ public class DefaultsPageTest extends TestCase {
         page.years.setSelection(5);
         page.performOk();
 
-        assertEquals(5, preferences.getInt(ChartsUIActivator.PREFS_INITIAL_BACKFILL_YEARS));
+        assertEquals(5, preferences.getInt(UIActivator.PREFS_INITIAL_BACKFILL_YEARS));
     }
 }

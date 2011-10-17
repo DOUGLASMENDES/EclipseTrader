@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.trading.IAlert;
 
 public class AlertTypeAdapter extends XmlAdapter<String, IAlert> {
@@ -52,8 +53,8 @@ public class AlertTypeAdapter extends XmlAdapter<String, IAlert> {
                     IAlert alert = (IAlert) configElements[j].createExecutableExtension("class"); //$NON-NLS-1$
                     return alert;
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Unable to create alert with id " + v, e);
-                    Activator.log(status);
+                    Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Unable to create alert with id " + v, e);
+                    CoreActivator.log(status);
                 }
             }
         }
@@ -62,7 +63,7 @@ public class AlertTypeAdapter extends XmlAdapter<String, IAlert> {
     }
 
     IConfigurationElement[] getExtensionConfigurationElements() {
-        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(Activator.ALERTS_EXTENSION_ID);
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.ALERTS_EXTENSION_ID);
         if (extensionPoint == null) {
             return new IConfigurationElement[0];
         }

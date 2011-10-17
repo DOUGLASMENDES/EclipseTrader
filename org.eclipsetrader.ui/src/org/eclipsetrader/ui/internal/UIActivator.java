@@ -16,11 +16,15 @@ import java.util.Hashtable;
 import java.util.UUID;
 
 import org.eclipse.core.internal.runtime.AdapterManager;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.IMarket;
@@ -30,6 +34,7 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.views.IWatchList;
 import org.eclipsetrader.ui.INotificationService;
 import org.eclipsetrader.ui.UIConstants;
+import org.eclipsetrader.ui.charts.IChartObjectFactory;
 import org.eclipsetrader.ui.internal.adapters.MarketAdapterFactory;
 import org.eclipsetrader.ui.internal.adapters.RepositoryAdapterFactory;
 import org.eclipsetrader.ui.internal.adapters.SecurityAdapterFactory;
@@ -52,6 +57,37 @@ public class UIActivator extends AbstractUIPlugin {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.eclipsetrader.ui";
+
+    // The extension points IDs
+    public static final String INDICATORS_EXTENSION_ID = "org.eclipsetrader.ui.indicators"; //$NON-NLS-1$
+
+    public static final String PREFS_SHOW_SCALE_TOOLTIPS = "SHOW_SCALE_TOOLTIPS"; //$NON-NLS-1$
+    public static final String PREFS_CROSSHAIR_ACTIVATION = "CROSSHAIR_ACTIVATION"; //$NON-NLS-1$
+    public static final String PREFS_CROSSHAIR_SUMMARY_TOOLTIP = "CROSSHAIR_SUMMARY_TOOLTIP"; //$NON-NLS-1$
+    public static final String PREFS_SHOW_TOOLTIPS = "SHOW_TOOLTIPS"; //$NON-NLS-1$
+    public static final String PREFS_INITIAL_BACKFILL_METHOD = "INITIAL_BACKFILL_METHOD"; //$NON-NLS-1$
+    public static final String PREFS_INITIAL_BACKFILL_START_DATE = "INITIAL_BACKFILL_START_DATE"; //$NON-NLS-1$
+    public static final String PREFS_INITIAL_BACKFILL_YEARS = "INITIAL_BACKFILL_YEARS"; //$NON-NLS-1$
+
+    public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image"; //$NON-NLS-1$
+    public static final String ALERT_ADD_IMAGE = "alert_add_image"; //$NON-NLS-1$
+    public static final String ALERT_DELETE_IMAGE = "alert_delete_image"; //$NON-NLS-1$
+    public static final String ALERT_WIZARD_IMAGE = "alert_wizard_image"; //$NON-NLS-1$
+
+    public static final String IMG_STRATEGY = "strategy";
+    public static final String IMG_FOLDER = "folder";
+    public static final String IMG_INSTRUMENT = "instrument";
+    public static final String IMG_SCRIPT_FOLDER = "script-folder";
+    public static final String IMG_SCRIPT_INCLUDE = "script-include";
+    public static final String IMG_MAIN_SCRIPT = "main-script";
+    public static final String IMG_REMOVE_ICON = "remove";
+    public static final String IMG_REMOVE_DISABLED_ICON = "remove-disabled";
+    public static final String IMG_DELETE_ICON = "delete";
+    public static final String IMG_DELETE_DISABLED_ICON = "delete-disabled";
+    public static final String IMG_TRADING_SYSTEM = "trading-system";
+
+    public static final String K_VIEWS_SECTION = "Views";
+    public static final String K_URI = "uri";
 
     // The shared instance
     private static UIActivator plugin;
@@ -87,8 +123,8 @@ public class UIActivator extends AbstractUIPlugin {
 
         NotificationService notificationService = new NotificationService();
         notificationServiceRegistration = context.registerService(new String[] {
-                INotificationService.class.getName(),
-                NotificationService.class.getName()
+            INotificationService.class.getName(),
+            NotificationService.class.getName()
         }, notificationService, new Hashtable<String, Object>());
     }
 
@@ -124,6 +160,14 @@ public class UIActivator extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
+
+    public static Image getImageFromRegistry(String key) {
+        if (plugin == null || plugin.getImageRegistry() == null) {
+            return null;
+        }
+        ImageDescriptor descriptor = plugin.getImageRegistry().getDescriptor(key);
+        return descriptor != null ? descriptor.createImage() : null;
     }
 
     /* (non-Javadoc)
@@ -165,6 +209,23 @@ public class UIActivator extends AbstractUIPlugin {
 
         reg.put(UIConstants.TOOLBAR_ARROW_DOWN, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_DOWN)));
         reg.put(UIConstants.TOOLBAR_ARROW_RIGHT, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/" + UIConstants.TOOLBAR_ARROW_RIGHT)));
+
+        reg.put(ALERT_NOTIFICATION_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/eview16/bell.png"))); //$NON-NLS-1$
+
+        reg.put(ALERT_WIZARD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/wizban/newfile_wiz.gif"))); //$NON-NLS-1$
+        reg.put(ALERT_ADD_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/bell_add.png"))); //$NON-NLS-1$
+        reg.put(ALERT_DELETE_IMAGE, ImageDescriptor.createFromURL(getBundle().getResource("icons/elcl16/delete.gif"))); //$NON-NLS-1$
+
+        reg.put(IMG_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/folder.png")));
+        reg.put(IMG_INSTRUMENT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/shape_square.png")));
+        reg.put(IMG_SCRIPT_FOLDER, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/folder_page_white.png")));
+        reg.put(IMG_MAIN_SCRIPT, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/page_white_code.png")));
+        reg.put(IMG_SCRIPT_INCLUDE, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/script_link.png")));
+        reg.put(IMG_REMOVE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/remove_exc.gif")));
+        reg.put(IMG_REMOVE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/remove_exc.gif")));
+        reg.put(IMG_DELETE_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/etool16/delete.gif")));
+        reg.put(IMG_DELETE_DISABLED_ICON, ImageDescriptor.createFromURL(getBundle().getResource("icons/dtool16/delete.gif")));
+        reg.put(IMG_TRADING_SYSTEM, ImageDescriptor.createFromURL(getBundle().getResource("icons/obj16/cog.png")));
     }
 
     public IRepositoryService getRepositoryService() {
@@ -192,21 +253,21 @@ public class UIActivator extends AbstractUIPlugin {
     public IDialogSettings getDialogSettingsForView(URI uri) {
         String uriString = uri.toString();
 
-        IDialogSettings rootSettings = getDialogSettings().getSection("Views");
+        IDialogSettings rootSettings = getDialogSettings().getSection(K_VIEWS_SECTION);
         if (rootSettings == null) {
-            rootSettings = getDialogSettings().addNewSection("Views");
+            rootSettings = getDialogSettings().addNewSection(K_VIEWS_SECTION);
         }
 
         IDialogSettings[] sections = rootSettings.getSections();
         for (int i = 0; i < sections.length; i++) {
-            if (uriString.equals(sections[i].get("uri"))) {
+            if (uriString.equals(sections[i].get(K_URI))) {
                 return sections[i];
             }
         }
 
         String uuid = UUID.randomUUID().toString();
         IDialogSettings dialogSettings = rootSettings.addNewSection(uuid);
-        dialogSettings.put("uri", uriString);
+        dialogSettings.put(K_URI, uriString);
 
         return dialogSettings;
     }
@@ -228,5 +289,51 @@ public class UIActivator extends AbstractUIPlugin {
         else {
             System.err.println(status);
         }
+    }
+
+    public IChartObjectFactory getChartObjectFactory(String targetID) {
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(INDICATORS_EXTENSION_ID);
+        if (extensionPoint == null) {
+            return null;
+        }
+
+        IConfigurationElement targetElement = null;
+        IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+        for (int j = 0; j < configElements.length; j++) {
+            String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+            if (targetID.equals(strID)) {
+                targetElement = configElements[j];
+                break;
+            }
+        }
+        if (targetElement == null) {
+            return null;
+        }
+
+        try {
+            return (IChartObjectFactory) targetElement.createExecutableExtension("class"); //$NON-NLS-1$
+        } catch (Exception e) {
+            Status status = new Status(IStatus.WARNING, PLUGIN_ID, 0, Messages.ChartsUIActivator_IndicatorErrorMessage + targetID, e);
+            getLog().log(status);
+        }
+
+        return null;
+    }
+
+    public IConfigurationElement getChartObjectConfiguration(String targetID) {
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(INDICATORS_EXTENSION_ID);
+        if (extensionPoint == null) {
+            return null;
+        }
+
+        IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
+        for (int j = 0; j < configElements.length; j++) {
+            String strID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+            if (targetID.equals(strID)) {
+                return configElements[j];
+            }
+        }
+
+        return null;
     }
 }

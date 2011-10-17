@@ -27,6 +27,7 @@ import org.eclipsetrader.core.trading.IBroker;
 import org.eclipsetrader.core.trading.IOrderSide;
 import org.eclipsetrader.core.trading.IPosition;
 import org.eclipsetrader.core.trading.ITradingService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -41,7 +42,7 @@ public class TradeHandler extends AbstractHandler {
     ITradingService tradingService;
 
     public TradeHandler() {
-        context = Activator.getDefault().getBundle().getBundleContext();
+        context = UIActivator.getDefault().getBundle().getBundleContext();
         serviceReference = context.getServiceReference(ITradingService.class.getName());
         tradingService = (ITradingService) context.getService(serviceReference);
     }

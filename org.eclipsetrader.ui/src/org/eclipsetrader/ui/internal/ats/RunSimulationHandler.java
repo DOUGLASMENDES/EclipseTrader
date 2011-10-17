@@ -34,6 +34,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.ats.simulation.SimulationRunner;
 import org.eclipsetrader.core.repositories.IRepositoryService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -82,7 +83,7 @@ public class RunSimulationHandler extends AbstractHandler {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+                BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
                 ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
 
                 IRepositoryService repositoryService = bundleContext.getService(serviceReference);
@@ -98,13 +99,13 @@ public class RunSimulationHandler extends AbstractHandler {
                                 ReportViewPart viewPart = (ReportViewPart) site.getPage().showView(ReportViewPart.VIEW_ID, UUID.randomUUID().toString(), IWorkbenchPage.VIEW_ACTIVATE);
                                 viewPart.setReport(runner.getReport());
                             } catch (PartInitException e) {
-                                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error opening report view", e); //$NON-NLS-1$
-                                Activator.log(status);
+                                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening report view", e); //$NON-NLS-1$
+                                UIActivator.log(status);
                             }
                         }
                     });
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error running simulation", e);
+                    Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, "Error running simulation", e);
                     return status;
                 } finally {
                     bundleContext.ungetService(serviceReference);

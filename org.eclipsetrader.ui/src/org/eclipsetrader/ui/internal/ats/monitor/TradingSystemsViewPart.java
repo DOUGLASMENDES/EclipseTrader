@@ -44,10 +44,10 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipsetrader.core.ats.ITradingSystemService;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemService;
 import org.eclipsetrader.core.internal.ats.TradingSystemProperties;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.ats.ViewColumn;
 import org.eclipsetrader.ui.internal.ats.ViewerObservableMap;
 import org.osgi.framework.BundleContext;
@@ -71,7 +71,7 @@ public class TradingSystemsViewPart extends ViewPart {
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         super.init(site, memento);
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<ITradingSystemService> serviceReference = bundleContext.getServiceReference(ITradingSystemService.class);
         tradingSystemService = bundleContext.getService(serviceReference);
@@ -135,10 +135,10 @@ public class TradingSystemsViewPart extends ViewPart {
             public Image getColumnImage(Object element, int columnIndex) {
                 if (columnIndex == 0) {
                     if (element instanceof TradingSystemItem) {
-                        return Activator.getImageFromRegistry(Activator.IMG_TRADING_SYSTEM);
+                        return UIActivator.getImageFromRegistry(UIActivator.IMG_TRADING_SYSTEM);
                     }
                     if (element instanceof TradingSystemInstrumentItem) {
-                        return Activator.getImageFromRegistry(Activator.IMG_INSTRUMENT);
+                        return UIActivator.getImageFromRegistry(UIActivator.IMG_INSTRUMENT);
                     }
                 }
                 return super.getColumnImage(element, columnIndex);

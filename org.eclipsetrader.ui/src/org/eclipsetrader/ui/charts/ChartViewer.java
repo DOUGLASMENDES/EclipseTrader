@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.IDataSeriesVisitor;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartViewer {
 
@@ -304,7 +304,7 @@ public class ChartViewer {
                     }
                 });
                 verticalAxis.addValues(new IAdaptable[] {
-                        dataSeries.getHighest(), dataSeries.getLowest()
+                    dataSeries.getHighest(), dataSeries.getLowest()
                 });
             }
         }
@@ -401,8 +401,8 @@ public class ChartViewer {
 
                     ((IScaleRenderer) renderer).renderHorizontalScale(graphics);
                 } catch (Error e) {
-                    Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_HorizontalScaleRenderingError);
-                    ChartsUIActivator.log(status);
+                    Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartViewer_HorizontalScaleRenderingError);
+                    UIActivator.log(status);
                 } finally {
                     if (graphics.gc != null) {
                         graphics.gc.dispose();
@@ -517,8 +517,8 @@ public class ChartViewer {
                     }
                 }
             } catch (Error e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
+                UIActivator.log(status);
             } finally {
                 if (target.gc != null) {
                     target.gc.dispose();
@@ -592,8 +592,8 @@ public class ChartViewer {
                 IScaleRenderer renderer = (IScaleRenderer) getRenderer();
                 renderer.renderVerticalScale(target);
             } catch (Error e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartViewer_RenderingErrorMessage);
+                UIActivator.log(status);
             } finally {
                 if (target.gc != null) {
                     target.gc.dispose();

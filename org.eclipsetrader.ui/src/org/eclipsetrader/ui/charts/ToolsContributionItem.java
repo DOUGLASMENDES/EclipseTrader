@@ -16,7 +16,7 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.ui.actions.CompoundContributionItem;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ToolsContributionItem extends CompoundContributionItem {
 
@@ -29,7 +29,7 @@ public class ToolsContributionItem extends CompoundContributionItem {
             public void run() {
             }
         };
-        lineAction.setImageDescriptor(ChartsUIActivator.imageDescriptorFromPlugin("icons/etool16/line.gif")); //$NON-NLS-1$
+        lineAction.setImageDescriptor(UIActivator.getImageDescriptor("icons/etool16/line.gif")); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

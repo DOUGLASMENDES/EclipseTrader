@@ -38,7 +38,7 @@ import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewVisitor;
 import org.eclipsetrader.core.views.ViewEvent;
 import org.eclipsetrader.core.views.ViewItemDelta;
-import org.eclipsetrader.ui.internal.trading.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class PortfolioView extends PlatformObject implements IView {
 
@@ -256,8 +256,8 @@ public class PortfolioView extends PlatformObject implements IView {
             try {
                 ((IViewChangeListener) l[i]).viewChanged(e);
             } catch (Throwable t) {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error notifiying listeners", t); //$NON-NLS-1$
-                Activator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error notifiying listeners", t); //$NON-NLS-1$
+                UIActivator.log(status);
             }
         }
     }

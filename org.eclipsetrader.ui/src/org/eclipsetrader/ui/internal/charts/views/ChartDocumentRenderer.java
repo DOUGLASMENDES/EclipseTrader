@@ -41,7 +41,7 @@ import org.eclipsetrader.ui.charts.ILineDecorator;
 import org.eclipsetrader.ui.charts.IObjectRenderer;
 import org.eclipsetrader.ui.charts.IScaleRenderer;
 import org.eclipsetrader.ui.charts.RenderTarget;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IColorRegistry {
 
@@ -86,12 +86,12 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
 
         graphics.verticalAxis.clear();
         graphics.verticalAxis.addValues(new Object[] {
-                series.getHighest(), series.getLowest()
+            series.getHighest(), series.getLowest()
         });
         graphics.verticalAxis.computeSize(graphics.height);
 
         int dashes[] = {
-                3, 3
+            3, 3
         };
         graphics.gc.setLineDash(dashes);
         graphics.gc.setForeground(getColor(blend(graphics.gc.getForeground().getRGB(), graphics.gc.getBackground().getRGB(), 15)));
@@ -170,7 +170,7 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
                 if (series != null) {
                     graphics.verticalAxis.clear();
                     graphics.verticalAxis.addValues(new Object[] {
-                            series.getHighest(), series.getLowest()
+                        series.getHighest(), series.getLowest()
                     });
 
                     IAdaptable[] values = series.getValues();
@@ -188,10 +188,10 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
                 }
             }
         } catch (Error e) {
-            if (ChartsUIActivator.getDefault() == null) {
+            if (UIActivator.getDefault() == null) {
                 throw e;
             }
-            ChartsUIActivator.log(new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartDocumentRenderer_RenderingErrorMessage));
+            UIActivator.log(new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartDocumentRenderer_RenderingErrorMessage));
         }
     }
 
@@ -278,7 +278,7 @@ public class ChartDocumentRenderer implements IChartRenderer, IScaleRenderer, IC
 
         graphics.verticalAxis.clear();
         graphics.verticalAxis.addValues(new Object[] {
-                series.getHighest(), series.getLowest()
+            series.getHighest(), series.getLowest()
         });
         graphics.verticalAxis.computeSize(graphics.height);
 

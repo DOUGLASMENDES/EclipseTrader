@@ -18,7 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.views.SecuritySelectionControl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,7 +42,7 @@ public class InstrumentsPage extends WizardPage {
         setControl(content);
         initializeDialogUnits(content);
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         IRepositoryService repositoryService = bundleContext.getService(serviceReference);

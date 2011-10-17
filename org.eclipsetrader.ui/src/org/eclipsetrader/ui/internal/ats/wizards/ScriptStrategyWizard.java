@@ -29,7 +29,7 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -43,7 +43,7 @@ public class ScriptStrategyWizard extends Wizard implements INewWizard {
     private IWorkbench workbench;
 
     public ScriptStrategyWizard() {
-        ImageDescriptor descriptor = ImageDescriptor.createFromURL(Activator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
+        ImageDescriptor descriptor = ImageDescriptor.createFromURL(UIActivator.getDefault().getBundle().getResource("icons/wizban/newfile_wiz.gif"));
         image = descriptor.createImage();
     }
 
@@ -92,7 +92,7 @@ public class ScriptStrategyWizard extends Wizard implements INewWizard {
         resource.setInstruments(instrumentsPage.getInstruments());
         resource.setBarsTimeSpan(barsPage.getValues());
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         final IRepositoryService service = bundleContext.getService(serviceReference);
@@ -113,12 +113,12 @@ public class ScriptStrategyWizard extends Wizard implements INewWizard {
         IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
         try {
             IStoreObject storeObject = (IStoreObject) resource.getAdapter(IStoreObject.class);
-            IDialogSettings dialogSettings = Activator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
+            IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
 
             page.showView(ScriptEditor.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
         } catch (PartInitException e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error opening script editor", e); //$NON-NLS-1$
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening script editor", e); //$NON-NLS-1$
+            UIActivator.log(status);
         }
 
         return true;

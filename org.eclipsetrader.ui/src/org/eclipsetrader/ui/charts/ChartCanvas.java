@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.TimeSpan;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ChartCanvas {
 
@@ -268,8 +268,8 @@ public class ChartCanvas {
                 }
                 paintObjects(graphics, clientArea);
             } catch (Throwable e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_RenderingChartError, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartCanvas_RenderingChartError, e);
+                UIActivator.log(status);
             } finally {
                 canvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);
                 graphics.dispose();
@@ -401,8 +401,8 @@ public class ChartCanvas {
                     }
                 }
             } catch (Error e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.ChartCanvas_VerticalScaleRenderingError, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.ChartCanvas_VerticalScaleRenderingError, e);
+                UIActivator.log(status);
             } finally {
                 verticalScaleCanvas.setData(BaseChartViewer.K_NEEDS_REDRAW, Boolean.FALSE);
                 graphics.dispose();

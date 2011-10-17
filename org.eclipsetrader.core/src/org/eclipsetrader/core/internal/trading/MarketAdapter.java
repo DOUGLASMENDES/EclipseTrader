@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.feed.IBackfillConnector;
 import org.eclipsetrader.core.feed.IFeedConnector;
 import org.eclipsetrader.core.instruments.ISecurity;
+import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
 import org.eclipsetrader.core.markets.IMarketService;
@@ -163,7 +164,7 @@ public class MarketAdapter extends XmlAdapter<String, IMarket> {
         IMarket market = null;
 
         try {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+            BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
             ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
 
             IMarketService marketService = (IMarketService) context.getService(serviceReference);
@@ -171,13 +172,13 @@ public class MarketAdapter extends XmlAdapter<String, IMarket> {
 
             context.ungetService(serviceReference);
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading market service", e);
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading market service", e);
+            CoreActivator.log(status);
         }
 
         if (market == null) {
-            Status status = new Status(IStatus.WARNING, Activator.PLUGIN_ID, 0, "Failed to load market " + v, null);
-            Activator.log(status);
+            Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Failed to load market " + v, null);
+            CoreActivator.log(status);
             return new FailsafeMarket(v);
         }
 

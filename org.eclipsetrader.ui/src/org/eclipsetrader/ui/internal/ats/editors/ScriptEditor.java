@@ -48,7 +48,7 @@ import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -86,7 +86,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
                     });
                 }
                 else if ((delta.getKind() & RepositoryResourceDelta.MOVED_TO) != 0) {
-                    dialogSettings.put(Activator.K_URI, script.getStore().toURI().toString());
+                    dialogSettings.put(UIActivator.K_URI, script.getStore().toURI().toString());
                 }
             }
         }
@@ -102,15 +102,15 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         super.init(site, memento);
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         repositoryService = bundleContext.getService(serviceReference);
 
-        dialogSettings = Activator.getDefault().getDialogSettings().getSection(Activator.K_VIEWS_SECTION).getSection(site.getSecondaryId());
+        dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(UIActivator.K_VIEWS_SECTION).getSection(site.getSecondaryId());
 
         try {
-            uri = new URI(dialogSettings.get(Activator.K_URI));
+            uri = new URI(dialogSettings.get(UIActivator.K_URI));
             script = (ScriptStrategy) repositoryService.getObjectFromURI(uri);
         } catch (Exception e) {
             throw new PartInitException("Error loading view " + site.getSecondaryId(), e);
@@ -261,7 +261,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
             if (status == Status.OK_STATUS) {
                 script = newScript;
                 uri = script.getStore().toURI();
-                dialogSettings.put(Activator.K_URI, uri.toString());
+                dialogSettings.put(UIActivator.K_URI, uri.toString());
                 setPartName(script.getName());
 
                 if (dirty) {
@@ -301,7 +301,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void dispose() {
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         if (serviceReference != null && repositoryService != null) {

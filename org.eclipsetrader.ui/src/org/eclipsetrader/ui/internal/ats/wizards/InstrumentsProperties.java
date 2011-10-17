@@ -21,7 +21,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.core.ats.IStrategy;
 import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.repositories.IRepositoryService;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.ats.SaveAdaptableHelper;
 import org.eclipsetrader.ui.internal.views.SecuritySelectionControl;
 import org.osgi.framework.BundleContext;
@@ -46,7 +46,7 @@ public class InstrumentsProperties extends PropertyPage implements IWorkbenchPro
         content.setLayout(gridLayout);
         initializeDialogUnits(content);
 
-        BundleContext bundleContext = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         IRepositoryService repositoryService = bundleContext.getService(serviceReference);

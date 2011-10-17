@@ -55,6 +55,7 @@ import org.eclipsetrader.core.trading.IOrderValidity;
 import org.eclipsetrader.core.trading.ITradingService;
 import org.eclipsetrader.core.trading.Order;
 import org.eclipsetrader.ui.Util;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class OrderDialog extends TitleAreaDialog {
 
@@ -576,8 +577,8 @@ public class OrderDialog extends TitleAreaDialog {
 
             super.okPressed();
         } catch (Exception e) {
-            Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, Messages.OrderDialog_SubmitErrorMessage, e);
-            Activator.log(status);
+            Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, Messages.OrderDialog_SubmitErrorMessage, e);
+            UIActivator.log(status);
             ErrorDialog.openError(getShell(), getShell().getText(), null, status);
         }
     }

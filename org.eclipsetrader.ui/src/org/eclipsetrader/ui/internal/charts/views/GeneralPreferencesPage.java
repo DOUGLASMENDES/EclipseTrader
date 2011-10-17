@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipsetrader.ui.charts.CrosshairDecorator;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class GeneralPreferencesPage extends PreferencePage implements IWorkbenchPreferencePage {
 
@@ -46,7 +46,7 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
      */
     @Override
     public void init(IWorkbench workbench) {
-        setPreferenceStore(ChartsUIActivator.getDefault().getPreferenceStore());
+        setPreferenceStore(UIActivator.getDefault().getPreferenceStore());
     }
 
     /* (non-Javadoc)
@@ -116,14 +116,14 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
     @Override
     protected void performDefaults() {
         IPreferenceStore preferences = getPreferenceStore();
-        showTooltips.setSelection(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_TOOLTIPS));
-        showScaleTooltips.setSelection(preferences.getBoolean(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
+        showTooltips.setSelection(preferences.getBoolean(UIActivator.PREFS_SHOW_TOOLTIPS));
+        showScaleTooltips.setSelection(preferences.getBoolean(UIActivator.PREFS_SHOW_SCALE_TOOLTIPS));
 
-        int v = preferences.getInt(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION);
+        int v = preferences.getInt(UIActivator.PREFS_CROSSHAIR_ACTIVATION);
         showCrosshair.setSelection(v != CrosshairDecorator.MODE_OFF);
         onMouseDown.setSelection(v == CrosshairDecorator.MODE_OFF || v == CrosshairDecorator.MODE_MOUSE_DOWN);
         onMouseHover.setSelection(v == CrosshairDecorator.MODE_MOUSE_HOVER);
-        showSummaryTooltip.setSelection(preferences.getBoolean(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+        showSummaryTooltip.setSelection(preferences.getBoolean(UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
         updateButtonsEnablement();
 
         super.performDefaults();
@@ -135,20 +135,20 @@ public class GeneralPreferencesPage extends PreferencePage implements IWorkbench
     @Override
     public boolean performOk() {
         IPreferenceStore preferences = getPreferenceStore();
-        preferences.setValue(ChartsUIActivator.PREFS_SHOW_TOOLTIPS, showTooltips.getSelection());
-        preferences.setValue(ChartsUIActivator.PREFS_SHOW_SCALE_TOOLTIPS, showScaleTooltips.getSelection());
+        preferences.setValue(UIActivator.PREFS_SHOW_TOOLTIPS, showTooltips.getSelection());
+        preferences.setValue(UIActivator.PREFS_SHOW_SCALE_TOOLTIPS, showScaleTooltips.getSelection());
         if (showCrosshair.getSelection()) {
             if (onMouseDown.getSelection()) {
-                preferences.setValue(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_MOUSE_DOWN);
+                preferences.setValue(UIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_MOUSE_DOWN);
             }
             if (onMouseHover.getSelection()) {
-                preferences.setValue(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_MOUSE_HOVER);
+                preferences.setValue(UIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_MOUSE_HOVER);
             }
         }
         else {
-            preferences.setValue(ChartsUIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_OFF);
+            preferences.setValue(UIActivator.PREFS_CROSSHAIR_ACTIVATION, CrosshairDecorator.MODE_OFF);
         }
-        preferences.setValue(ChartsUIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP, showSummaryTooltip.getSelection());
+        preferences.setValue(UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP, showSummaryTooltip.getSelection());
         return super.performOk();
     }
 }

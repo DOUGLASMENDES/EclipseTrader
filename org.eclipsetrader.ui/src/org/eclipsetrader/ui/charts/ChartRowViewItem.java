@@ -27,7 +27,7 @@ import org.eclipsetrader.core.internal.charts.repository.Parameter;
 import org.eclipsetrader.core.views.IViewItem;
 import org.eclipsetrader.core.views.IViewItemVisitor;
 import org.eclipsetrader.core.views.ViewItemDelta;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.charts.views.MainChartFactory;
 
 public class ChartRowViewItem implements IViewItem {
@@ -58,8 +58,8 @@ public class ChartRowViewItem implements IViewItem {
             if (MainChartFactory.FACTORY_ID.equals(element[i].getPluginId())) {
                 factory = new MainChartFactory();
             }
-            else if (ChartsUIActivator.getDefault() != null) {
-                factory = ChartsUIActivator.getDefault().getChartObjectFactory(element[i].getPluginId());
+            else if (UIActivator.getDefault() != null) {
+                factory = UIActivator.getDefault().getChartObjectFactory(element[i].getPluginId());
             }
 
             if (factory != null) {
@@ -109,24 +109,24 @@ public class ChartRowViewItem implements IViewItem {
     public void addChildItem(ChartViewItem viewItem) {
         items.add(viewItem);
         parent.fireViewChangedEvent(new ViewItemDelta[] {
-                new ViewItemDelta(ViewItemDelta.CHANGED, this),
-                new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+            new ViewItemDelta(ViewItemDelta.CHANGED, this),
+            new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
         });
     }
 
     public void addChildItem(int index, ChartViewItem viewItem) {
         items.add(index, viewItem);
         parent.fireViewChangedEvent(new ViewItemDelta[] {
-                new ViewItemDelta(ViewItemDelta.CHANGED, this),
-                new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
+            new ViewItemDelta(ViewItemDelta.CHANGED, this),
+            new ViewItemDelta(ViewItemDelta.ADDED, viewItem),
         });
     }
 
     public void removeChildItem(ChartViewItem viewItem) {
         items.remove(viewItem);
         parent.fireViewChangedEvent(new ViewItemDelta[] {
-                new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
-                new ViewItemDelta(ViewItemDelta.CHANGED, this),
+            new ViewItemDelta(ViewItemDelta.REMOVED, viewItem),
+            new ViewItemDelta(ViewItemDelta.CHANGED, this),
         });
     }
 
@@ -147,8 +147,8 @@ public class ChartRowViewItem implements IViewItem {
 
         if (removedItem != null) {
             parent.fireViewChangedEvent(new ViewItemDelta[] {
-                    new ViewItemDelta(ViewItemDelta.REMOVED, removedItem),
-                    new ViewItemDelta(ViewItemDelta.CHANGED, this),
+                new ViewItemDelta(ViewItemDelta.REMOVED, removedItem),
+                new ViewItemDelta(ViewItemDelta.CHANGED, this),
             });
         }
     }

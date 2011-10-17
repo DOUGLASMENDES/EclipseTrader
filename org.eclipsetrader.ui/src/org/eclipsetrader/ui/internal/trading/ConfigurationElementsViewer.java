@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class ConfigurationElementsViewer {
 
@@ -46,12 +47,12 @@ public class ConfigurationElementsViewer {
     private TableViewer selected;
     private Button up;
     private Button down;
-    private Image rightImage = Activator.getImageDescriptor("icons/etool16/right.gif").createImage(); //$NON-NLS-1$
-    private Image allRightImage = Activator.getImageDescriptor("icons/etool16/all-right.gif").createImage(); //$NON-NLS-1$
-    private Image allLeftImage = Activator.getImageDescriptor("icons/etool16/all-left.gif").createImage(); //$NON-NLS-1$
-    private Image leftImage = Activator.getImageDescriptor("icons/etool16/left.gif").createImage(); //$NON-NLS-1$
-    private Image upImage = Activator.getImageDescriptor("icons/etool16/up.gif").createImage(); //$NON-NLS-1$
-    private Image downImage = Activator.getImageDescriptor("icons/etool16/down.gif").createImage(); //$NON-NLS-1$
+    private Image rightImage = UIActivator.getImageDescriptor("icons/etool16/right.gif").createImage(); //$NON-NLS-1$
+    private Image allRightImage = UIActivator.getImageDescriptor("icons/etool16/all-right.gif").createImage(); //$NON-NLS-1$
+    private Image allLeftImage = UIActivator.getImageDescriptor("icons/etool16/all-left.gif").createImage(); //$NON-NLS-1$
+    private Image leftImage = UIActivator.getImageDescriptor("icons/etool16/left.gif").createImage(); //$NON-NLS-1$
+    private Image upImage = UIActivator.getImageDescriptor("icons/etool16/up.gif").createImage(); //$NON-NLS-1$
+    private Image downImage = UIActivator.getImageDescriptor("icons/etool16/down.gif").createImage(); //$NON-NLS-1$
 
     private List<IConfigurationElement> availableList = new ArrayList<IConfigurationElement>();
     private List<IConfigurationElement> selectedList = new ArrayList<IConfigurationElement>();

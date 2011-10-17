@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal.trading;
 
 import org.eclipse.ui.IStartup;
 import org.eclipsetrader.core.trading.IAlertService;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -26,7 +27,7 @@ public class EarlyStartup implements IStartup {
      */
     @Override
     public void earlyStartup() {
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
         ServiceReference serviceReference = context.getServiceReference(IAlertService.class.getName());
         if (serviceReference != null) {
             IAlertService service = (IAlertService) context.getService(serviceReference);

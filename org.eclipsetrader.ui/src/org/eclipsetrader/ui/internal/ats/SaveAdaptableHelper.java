@@ -23,6 +23,7 @@ import org.eclipsetrader.core.repositories.IRepository;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -38,7 +39,7 @@ public class SaveAdaptableHelper {
     public static IStatus save(final IAdaptable adaptableElement, final IRepository repository) {
         final AtomicReference<IStatus> result = new AtomicReference<IStatus>();
 
-        BundleContext context = Activator.getDefault().getBundle().getBundleContext();
+        BundleContext context = UIActivator.getDefault().getBundle().getBundleContext();
         ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
         if (serviceReference != null) {
             final IRepositoryService service = (IRepositoryService) context.getService(serviceReference);

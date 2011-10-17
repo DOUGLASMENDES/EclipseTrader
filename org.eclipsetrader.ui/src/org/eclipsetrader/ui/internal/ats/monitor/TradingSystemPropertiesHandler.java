@@ -28,7 +28,7 @@ import org.eclipse.ui.internal.dialogs.PropertyPageContributorManager;
 import org.eclipse.ui.internal.dialogs.PropertyPageManager;
 import org.eclipsetrader.core.internal.ats.TradingSystem;
 import org.eclipsetrader.ui.PriorityPreferenceNode;
-import org.eclipsetrader.ui.internal.ats.Activator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 @SuppressWarnings("restriction")
 public class TradingSystemPropertiesHandler extends AbstractHandler {
@@ -61,7 +61,7 @@ public class TradingSystemPropertiesHandler extends AbstractHandler {
 
     protected void openPropertiesDialog(Shell shell, final IAdaptable adaptableElement) {
         PropertyPageManager pageManager = new PropertyPageManager();
-        pageManager.addToRoot(new PriorityPreferenceNode(Activator.PLUGIN_ID + ".propertypages.general", generalProperties = new GeneralProperties(), -1));
+        pageManager.addToRoot(new PriorityPreferenceNode(UIActivator.PLUGIN_ID + ".propertypages.general", generalProperties = new GeneralProperties(), -1));
         PropertyPageContributorManager.getManager().contribute(pageManager, adaptableElement);
 
         for (Object nodeObj : pageManager.getElements(PreferenceManager.PRE_ORDER)) {

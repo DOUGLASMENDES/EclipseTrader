@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class SelectionProvider implements ISelectionProvider {
 
@@ -69,8 +69,8 @@ public class SelectionProvider implements ISelectionProvider {
             try {
                 ((ISelectionChangedListener) l[i]).selectionChanged(event);
             } catch (Throwable e) {
-                Status status = new Status(IStatus.ERROR, ChartsUIActivator.PLUGIN_ID, Messages.SelectionProvider_ExceptionMessage, e);
-                ChartsUIActivator.log(status);
+                Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, Messages.SelectionProvider_ExceptionMessage, e);
+                UIActivator.log(status);
             }
         }
     }

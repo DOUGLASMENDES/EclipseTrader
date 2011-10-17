@@ -49,7 +49,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipsetrader.ui.charts.ChartObjectFactoryTransfer;
-import org.eclipsetrader.ui.internal.charts.ChartsUIActivator;
+import org.eclipsetrader.ui.internal.UIActivator;
 
 public class PaletteView extends ViewPart {
 
@@ -106,7 +106,7 @@ public class PaletteView extends ViewPart {
     }
 
     protected void createItems() {
-        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(ChartsUIActivator.INDICATORS_EXTENSION_ID);
+        IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(UIActivator.INDICATORS_EXTENSION_ID);
         IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
 
         List<IConfigurationElement> contributionElements = new ArrayList<IConfigurationElement>();
@@ -145,7 +145,7 @@ public class PaletteView extends ViewPart {
 
         PShelfItem shelfItem = new PShelfItem(shelf, SWT.NONE);
         shelfItem.setText(Messages.PaletteView_OtherTitle);
-        ImageDescriptor imageDescriptor = ChartsUIActivator.imageDescriptorFromPlugin("icons/obj16/blank_obj.gif"); //$NON-NLS-1$
+        ImageDescriptor imageDescriptor = UIActivator.getImageDescriptor("icons/obj16/blank_obj.gif"); //$NON-NLS-1$
         final Image image = imageDescriptor != null ? imageDescriptor.createImage() : null;
         if (image != null) {
             shelfItem.setImage(image);
@@ -197,8 +197,8 @@ public class PaletteView extends ViewPart {
                 IConfigurationElement configurationElement = (IConfigurationElement) element;
                 String template = configurationElement.getAttribute(K_DESCRIPTION) != null ? "{0} - {1}" : "{0}"; //$NON-NLS-1$ //$NON-NLS-2$
                 return NLS.bind(template, new Object[] {
-                        configurationElement.getAttribute(K_NAME),
-                        configurationElement.getAttribute(K_DESCRIPTION)
+                    configurationElement.getAttribute(K_NAME),
+                    configurationElement.getAttribute(K_DESCRIPTION)
                 });
             }
         });
