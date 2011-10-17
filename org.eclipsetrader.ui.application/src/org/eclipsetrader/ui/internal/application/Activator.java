@@ -11,10 +11,16 @@
 
 package org.eclipsetrader.ui.internal.application;
 
+import java.io.File;
 import java.text.MessageFormat;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -43,6 +49,146 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+
+        // TODO Remove after 1.0 release
+        migrateSettings();
+        migrateDialogSections();
+        migrateFiles();
+        // -----------------------------
+    }
+
+    private void migrateFiles() throws Exception {
+        IPath workspacePath = Platform.getLocation().append(".metadata").append(".plugins");
+
+        File file = workspacePath.append("org.eclipsetrader.core.trading").append("alerts.xml").toFile();
+        if (file.exists()) {
+            File destinationFile = workspacePath.append("org.eclipsetrader.core").append("alerts.xml").toFile();
+            if (!destinationFile.exists()) {
+                destinationFile.getParentFile().mkdirs();
+            }
+            else {
+                destinationFile.delete();
+            }
+            file.renameTo(destinationFile);
+        }
+
+        file = workspacePath.append("org.eclipsetrader.core.trading").append("market_brokers.xml").toFile();
+        if (file.exists()) {
+            File destinationFile = workspacePath.append("org.eclipsetrader.core").append("market_brokers.xml").toFile();
+            if (!destinationFile.exists()) {
+                destinationFile.getParentFile().mkdirs();
+            }
+            else {
+                destinationFile.delete();
+            }
+            file.renameTo(destinationFile);
+        }
+    }
+
+    private void migrateSettings() throws Exception {
+        IPath workspacePath = Platform.getLocation().append(".metadata").append(".plugins").append("org.eclipse.core.runtime").append(".settings");
+
+        File preferencesFile = workspacePath.append("org.eclipsetrader.ui.prefs").toFile();
+        PreferenceStore preferences = new PreferenceStore(preferencesFile.toString());
+        if (preferencesFile.exists()) {
+            preferences.load();
+        }
+
+        File legacyPreferencesFile = workspacePath.append("org.eclipsetrader.ui.charts.prefs").toFile();
+        if (legacyPreferencesFile.exists()) {
+            PreferenceStore legacyPreferences = new PreferenceStore(legacyPreferencesFile.toString());
+            legacyPreferences.load();
+            for (String name : legacyPreferences.preferenceNames()) {
+                preferences.putValue(name, legacyPreferences.getString(name));
+            }
+            legacyPreferencesFile.delete();
+        }
+
+        legacyPreferencesFile = workspacePath.append("org.eclipsetrader.ui.trading.prefs").toFile();
+        if (legacyPreferencesFile.exists()) {
+            PreferenceStore legacyPreferences = new PreferenceStore(legacyPreferencesFile.toString());
+            legacyPreferences.load();
+            for (String name : legacyPreferences.preferenceNames()) {
+                preferences.putValue(name, legacyPreferences.getString(name));
+            }
+            legacyPreferencesFile.delete();
+        }
+
+        legacyPreferencesFile = workspacePath.append("org.eclipsetrader.ui.ats.prefs").toFile();
+        if (legacyPreferencesFile.exists()) {
+            PreferenceStore legacyPreferences = new PreferenceStore(legacyPreferencesFile.toString());
+            legacyPreferences.load();
+            for (String name : legacyPreferences.preferenceNames()) {
+                preferences.putValue(name, legacyPreferences.getString(name));
+            }
+            legacyPreferencesFile.delete();
+        }
+
+        if (!preferencesFile.exists()) {
+            preferencesFile.getParentFile().mkdirs();
+        }
+        preferences.save();
+    }
+
+    private void migrateDialogSections() throws Exception {
+        IPath workspacePath = Platform.getLocation().append(".metadata").append(".plugins");
+
+        File dialogSettingsFile = workspacePath.append("org.eclipsetrader.ui").append("dialog_settings.xml").toFile();
+        DialogSettings dialogSettings = new DialogSettings("Workbench");
+        if (dialogSettingsFile.exists()) {
+            dialogSettings.load(dialogSettingsFile.toString());
+        }
+
+        File legacyDialogSettingsFile = workspacePath.append("org.eclipsetrader.ui.charts").append("dialog_settings.xml").toFile();
+        if (legacyDialogSettingsFile.exists()) {
+            DialogSettings legacyDialogSettings = new DialogSettings("Workbench");
+            legacyDialogSettings.load(legacyDialogSettingsFile.toString());
+
+            IDialogSettings[] childSections = legacyDialogSettings.getSections();
+            migrateSections(childSections, dialogSettings);
+
+            legacyDialogSettingsFile.delete();
+        }
+
+        legacyDialogSettingsFile = workspacePath.append("org.eclipsetrader.ui.trading").append("dialog_settings.xml").toFile();
+        if (legacyDialogSettingsFile.exists()) {
+            DialogSettings legacyDialogSettings = new DialogSettings("Workbench");
+            legacyDialogSettings.load(legacyDialogSettingsFile.toString());
+
+            IDialogSettings[] childSections = legacyDialogSettings.getSections();
+            migrateSections(childSections, dialogSettings);
+
+            legacyDialogSettingsFile.delete();
+        }
+
+        legacyDialogSettingsFile = workspacePath.append("org.eclipsetrader.ui.ats").append("dialog_settings.xml").toFile();
+        if (legacyDialogSettingsFile.exists()) {
+            DialogSettings legacyDialogSettings = new DialogSettings("Workbench");
+            legacyDialogSettings.load(legacyDialogSettingsFile.toString());
+
+            IDialogSettings[] childSections = legacyDialogSettings.getSections();
+            migrateSections(childSections, dialogSettings);
+
+            legacyDialogSettingsFile.delete();
+        }
+
+        if (!dialogSettingsFile.exists()) {
+            dialogSettingsFile.getParentFile().mkdirs();
+        }
+        dialogSettings.save(dialogSettingsFile.toString());
+    }
+
+    private void migrateSections(IDialogSettings[] sections, IDialogSettings to) {
+        for (int i = 0; i < sections.length; i++) {
+            IDialogSettings targetSection = to.getSection(sections[i].getName());
+            if (targetSection != null) {
+                IDialogSettings[] childSections = sections[i].getSections();
+                migrateSections(childSections, targetSection);
+            }
+            else {
+                to.addSection(sections[i]);
+            }
+        }
     }
 
     /*
