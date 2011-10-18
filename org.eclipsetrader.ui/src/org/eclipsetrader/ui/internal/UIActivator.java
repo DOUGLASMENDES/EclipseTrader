@@ -166,8 +166,7 @@ public class UIActivator extends AbstractUIPlugin {
         if (plugin == null || plugin.getImageRegistry() == null) {
             return null;
         }
-        ImageDescriptor descriptor = plugin.getImageRegistry().getDescriptor(key);
-        return descriptor != null ? descriptor.createImage() : null;
+        return plugin.getImageRegistry().get(key);
     }
 
     /* (non-Javadoc)
