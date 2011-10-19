@@ -30,7 +30,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -92,6 +91,9 @@ public class Level2View extends ViewPart {
     private static final int FADE_TIMER = 500;
     private static final String VIEW_TITLE_TOOLTIP = "Level II - {0}";
 
+    private IMarketService marketService;
+    private IFeedService feedService;
+
     private Text symbol;
     private Label activeConnector;
 
@@ -115,8 +117,10 @@ public class Level2View extends ViewPart {
     private IMemento memento;
     private IFeedConnector2 connector;
     private IFeedSubscription2 subscription;
+    private ITrade lastTrade;
     private ILastClose lastClose;
-    private IBook book;
+    private IBook lastBook;
+    private IBook nextBook;
 
     private Action showMarketMakerAction;
     private Action hideSummaryAction;
@@ -145,24 +149,33 @@ public class Level2View extends ViewPart {
         @Override
         public void run() {
             if (!table.isDisposed()) {
-                table.setRedraw(false);
-                try {
-                    for (TableItem tableItem : table.getItems()) {
-                        int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
-                        if (timers != null) {
-                            for (int i = 0; i < timers.length; i++) {
-                                if (timers[i] > 0) {
-                                    timers[i]--;
-                                    updateBackground(tableItem, i);
-                                }
+                for (TableItem tableItem : table.getItems()) {
+                    int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
+                    if (timers != null) {
+                        for (int i = 0; i < timers.length; i++) {
+                            if (timers[i] > 0) {
+                                timers[i]--;
+                                updateBackground(tableItem, i);
                             }
                         }
                     }
-                } finally {
-                    table.setRedraw(true);
                 }
                 table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
             }
+        }
+    };
+
+    private Runnable bookUpdateRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (table == null || table.isDisposed()) {
+                return;
+            }
+            if (lastBook != nextBook) {
+                onBookUpdate(lastBook = nextBook);
+            }
+            Display.getDefault().timerExec(100, bookUpdateRunnable);
         }
     };
 
@@ -191,13 +204,21 @@ public class Level2View extends ViewPart {
         super.init(site, memento);
         this.memento = memento;
 
+        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+
+        ServiceReference<IMarketService> marketServiceReference = context.getServiceReference(IMarketService.class);
+        marketService = context.getService(marketServiceReference);
+
+        ServiceReference<IFeedService> feedServiceReference = context.getServiceReference(IFeedService.class);
+        feedService = context.getService(feedServiceReference);
+
         showMarketMakerAction = new Action("Show Market Maker", IAction.AS_CHECK_BOX) {
 
             @Override
             public void run() {
                 updateViewer();
-                if (book != null) {
-                    onBookUpdate(book);
+                if (lastBook != null) {
+                    onBookUpdate(lastBook);
                 }
             }
         };
@@ -282,7 +303,7 @@ public class Level2View extends ViewPart {
                 }
 
                 dropDownMenu = new Menu(connectorButton);
-                List<IFeedConnector> c = Arrays.asList(getFeedService().getConnectors());
+                List<IFeedConnector> c = Arrays.asList(feedService.getConnectors());
                 Collections.sort(c, new Comparator<IFeedConnector>() {
 
                     @Override
@@ -327,9 +348,6 @@ public class Level2View extends ViewPart {
 
         createBookViewer(content);
 
-        setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
-        table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
-
         if (memento != null) {
             String s = memento.getString("symbol");
             if (s != null) {
@@ -346,7 +364,7 @@ public class Level2View extends ViewPart {
 
             String id = memento.getString("connector");
             if (id != null) {
-                IFeedConnector connector = getFeedService().getConnector(id);
+                IFeedConnector connector = feedService.getConnector(id);
                 if (connector == null) {
                     connector = CoreActivator.getDefault().getDefaultConnector();
                 }
@@ -362,10 +380,16 @@ public class Level2View extends ViewPart {
                 subscription.addSubscriptionListener(subscriptionListener);
 
                 lastClose = subscription.getLastClose();
-                update(subscription.getTrade());
+                lastTrade = subscription.getTrade();
                 update(subscription.getTodayOHL());
+                update();
             }
         }
+
+        setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
+
+        Display.getDefault().timerExec(FADE_TIMER, fadeUpdateRunnable);
+        Display.getDefault().timerExec(100, bookUpdateRunnable);
     }
 
     /* (non-Javadoc)
@@ -400,9 +424,18 @@ public class Level2View extends ViewPart {
             subscription.removeSubscriptionListener(subscriptionListener);
             subscription.dispose();
         }
+
         for (int i = 0; i < tickFade.length; i++) {
             tickFade[i].dispose();
         }
+
+        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+
+        ServiceReference<IMarketService> marketServiceReference = context.getServiceReference(IMarketService.class);
+        context.ungetService(marketServiceReference);
+        ServiceReference<IFeedService> feedServiceReference = context.getServiceReference(IFeedService.class);
+        context.ungetService(feedServiceReference);
+
         super.dispose();
     }
 
@@ -466,7 +499,7 @@ public class Level2View extends ViewPart {
 
         tableColumn = columnIndex < table.getColumnCount() ? table.getColumn(columnIndex) : new TableColumn(table, SWT.CENTER);
         tableColumn.setText("Q.ty");
-        tableLayout.setColumnData(tableColumn, new ColumnWeightData(showMarketMakerAction.isChecked() ? 22 : 24));
+        tableLayout.setColumnData(tableColumn, new ColumnWeightData(showMarketMakerAction.isChecked() ? 21 : 24));
         columnIndex++;
 
         tableColumn = columnIndex < table.getColumnCount() ? table.getColumn(columnIndex) : new TableColumn(table, SWT.CENTER);
@@ -563,32 +596,44 @@ public class Level2View extends ViewPart {
             if (showMarketMakerAction.isChecked()) {
                 String s = entry.getMarketMaker() != null ? entry.getMarketMaker() : "";
                 if (!s.equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
+                    if (!"".equals(tableItem.getText(columnIndex))) {
+                        timers[columnIndex] = 6;
+                    }
+                    tableItem.setText(columnIndex, s);
+                    updateBackground(tableItem, columnIndex);
                 }
-                tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex++);
+                columnIndex++;
             }
 
             String s = numberFormatter.format(entry.getProposals());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex++);
+            columnIndex++;
 
             s = numberFormatter.format(entry.getQuantity());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex++);
+            columnIndex++;
 
             s = priceFormatter.format(entry.getPrice());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex++);
+            columnIndex++;
         }
         else {
             if (showMarketMakerAction.isChecked()) {
@@ -621,32 +666,44 @@ public class Level2View extends ViewPart {
             if (showMarketMakerAction.isChecked()) {
                 String s = entry.getMarketMaker() != null ? entry.getMarketMaker() : "";
                 if (!s.equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
+                    if (!"".equals(tableItem.getText(columnIndex))) {
+                        timers[columnIndex] = 6;
+                    }
+                    tableItem.setText(columnIndex, s);
+                    updateBackground(tableItem, columnIndex);
                 }
-                tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex--);
+                columnIndex--;
             }
 
             String s = numberFormatter.format(entry.getProposals());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex--);
+            columnIndex--;
 
             s = numberFormatter.format(entry.getQuantity());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex--);
+            columnIndex--;
 
             s = priceFormatter.format(entry.getPrice());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                timers[columnIndex] = 6;
+                if (!"".equals(tableItem.getText(columnIndex))) {
+                    timers[columnIndex] = 6;
+                }
+                tableItem.setText(columnIndex, s);
+                updateBackground(tableItem, columnIndex);
             }
-            tableItem.setText(columnIndex, s);
-            updateBackground(tableItem, columnIndex--);
+            columnIndex--;
         }
         else {
             if (showMarketMakerAction.isChecked()) {
@@ -672,8 +729,6 @@ public class Level2View extends ViewPart {
     }
 
     protected void onBookUpdate(IBook book) {
-        this.book = book;
-
         IBookEntry[] bidEntries = book.getBidProposals();
         IBookEntry[] askEntries = book.getAskProposals();
         int rows = Math.max(bidEntries.length, askEntries.length);
@@ -688,7 +743,7 @@ public class Level2View extends ViewPart {
                 if (timers == null || timers.length != table.getColumnCount()) {
                     timers = new int[table.getColumnCount()];
                     for (int i = 0; i < timers.length; i++) {
-                        timers[i] = 6;
+                        timers[i] = 0;
                     }
                     tableItem.setData(K_FADE_LEVELS, timers);
                 }
@@ -706,6 +761,8 @@ public class Level2View extends ViewPart {
         if (doLayout) {
             table.layout();
             table.getParent().layout();
+            table.layout();
+            table.getParent().layout();
         }
 
         long[] leftWeights = new long[Math.min(bidEntries.length, 5)];
@@ -721,22 +778,6 @@ public class Level2View extends ViewPart {
         pressureBar.setWeights(leftWeights, rightWeights);
     }
 
-    protected IMarketService getMarketService() {
-        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-        ServiceReference serviceReference = context.getServiceReference(IMarketService.class.getName());
-        IMarketService service = (IMarketService) context.getService(serviceReference);
-        context.ungetService(serviceReference);
-        return service;
-    }
-
-    protected IFeedService getFeedService() {
-        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-        ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
-        IFeedService service = (IFeedService) context.getService(serviceReference);
-        context.ungetService(serviceReference);
-        return service;
-    }
-
     protected void onSetSymbol() {
         if (subscription != null && subscription.getSymbol().equals(symbol.getText())) {
             return;
@@ -748,12 +789,14 @@ public class Level2View extends ViewPart {
                 subscription.dispose();
             }
 
-            subscription = this.connector.subscribeLevel2(symbol.getText());
+            subscription = connector.subscribeLevel2(symbol.getText());
             subscription.addSubscriptionListener(subscriptionListener);
 
             lastClose = subscription.getLastClose();
-            update(subscription.getTrade());
+            lastTrade = subscription.getTrade();
             update(subscription.getTodayOHL());
+
+            update();
 
             IBook book = subscription.getBook();
             if (book != null) {
@@ -787,8 +830,10 @@ public class Level2View extends ViewPart {
                 subscription.addSubscriptionListener(subscriptionListener);
 
                 lastClose = subscription.getLastClose();
-                update(subscription.getTrade());
+                lastTrade = subscription.getTrade();
                 update(subscription.getTodayOHL());
+
+                update();
 
                 IBook book = subscription.getBook();
                 if (book != null) {
@@ -801,7 +846,7 @@ public class Level2View extends ViewPart {
     public void setSecurity(ISecurity security) {
         IFeedConnector connector = null;
 
-        IMarket[] market = getMarketService().getMarkets();
+        IMarket[] market = marketService.getMarkets();
         for (int i = 0; i < market.length; i++) {
             if (market[i].hasMember(security)) {
                 connector = market[i].getLiveFeedConnector();
@@ -834,8 +879,10 @@ public class Level2View extends ViewPart {
                 symbol.setText(subscription.getSymbol());
 
                 lastClose = subscription.getLastClose();
-                update(subscription.getTrade());
+                lastTrade = subscription.getTrade();
                 update(subscription.getTodayOHL());
+
+                update();
 
                 IBook book = subscription.getBook();
                 if (book != null) {
@@ -848,46 +895,46 @@ public class Level2View extends ViewPart {
     }
 
     protected void onQuoteUpdate(final QuoteEvent event) {
-        try {
-            table.getDisplay().asyncExec(new Runnable() {
+        Display.getDefault().asyncExec(new Runnable() {
 
-                @Override
-                public void run() {
-                    if (!table.isDisposed()) {
-                        for (QuoteDelta delta : event.getDelta()) {
-                            if (delta.getNewValue() instanceof IBook) {
-                                onBookUpdate((IBook) delta.getNewValue());
-                            }
-                            if (delta.getNewValue() instanceof ITrade) {
-                                ITrade trade = (ITrade) delta.getNewValue();
-                                update(trade);
-                            }
-                            if (delta.getNewValue() instanceof ITodayOHL) {
-                                ITodayOHL todayOHL = (ITodayOHL) delta.getNewValue();
-                                update(todayOHL);
-                            }
-                            if (delta.getNewValue() instanceof ILastClose) {
-                                lastClose = (ILastClose) delta.getNewValue();
-                            }
-                        }
+            @Override
+            public void run() {
+                if (table.isDisposed()) {
+                    return;
+                }
+
+                QuoteDelta[] delta = event.getDelta();
+                for (int i = 0; i < delta.length; i++) {
+                    if (delta[i].getNewValue() instanceof IBook) {
+                        nextBook = (IBook) delta[i].getNewValue();
+                    }
+                    if (delta[i].getNewValue() instanceof ITrade) {
+                        lastTrade = (ITrade) delta[i].getNewValue();
+                        update();
+                    }
+                    if (delta[i].getNewValue() instanceof ITodayOHL) {
+                        ITodayOHL todayOHL = (ITodayOHL) delta[i].getNewValue();
+                        update(todayOHL);
+                    }
+                    if (delta[i].getNewValue() instanceof ILastClose) {
+                        lastClose = (ILastClose) delta[i].getNewValue();
+                        update();
                     }
                 }
-            });
-        } catch (SWTException e) {
-            // Ignore
-        }
+            }
+        });
     }
 
-    protected void update(ITrade trade) {
-        time.setText(trade != null && trade.getTime() != null ? timeFormatter.format(trade.getTime()) : "");
-        last.setText(trade != null && trade.getPrice() != null ? priceFormatter.format(trade.getPrice()) : "");
-        volume.setText(trade != null && trade.getVolume() != null ? numberFormatter.format(trade.getVolume()) : "");
+    protected void update() {
+        time.setText(lastTrade != null && lastTrade.getTime() != null ? timeFormatter.format(lastTrade.getTime()) : "");
+        last.setText(lastTrade != null && lastTrade.getPrice() != null ? priceFormatter.format(lastTrade.getPrice()) : "");
+        volume.setText(lastTrade != null && lastTrade.getVolume() != null ? numberFormatter.format(lastTrade.getVolume()) : "");
 
-        if (trade != null && lastClose != null && lastClose.getPrice() != null && trade.getPrice() != null) {
-            double changePercent = (trade.getPrice() - lastClose.getPrice()) / lastClose.getPrice() * 100.0;
+        if (lastTrade != null && lastClose != null && lastClose.getPrice() != null && lastTrade.getPrice() != null) {
+            double changePercent = (lastTrade.getPrice() - lastClose.getPrice()) / lastClose.getPrice() * 100.0;
             change.setText(NLS.bind("{0}{1}%", new Object[] {
-                    changePercent < 0 ? "-" : changePercent > 0 ? "+" : "",
-                    percentageFormatter.format(Math.abs(changePercent)),
+                changePercent < 0 ? "-" : changePercent > 0 ? "+" : "",
+                percentageFormatter.format(Math.abs(changePercent)),
             }));
         }
         else {
