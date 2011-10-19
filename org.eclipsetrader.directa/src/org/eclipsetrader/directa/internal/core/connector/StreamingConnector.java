@@ -15,13 +15,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -68,10 +65,6 @@ import org.eclipsetrader.core.feed.IFeedConnector2;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
 import org.eclipsetrader.core.feed.IFeedSubscription2;
-import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.LastClose;
 import org.eclipsetrader.core.feed.Quote;
 import org.eclipsetrader.core.feed.QuoteDelta;
@@ -920,18 +913,13 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 client.executeMethod(method);
 
                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("snapshot.data")));
 
                 String s5;
                 while ((s5 = bufferedreader.readLine()) != null && !s5.startsWith(s)) {
-                    bufferedWriter.write(s5);
-                    bufferedWriter.write("\r\n");
                 }
 
                 if (s5 != null) {
                     do {
-                        bufferedWriter.write(s5);
-                        bufferedWriter.write("\r\n");
                         if (s5.startsWith(s)) {
                             String as[] = new String[43];
                             for (int i = 0; i < 43; i++) {
@@ -965,8 +953,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                         }
                     } while ((s5 = bufferedreader.readLine()) != null);
                 }
-
-                bufferedWriter.close();
             } catch (Exception e) {
                 Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e); //$NON-NLS-1$
                 Activator.log(status);
@@ -985,7 +971,6 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 IdentifierType identifierType = subscription.getIdentifierType();
                 PriceDataType priceData = identifierType.getPriceData();
 
-                Object oldValue = identifierType.getTrade();
                 priceData.setLast(Double.parseDouble(sVal[PREZZO]));
                 priceData.setVolume(Long.parseLong(sVal[VOLUME]));
                 try {
@@ -1006,42 +991,23 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                     Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     Activator.log(status);
                 }
-                Object newValue = new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume());
-                if (!newValue.equals(oldValue)) {
-                    subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-                    identifierType.setTrade((ITrade) newValue);
-                }
+                subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 
-                oldValue = identifierType.getQuote();
                 priceData.setBid(Double.parseDouble(sVal[BID_PREZZO]));
                 priceData.setBidSize(Long.parseLong(sVal[BID_QUANTITA]));
                 priceData.setAsk(Double.parseDouble(sVal[ASK_PREZZO]));
                 priceData.setAskSize(Long.parseLong(sVal[ASK_QUANTITA]));
-                newValue = new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize());
-                if (!newValue.equals(oldValue)) {
-                    subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-                    identifierType.setQuote((IQuote) newValue);
-                }
+                subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
 
-                oldValue = identifierType.getTodayOHL();
                 priceData.setOpen(Double.parseDouble(sVal[APERTURA]));
                 priceData.setHigh(Double.parseDouble(sVal[MASSIMO]));
                 priceData.setLow(Double.parseDouble(sVal[MINIMO]));
                 if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
-                    newValue = new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow());
-                    if (!newValue.equals(oldValue)) {
-                        subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-                        identifierType.setTodayOHL((ITodayOHL) newValue);
-                    }
+                    subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
                 }
 
-                oldValue = identifierType.getLastClose();
                 priceData.setLastClose(Double.parseDouble(sVal[PRECEDENTE]));
-                newValue = new LastClose(priceData.getLastClose(), null);
-                if (!newValue.equals(oldValue)) {
-                    subscription.addDelta(new QuoteDelta(identifierType.getIdentifier(), oldValue, newValue));
-                    identifierType.setLastClose((ILastClose) newValue);
-                }
+                subscription.setLastClose(new LastClose(priceData.getLastClose(), null));
             }
 
             wakeupNotifyThread();
