@@ -131,6 +131,12 @@ public class TimeSpan {
         return false;
     }
 
+    public String getDescription() {
+        return NLS.bind("{0} {1}", new Object[] {
+            String.valueOf(length), units.toString()
+        });
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

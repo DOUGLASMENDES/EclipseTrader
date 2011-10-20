@@ -39,4 +39,6 @@ public interface IHistory extends IAdaptable {
     public ISplit[] getSplits();
 
     public IOHLC[] getAdjustedOHLC();
+
+    public IHistory[] getDay(Date date);
 }

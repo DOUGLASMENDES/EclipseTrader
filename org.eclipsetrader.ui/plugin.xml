@@ -177,6 +177,13 @@
             name="Trading Systems Monitor"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            class="org.eclipsetrader.ui.internal.charts.views.HistoryDataEditorPart"
+            icon="icons/eview16/table_edit.png"
+            id="org.eclipsetrader.ui.editors.history"
+            name="History Editor">
+      </view>
    </extension>
    <extension
          point="org.eclipsetrader.core.providers">
@@ -672,6 +679,25 @@
             </and>
          </enabledWhen>
       </handler>
+      <handler
+            commandId="org.eclipsetrader.ui.file.open.data">
+         <class
+               class="org.eclipsetrader.ui.internal.charts.views.DataOpenHandler">
+         </class>
+         <activeWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate
+                     operator="and">
+                  <adapt
+                        type="org.eclipsetrader.core.instruments.Security">
+                  </adapt>
+               </iterate>
+            </and>
+         </activeWhen>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -802,6 +828,25 @@
          </command>
       </menuContribution>
       <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=group.edit">
+         <command
+               commandId="org.eclipsetrader.ui.file.open.data">
+            <visibleWhen>
+               <and>
+                  <count
+                        value="+">
+                  </count>
+                  <iterate
+                        operator="and">
+                     <adapt
+                           type="org.eclipsetrader.core.instruments.Security">
+                     </adapt>
+                  </iterate>
+               </and>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
             locationURI="popup:org.eclipse.ui.popup.any?after=group.open">
          <command
                commandId="org.eclipse.ui.file.open"
@@ -888,15 +933,19 @@
       </activityPatternBinding>
       <activityPatternBinding
             activityId="org.eclipsetrader.activities.hideContributions"
-            pattern="org.eclipsetrader.ui.charts/org.eclipsetrader.ui.chart">
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.chart">
       </activityPatternBinding>
       <activityPatternBinding
             activityId="org.eclipsetrader.activities.hideContributions"
-            pattern="org.eclipsetrader.ui.ats/org.eclipsetrader.ui.ats.scritpstrategy.editor">
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.ats.scritpstrategy.editor">
       </activityPatternBinding>
       <activityPatternBinding
             activityId="org.eclipsetrader.activities.hideContributions"
-            pattern="org.eclipsetrader.ui.ats/org.eclipsetrader.ui.ats.views.report">
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.ats.views.report">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="org.eclipsetrader.activities.hideContributions"
+            pattern="org.eclipsetrader.ui/org.eclipsetrader.ui.editors.history">
       </activityPatternBinding>
    </extension>
    <extension
@@ -1089,6 +1138,12 @@
       <command
             id="org.eclipsetrader.ui.ats.commands.stop"
             name="Stop">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%opendata.command.description"
+            id="org.eclipsetrader.ui.file.open.data"
+            name="%opendata.command.name">
       </command>
    </extension>
    <extension

@@ -16,6 +16,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipsetrader.ui.UIConstants;
+import org.eclipsetrader.ui.internal.charts.views.HistoryDataEditorPart;
 
 public class TraderPerspective implements IPerspectiveFactory {
 
@@ -32,6 +33,8 @@ public class TraderPerspective implements IPerspectiveFactory {
         editorsFolder.addPlaceholder("org.eclipsetrader.ui.chart:*"); //$NON-NLS-1$
         editorsFolder.addPlaceholder("org.eclipsetrader.news.browser");
         editorsFolder.addPlaceholder("org.eclipsetrader.news.browser:*");
+        editorsFolder.addPlaceholder(HistoryDataEditorPart.VIEW_ID);
+        editorsFolder.addPlaceholder(HistoryDataEditorPart.VIEW_ID + ":*");
 
         // Left.
         IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.18, UIConstants.EDITOR_AREA); //$NON-NLS-1$

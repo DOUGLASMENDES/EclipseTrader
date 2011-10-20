@@ -335,4 +335,8 @@ public class UIActivator extends AbstractUIPlugin {
 
         return null;
     }
+
+    public static ImageDescriptor imageDescriptorFromPlugin(String imageFilePath) {
+        return imageDescriptorFromPlugin(PLUGIN_ID, imageFilePath);
+    }
 }

@@ -13,6 +13,7 @@ package org.eclipsetrader.ui;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +40,9 @@ public class DateCellEditor extends TextCellEditor {
     protected Object doGetValue() {
         String text = (String) super.doGetValue();
         try {
-            return dateFormat.parse(text);
+            if (text != null && !"".equals(text)) {
+                return dateFormat.parse(text);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -51,6 +54,9 @@ public class DateCellEditor extends TextCellEditor {
      */
     @Override
     protected void doSetValue(Object value) {
-        super.doSetValue(dateFormat.format(value));
+        if (value instanceof Date) {
+            super.doSetValue(dateFormat.format(value));
+        }
+        super.doSetValue("");
     }
 }

@@ -19,6 +19,7 @@ import org.eclipsetrader.ui.UIConstants;
 import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
 import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewPart;
 import org.eclipsetrader.ui.internal.ats.monitor.TradingSystemsViewPart;
+import org.eclipsetrader.ui.internal.charts.views.HistoryDataEditorPart;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
 
@@ -47,6 +48,8 @@ public class PerspectiveFactory implements IPerspectiveFactory {
         editors.addPlaceholder("org.eclipsetrader.ui.views.portfolio");
         editors.addPlaceholder("org.eclipsetrader.ui.views.watchlist");
         editors.addPlaceholder("org.eclipsetrader.ui.views.watchlist:*");
+        editors.addPlaceholder(HistoryDataEditorPart.VIEW_ID);
+        editors.addPlaceholder(HistoryDataEditorPart.VIEW_ID + ":*");
 
         // Left.
         IFolderLayout left = layout.createFolder("left", IPageLayout.LEFT, (float) 0.20, UIConstants.EDITOR_AREA); //$NON-NLS-1$

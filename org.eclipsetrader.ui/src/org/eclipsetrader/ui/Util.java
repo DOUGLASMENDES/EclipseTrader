@@ -62,4 +62,8 @@ public class Util {
     public static DateFormat getTimeFormat() {
         return new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
     }
+
+    public static DateFormat getDateTimeFormat() {
+        return new SimpleDateFormat(getDateFormatPattern() + " HH:mm"); //$NON-NLS-1$
+    }
 }

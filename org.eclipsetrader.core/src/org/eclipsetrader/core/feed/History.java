@@ -365,6 +365,145 @@ public class History implements IHistory, IStoreObject {
     }
 
     /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getDay(java.util.Date)
+     */
+    @Override
+    public IHistory[] getDay(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        date = c.getTime();
+
+        IStore dayStore = null;
+        IStoreProperties dayProperties = null;
+
+        if (store != null) {
+            IStore[] childStores = store.fetchChilds(null);
+            if (childStores != null) {
+                for (int i = 0; i < childStores.length; i++) {
+                    IStoreProperties childProperties = childStores[i].fetchProperties(null);
+
+                    Date barsDate = (Date) childProperties.getProperty(IPropertyConstants.BARS_DATE);
+                    if (date.equals(barsDate)) {
+                        dayStore = childStores[i];
+                        dayProperties = childProperties;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (dayStore == null || dayProperties == null) {
+            return new IHistory[0];
+        }
+
+        List<IHistory> l = new ArrayList<IHistory>();
+
+        String[] propertyNames = dayProperties.getPropertyNames();
+        for (int i = 0; i < propertyNames.length; i++) {
+            Object value = dayProperties.getProperty(propertyNames[i]);
+            if (!(value instanceof IOHLC[])) {
+                continue;
+            }
+            TimeSpan timeSpan = TimeSpan.fromString(propertyNames[i]);
+            if (timeSpan != null) {
+                Key key = new Key(date, date, timeSpan);
+
+                WeakReference<HistoryDay> reference = historyMap.get(key);
+                HistoryDay history = reference != null ? reference.get() : null;
+                if (history == null) {
+                    IStore[] storeList = new IStore[] {
+                        dayStore,
+                    };
+                    IStoreProperties[] propertiesList = new IStoreProperties[] {
+                        dayProperties
+                    };
+                    history = createHistoryDay(storeList, propertiesList, timeSpan);
+                    historyMap.put(key, new WeakReference<HistoryDay>(history));
+                }
+                l.add(history);
+            }
+        }
+
+        return l.toArray(new IHistory[l.size()]);
+    }
+
+    @SuppressWarnings("unchecked")
+    private HistoryDay createHistoryDay(IStore[] storeList, IStoreProperties[] propertiesList, TimeSpan timeSpan) {
+        HistoryDay history = new HistoryDay(security, timeSpan, storeList, propertiesList) {
+
+            @Override
+            protected IStoreObject[] updateStoreObjects() {
+                IStoreObject[] storeObject = super.updateStoreObjects();
+
+                Set<Entry<Key, WeakReference<HistoryDay>>> set = historyMap.entrySet();
+                Entry<Key, WeakReference<HistoryDay>>[] entry = set.toArray(new Entry[set.size()]);
+
+                Set<Key> updatedElements = new HashSet<Key>();
+
+                for (int ii = 0; ii < storeObject.length; ii++) {
+                    TimeSpan timeSpan = (TimeSpan) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.TIME_SPAN);
+                    Date barsDate = (Date) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
+                    for (int i = 0; i < entry.length; i++) {
+                        HistoryDay element = entry[i].getValue().get();
+                        Key key = entry[i].getKey();
+                        if (element != null && element != this && element.getTimeSpan().equals(timeSpan)) {
+                            if (!entry[i].getKey().isInRange(barsDate)) {
+                                continue;
+                            }
+                            updatedElements.add(key);
+                        }
+                    }
+                }
+
+                for (Key key : updatedElements) {
+                    HistoryDay element = historyMap.get(key).get();
+                    if (element == null) {
+                        continue;
+                    }
+
+                    Map<Date, IStore> storeList = new HashMap<Date, IStore>();
+                    Map<Date, IStoreProperties> propertyList = new HashMap<Date, IStoreProperties>();
+
+                    IStore[] childStores = store != null ? store.fetchChilds(null) : null;
+                    if (childStores != null) {
+                        for (IStore childStore : childStores) {
+                            IStoreProperties properties = childStore.fetchProperties(null);
+
+                            Date barsDate = (Date) properties.getProperty(IPropertyConstants.BARS_DATE);
+                            if (!key.isInRange(barsDate)) {
+                                continue;
+                            }
+
+                            storeList.put(barsDate, childStore);
+                            propertyList.put(barsDate, properties);
+                        }
+                    }
+                    for (int i = 0; i < storeObject.length; i++) {
+                        Date barsDate = (Date) storeObject[i].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
+                        if (!key.isInRange(barsDate)) {
+                            continue;
+                        }
+
+                        storeList.put(barsDate, storeObject[i].getStore());
+                        propertyList.put(barsDate, storeObject[i].getStoreProperties());
+                    }
+
+                    Collection<IStore> s = storeList.values();
+                    Collection<IStoreProperties> p = propertyList.values();
+                    element.setStoreProperties(s.toArray(new IStore[s.size()]), p.toArray(new IStoreProperties[p.size()]));
+                }
+
+                return storeObject;
+            }
+        };
+        return history;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.feed.IHistory#getTimeSpan()
      */
     @Override
@@ -426,7 +565,9 @@ public class History implements IHistory, IStoreObject {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (adapter.isAssignableFrom(getClass())) {
             return this;

@@ -301,6 +301,14 @@ public class HistoryDay implements IHistory {
     }
 
     /* (non-Javadoc)
+     * @see org.eclipsetrader.core.feed.IHistory#getDay(java.util.Date)
+     */
+    @Override
+    public IHistory[] getDay(Date date) {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipsetrader.core.feed.IHistory#getTimeSpan()
      */
     @Override

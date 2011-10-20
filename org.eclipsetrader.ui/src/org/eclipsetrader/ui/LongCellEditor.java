@@ -17,18 +17,18 @@ import java.text.ParseException;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-public class DoubleCellEditor extends TextCellEditor {
+public class LongCellEditor extends TextCellEditor {
 
     NumberFormat numberFormat = NumberFormat.getInstance();
 
-    public DoubleCellEditor() {
+    public LongCellEditor() {
     }
 
-    public DoubleCellEditor(Composite parent) {
+    public LongCellEditor(Composite parent) {
         super(parent);
     }
 
-    public DoubleCellEditor(Composite parent, int style) {
+    public LongCellEditor(Composite parent, int style) {
         super(parent, style);
     }
 
@@ -40,7 +40,7 @@ public class DoubleCellEditor extends TextCellEditor {
         String text = (String) super.doGetValue();
         try {
             if (text != null && !"".equals(text)) {
-                return numberFormat.parse(text).doubleValue();
+                return numberFormat.parse(text).longValue();
             }
         } catch (ParseException e) {
             e.printStackTrace();
