@@ -1,83 +1,114 @@
 ### Eclipse Workspace Patch 1.0
 #P org.eclipse.ui.workbench
-Index: Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java
-===================================================================
---- Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	(revisione 1609)
-+++ Eclipse UI/org/eclipse/ui/internal/IWorkbenchConstants.java	(copia locale)
-@@ -348,4 +348,6 @@
-     //Colors
-     public static final String COLOR_HIGHLIGHT = "org.eclipse.ui.highlight"; //$NON-NLS-1$
- 
-+	public static final String TAG_DURABLE = "durable"; //$NON-NLS-1$
-+
- }
 Index: Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java
 ===================================================================
 --- Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	(revisione 1609)
 +++ Eclipse UI/org/eclipse/ui/internal/ViewSashContainer.java	(copia locale)
-@@ -118,10 +118,14 @@
-                 folder.setID(partID);
-                 result.add(folder.restoreState(childMem
-                         .getChild(IWorkbenchConstants.TAG_FOLDER)));
--                ContainerPlaceholder placeholder = new ContainerPlaceholder(
--                        partID);
--                placeholder.setRealContainer(folder);
--                part = placeholder;
-+				if (!folder.getDurable()) {
-+					ContainerPlaceholder placeholder = new ContainerPlaceholder(
-+							partID);
-+					placeholder.setRealContainer(folder);
-+					part = placeholder;
-+				} else {
-+					part = folder;
-+				}
-             }
-             // 1FUN70C: ITPUI:WIN - Shouldn't set Container when not active
-             part.setContainer(this);
-Index: Eclipse UI/org/eclipse/ui/internal/ViewStack.java
+@@ -12,7 +12,6 @@
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+-
+ import org.eclipse.core.runtime.IStatus;
+ import org.eclipse.core.runtime.MultiStatus;
+ import org.eclipse.swt.widgets.Composite;
+Index: Eclipse UI/org/eclipse/ui/internal/PerspectiveHelper.java
 ===================================================================
---- Eclipse UI/org/eclipse/ui/internal/ViewStack.java	(revisione 1609)
-+++ Eclipse UI/org/eclipse/ui/internal/ViewStack.java	(copia locale)
-@@ -13,7 +13,9 @@
-  *******************************************************************************/
- package org.eclipse.ui.internal;
+--- Eclipse UI/org/eclipse/ui/internal/PerspectiveHelper.java	(revisione 1609)
++++ Eclipse UI/org/eclipse/ui/internal/PerspectiveHelper.java	(copia locale)
+@@ -99,6 +99,8 @@
  
-+import org.eclipse.core.runtime.IStatus;
- import org.eclipse.jface.action.IMenuManager;
-+import org.eclipse.ui.IMemento;
- import org.eclipse.ui.internal.presentations.PresentablePart;
- import org.eclipse.ui.internal.presentations.PresentationFactoryUtil;
- import org.eclipse.ui.internal.presentations.SystemMenuDetach;
-@@ -95,6 +97,11 @@
-             return false;
+     protected ActualDropTarget dropTarget;
+     
++	private List restoreFastViewsList = new ArrayList();
++
+     private IDragOverListener dragTarget = new IDragOverListener() {
+ 
+         public IDropTarget drag(Control currentControl, Object draggedObject,
+@@ -1321,13 +1323,13 @@
+      * fact to locate the parent.
+      */
+     public void replacePlaceholderWithPart(LayoutPart part) {
+-        
++		restoreDurable();
+         // Look for a PartPlaceholder that will tell us how to position this
+         // object
+         PartPlaceholder[] placeholders = collectPlaceholders();
+         for (int i = 0, length = placeholders.length; i < length; i++) {
+-            if (placeholders[i].getCompoundId().equals(part.getCompoundId())) {
+-                // found a matching placeholder which we can replace with the
++			if (placeholders[i].getCompoundId().equals(part.getCompoundId())) {
++				// found a matching placeholder which we can replace with the
+                 // new View
+                 ILayoutContainer container = placeholders[i].getContainer();
+                 if (container != null) {
+@@ -1347,21 +1349,50 @@
+                     }
+                     container.replace(placeholders[i], part);
+                     return;
+-                }
+-            }
++				}
++			}
          }
++	}
  
-+		// Durable folders should not move
-+		if (durable) {
-+			return false;
++	private void restoreDurable() {
++		LayoutPart[] children = mainLayout.getChildren();
++
++		for (int i = 0; i < children.length; i++) {
++			LayoutPart t = children[i];
++			if (t instanceof ContainerPlaceholder) {
++				LayoutPart r = ((ContainerPlaceholder) t).getRealContainer();
++				if (r instanceof ViewStack) {
++					ViewStack viewStack = (ViewStack) r;
++					viewStack.setDurable(page.window.getWindowAdvisor().isDurableFolder(
++							perspective.getDesc().getId(), r.getID()));
++					if (viewStack.getDurable() && !restoreFastViewsList.contains(viewStack.getID())) {
++						t.container.replace(t, r);
++					}
++				}
++			}
++		}
++		// restoreFastViewsList.clear();
+     }
+ 
+     /**
+      * @see org.eclipse.ui.IPersistable
+      */
+-    public IStatus restoreState(IMemento memento) {
++	public IStatus restoreState(IMemento parent, IMemento memento) {
+         // Restore main window.
+         IMemento childMem = memento
+                 .getChild(IWorkbenchConstants.TAG_MAIN_WINDOW);
+         IStatus r = mainLayout.restoreState(childMem);
+ 
++		IMemento barsMem = parent.getChild(IWorkbenchConstants.TAG_FAST_VIEW_BARS);
++		if (barsMem != null) {
++			IMemento[] bars = barsMem.getChildren(IWorkbenchConstants.TAG_FAST_VIEW_BAR);
++
++			for (int i = 0; i < bars.length; i++) {
++				final String id = bars[i].getString(IWorkbenchConstants.TAG_ID);
++				restoreFastViewsList.add(id);
++			}
 +		}
 +
-         // We need to search if one of the presentations is not moveable
-         // if that's the case the whole folder should not be moveable
-         IStackPresentationSite presenationSite;
-@@ -227,4 +234,17 @@
- 	public boolean getDurable () {
- 		return this.durable;
- 	}
-+
-+	public IStatus saveState(IMemento memento) {
-+		memento.putBoolean(IWorkbenchConstants.TAG_DURABLE, durable);
-+		return super.saveState(memento);
-+	}
-+
-+	public IStatus restoreState(IMemento memento) {
-+		Boolean result = memento.getBoolean(IWorkbenchConstants.TAG_DURABLE);
-+		if (result != null) {
-+			this.durable = result.booleanValue();
-+		}
-+		return super.restoreState(memento);
-+	}
- }
+         // Restore each floating window.
+         if (detachable) {
+             IMemento detachedWindows[] = memento
+Index: Eclipse UI/org/eclipse/ui/internal/Perspective.java
+===================================================================
+--- Eclipse UI/org/eclipse/ui/internal/Perspective.java	(revisione 1609)
++++ Eclipse UI/org/eclipse/ui/internal/Perspective.java	(copia locale)
+@@ -1306,7 +1306,7 @@
+         final PerspectiveHelper pres = presArray[0];
+ 
+         // Read the layout.
+-        result.merge(pres.restoreState(memento
++		result.merge(pres.restoreState(memento, memento
+                 .getChild(IWorkbenchConstants.TAG_LAYOUT)));
+ 
+         StartupThreading.runWithoutExceptions(new StartupRunnable() {
 Index: META-INF/MANIFEST.MF
 ===================================================================
 --- META-INF/MANIFEST.MF	(revisione 1609)
@@ -87,7 +118,7 @@ Index: META-INF/MANIFEST.MF
  Bundle-Name: %pluginName
  Bundle-SymbolicName: org.eclipse.ui.workbench; singleton:=true
 -Bundle-Version: 3.7.0.qualifier
-+Bundle-Version: 3.7.0.I20110519-0100-ET
++Bundle-Version: 3.7.0.I20111020-0925-ET
  Bundle-ClassPath: e4-workbench.jar,
   compatibility.jar,
   .

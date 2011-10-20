@@ -9,13 +9,13 @@ Index: feature.xml
        id="org.eclipse.rcp"
        label="%featureName"
 -      version="3.7.1.qualifier"
-+      version="3.7.1.r37x_v20110729-9DB5FmNFnFLSFCtLxnRfMqt15A4A"
++      version="3.7.1.r37x_v20111020-ET-9DB5FmNFnFLSFCtLxnRfMqt15A4A"
        provider-name="%providerName"
        plugin="org.eclipse.rcp"
        image="eclipse_update_120.jpg"
        license-feature="org.eclipse.license"
 -      license-feature-version="1.0.0.qualifier">
-+      license-feature-version="1.0.0.r37x_v20110729-9DB5FmNFnFLSFCtLxnRfMqt15A4A">
++      license-feature-version="1.0.0.r37x_v20111020-ET-9DB5FmNFnFLSFCtLxnRfMqt15A4A">
  
     <description>
        %description
