@@ -92,6 +92,7 @@ public class CoreActivator extends Plugin {
 
     private MarketBrokerAdapterFactory marketBrokerFactory;
     private TradingSystemServiceFactory tradingSystemServiceFactory;
+    private ServiceRegistration tradingSystemServiceRegistration;
 
     private Map<String, IRepositoryElementFactory> elementFactoryMap = new HashMap<String, IRepositoryElementFactory>();
     private Map<String, IDataProviderFactory> providersFactoryMap = new HashMap<String, IDataProviderFactory>();
@@ -115,8 +116,7 @@ public class CoreActivator extends Plugin {
 
         repositoryService = new RepositoryService();
         repositoryServiceRegistration = context.registerService(new String[] {
-            IRepositoryService.class.getName(),
-            RepositoryService.class.getName()
+            IRepositoryService.class.getName(), RepositoryService.class.getName()
         }, repositoryService, new Hashtable<String, Object>());
         repositoryService.startUp();
 
@@ -151,9 +151,8 @@ public class CoreActivator extends Plugin {
         alertService.startUp();
 
         tradingSystemServiceFactory = new TradingSystemServiceFactory(repositoryService);
-        context.registerService(new String[] {
-            ITradingSystemService.class.getName(),
-            TradingSystemService.class.getName()
+        tradingSystemServiceRegistration = context.registerService(new String[] {
+            ITradingSystemService.class.getName(), TradingSystemService.class.getName()
         }, tradingSystemServiceFactory, new Hashtable<String, Object>());
 
         IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(PROVIDERS_FACTORY_ID);
@@ -186,28 +185,14 @@ public class CoreActivator extends Plugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        ServiceReference<TradingSystemService> serviceReference = context.getServiceReference(TradingSystemService.class);
-        if (serviceReference != null) {
-            TradingSystemService service = context.getService(serviceReference);
-            if (service != null) {
-                service.shutDown();
-            }
-            context.ungetService(serviceReference);
-        }
-
-        if (tradingSystemServiceFactory != null) {
-            tradingSystemServiceFactory.dispose();
-        }
+        tradingSystemServiceRegistration.unregister();
+        tradingSystemServiceFactory.dispose();
 
         alertServiceRegistration.unregister();
         alertService.shutDown();
 
-        if (tradingServiceRegistration != null) {
-            tradingServiceRegistration.unregister();
-        }
-        if (tradingServiceFactory != null) {
-            tradingServiceFactory.dispose();
-        }
+        tradingServiceRegistration.unregister();
+        tradingServiceFactory.dispose();
 
         marketBrokerFactory.save(getStateLocation().append("market_brokers.xml").toFile());
 
@@ -220,33 +205,17 @@ public class CoreActivator extends Plugin {
             getLog().log(status);
         }
 
-        if (currencyServiceRegistration != null) {
-            currencyServiceRegistration.unregister();
-        }
-        if (currencyServiceFactory != null) {
-            currencyServiceFactory.dispose();
-        }
+        currencyServiceRegistration.unregister();
+        currencyServiceFactory.dispose();
 
-        if (marketServiceRegistration != null) {
-            marketServiceRegistration.unregister();
-        }
-        if (marketServiceFactory != null) {
-            marketServiceFactory.dispose();
-        }
+        marketServiceRegistration.unregister();
+        marketServiceFactory.dispose();
 
-        if (feedServiceRegistration != null) {
-            feedServiceRegistration.unregister();
-        }
-        if (feedServiceFactory != null) {
-            feedServiceFactory.dispose();
-        }
+        feedServiceRegistration.unregister();
+        feedServiceFactory.dispose();
 
-        if (repositoryServiceRegistration != null) {
-            repositoryServiceRegistration.unregister();
-        }
-        if (repositoryService != null) {
-            repositoryService.shutDown();
-        }
+        repositoryServiceRegistration.unregister();
+        repositoryService.shutDown();
 
         plugin = null;
         super.stop(context);
