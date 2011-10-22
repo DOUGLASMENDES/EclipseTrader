@@ -97,9 +97,7 @@ public class TradingSystemService implements ITradingSystemService {
     @Override
     public void stop() {
         for (TradingSystem system : list) {
-            if (system.getStatus() != ITradingSystem.STATUS_UNKNOWN) {
-                stop(system);
-            }
+            stop(system);
         }
     }
 

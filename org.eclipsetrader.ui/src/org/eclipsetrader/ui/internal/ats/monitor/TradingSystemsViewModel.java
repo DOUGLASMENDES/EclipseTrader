@@ -11,8 +11,6 @@
 
 package org.eclipsetrader.ui.internal.ats.monitor;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +21,8 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.databinding.viewers.TreeStructureAdvisor;
-import org.eclipsetrader.core.ats.ITradingSystemService;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemService;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.eclipsetrader.ui.internal.ats.ViewColumn;
@@ -38,16 +36,9 @@ public class TradingSystemsViewModel extends TreeStructureAdvisor implements IOb
     private final List<ViewColumn> dataProviders = new ArrayList<ViewColumn>();
     private final WritableList columns = new WritableList(dataProviders, IDataProviderFactory.class);
 
-    private final PropertyChangeListener changeListener = new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-        }
-    };
-
     public TradingSystemsViewModel(ITradingSystemService tradingSystemService) {
         for (ITradingSystem tradingSystem : tradingSystemService.getTradeSystems()) {
-            list.add(new TradingSystemItem(this, tradingSystem));
+            root.add(new TradingSystemItem(this, tradingSystem));
         }
 
         CoreActivator activator = CoreActivator.getDefault();

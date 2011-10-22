@@ -15,7 +15,10 @@ import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 public class TableDecoratingLabelProvider extends DecoratingLabelProvider implements ITableLabelProvider {
 
@@ -56,5 +59,19 @@ public class TableDecoratingLabelProvider extends DecoratingLabelProvider implem
             }
         }
         return text;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.DecoratingLabelProvider#getForeground(java.lang.Object)
+     */
+    @Override
+    public Color getForeground(Object element) {
+        if (element instanceof TradingSystemInstrumentItem) {
+            TradingSystemInstrumentItem item = (TradingSystemInstrumentItem) element;
+            if (item.getStatus() != TradingSystemInstrumentItem.STATUS_NORMAL) {
+                return Display.getDefault().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
+            }
+        }
+        return super.getForeground(element);
     }
 }

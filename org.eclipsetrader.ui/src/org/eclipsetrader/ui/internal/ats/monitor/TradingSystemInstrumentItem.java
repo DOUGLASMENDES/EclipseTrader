@@ -23,8 +23,16 @@ import org.eclipsetrader.ui.internal.ats.ViewItem;
 
 public class TradingSystemInstrumentItem implements ViewItem {
 
+    public static final int STATUS_NORMAL = 0;
+    public static final int STATUS_ADDED = 1;
+    public static final int STATUS_REMOVED = 2;
+
+    public static final String PROP_STATUS = "status";
+
     final TradingSystemItem parent;
     final ITradingSystemInstrument instrument;
+
+    private int status = STATUS_NORMAL;
 
     private final WritableMap observableValues = new WritableMap(NullRealm.getInstance(), String.class, Object.class);
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
@@ -47,6 +55,18 @@ public class TradingSystemInstrumentItem implements ViewItem {
         if (changeSupport != null) {
             changeSupport.addPropertyChangeListener(changeListener);
         }
+    }
+
+    public ITradingSystemInstrument getInstrument() {
+        return instrument;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        changeSupport.firePropertyChange(PROP_STATUS, this.status, this.status = status);
     }
 
     /* (non-Javadoc)

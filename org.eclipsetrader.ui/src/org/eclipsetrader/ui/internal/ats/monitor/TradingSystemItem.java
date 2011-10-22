@@ -11,16 +11,20 @@
 
 package org.eclipsetrader.ui.internal.ats.monitor;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.WritableMap;
-import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.ui.NullRealm;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
@@ -35,12 +39,44 @@ public class TradingSystemItem implements ViewItem {
     private final WritableMap observableValues = new WritableMap(NullRealm.getInstance(), String.class, Object.class);
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
+    private PropertyChangeListener changeListener = new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (ITradingSystem.PROPERTY_INSTRUMENTS.equals(evt.getPropertyName())) {
+                ITradingSystemInstrument[] instrument = (ITradingSystemInstrument[]) evt.getNewValue();
+                for (int i = 0; i < instrument.length; i++) {
+                    if (!hasInstrument(instrument[i])) {
+                        TradingSystemInstrumentItem instrumentItem = new TradingSystemInstrumentItem(TradingSystemItem.this, instrument[i]);
+                        if (tradingSystem.getStatus() != ITradingSystem.STATUS_STOPPED) {
+                            instrumentItem.setStatus(TradingSystemInstrumentItem.STATUS_ADDED);
+                        }
+                        childs.add(instrumentItem);
+                    }
+                }
+                if (tradingSystem.getStatus() != ITradingSystem.STATUS_STARTED) {
+                    cleanUp();
+                }
+            }
+            else if (ITradingSystem.PROPERTY_STATUS.equals(evt.getPropertyName())) {
+                if (tradingSystem.getStatus() == ITradingSystem.STATUS_STOPPED) {
+                    cleanUp();
+                }
+            }
+        }
+    };
+
     public TradingSystemItem(TradingSystemsViewModel model, ITradingSystem tradingSystem) {
         this.model = model;
         this.tradingSystem = tradingSystem;
 
         for (ITradingSystemInstrument instrument : tradingSystem.getInstruments()) {
             list.add(new TradingSystemInstrumentItem(this, instrument));
+        }
+
+        PropertyChangeSupport changeSupport = (PropertyChangeSupport) tradingSystem.getAdapter(PropertyChangeSupport.class);
+        if (changeSupport != null) {
+            changeSupport.addPropertyChangeListener(changeListener);
         }
 
         observableValues.put("_label_", toString());
@@ -56,6 +92,33 @@ public class TradingSystemItem implements ViewItem {
 
     public TradingSystemsViewModel getModel() {
         return model;
+    }
+
+    private boolean hasInstrument(ITradingSystemInstrument instrument) {
+        for (TradingSystemInstrumentItem instrumentItem : list) {
+            if (instrumentItem.getInstrument() == instrument) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void cleanUp() {
+        for (TradingSystemInstrumentItem instrumentItem : list) {
+            instrumentItem.setStatus(TradingSystemInstrumentItem.STATUS_NORMAL);
+        }
+        childs.getRealm().exec(new Runnable() {
+
+            @Override
+            public void run() {
+                Set<ITradingSystemInstrument> set = new HashSet<ITradingSystemInstrument>(Arrays.asList(tradingSystem.getInstruments()));
+                for (TradingSystemInstrumentItem instrumentItem : new ArrayList<TradingSystemInstrumentItem>(list)) {
+                    if (!set.contains(instrumentItem.getInstrument())) {
+                        childs.remove(instrumentItem);
+                    }
+                }
+            }
+        });
     }
 
     /* (non-Javadoc)

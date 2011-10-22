@@ -11,19 +11,24 @@
 
 package org.eclipsetrader.core.internal.ats;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.eclipsetrader.core.ats.IStrategy;
-import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradingSystemContext;
+import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.engines.EngineEvent;
 import org.eclipsetrader.core.ats.engines.JavaScriptEngine;
 import org.eclipsetrader.core.feed.IQuote;
@@ -39,7 +44,7 @@ public class TradingSystem implements ITradingSystem {
     private final Map<ISecurity, TradingSystemInstrument> instruments = new HashMap<ISecurity, TradingSystemInstrument>();
     private JavaScriptEngine engine;
 
-    private int status = STATUS_UNKNOWN;
+    private int status = STATUS_STOPPED;
 
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
@@ -65,12 +70,50 @@ public class TradingSystem implements ITradingSystem {
         }
     };
 
+    private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            if (!IStrategy.PROP_INSTRUMENTS.equals(evt.getPropertyName())) {
+                return;
+            }
+
+            boolean changed = false;
+            ITradingSystemInstrument[] oldInstruments = getInstruments();
+
+            ISecurity[] security = (ISecurity[]) evt.getNewValue();
+            for (int i = 0; i < security.length; i++) {
+                if (!instruments.containsKey(security[i])) {
+                    instruments.put(security[i], new TradingSystemInstrument(security[i]));
+                    changed = true;
+                }
+            }
+
+            Set<ISecurity> set = new HashSet<ISecurity>(Arrays.asList(security));
+            for (Iterator<ISecurity> iter = instruments.keySet().iterator(); iter.hasNext();) {
+                if (!set.contains(iter.next())) {
+                    iter.remove();
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                changeSupport.firePropertyChange(PROPERTY_INSTRUMENTS, oldInstruments, getInstruments());
+            }
+        }
+    };
+
     public TradingSystem(IStrategy strategy) {
         this.strategy = strategy;
         this.properties = new TradingSystemProperties();
 
         for (ISecurity security : strategy.getInstruments()) {
             instruments.put(security, new TradingSystemInstrument(security));
+        }
+
+        PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) strategy.getAdapter(PropertyChangeSupport.class);
+        if (propertyChangeSupport != null) {
+            propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
         }
     }
 
@@ -80,6 +123,13 @@ public class TradingSystem implements ITradingSystem {
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void dispose() {
+        PropertyChangeSupport propertyChangeSupport = (PropertyChangeSupport) strategy.getAdapter(PropertyChangeSupport.class);
+        if (propertyChangeSupport != null) {
+            propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+        }
     }
 
     /* (non-Javadoc)

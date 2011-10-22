@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IAdaptable;
 public interface ITradingSystem extends IAdaptable {
 
     public static final String PROPERTY_STATUS = "status";
+    public static final String PROPERTY_INSTRUMENTS = "instruments";
 
-    public static final int STATUS_UNKNOWN = 0;
     public static final int STATUS_STARTING = 1;
     public static final int STATUS_STARTED = 2;
     public static final int STATUS_STOPPING = 3;

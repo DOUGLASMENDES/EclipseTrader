@@ -104,9 +104,7 @@ public class TradingSystemsViewPart extends ViewPart {
                                 if (viewer.getControl().isDisposed()) {
                                     return;
                                 }
-                                viewer.update(item, new String[] {
-                                    "_label_"
-                                });
+                                viewer.refresh(item);
                             }
                         });
                     }
