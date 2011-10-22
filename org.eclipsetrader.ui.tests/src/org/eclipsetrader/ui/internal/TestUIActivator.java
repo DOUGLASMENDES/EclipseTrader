@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipsetrader.core.internal.markets.MarketService;
 import org.eclipsetrader.core.internal.repositories.RepositoryService;
 import org.eclipsetrader.core.markets.IMarketService;
@@ -27,6 +28,16 @@ public class TestUIActivator extends UIActivator {
             if (fields[i].getName().equals("plugin")) {
                 fields[i].setAccessible(true);
                 fields[i].set(this, this);
+            }
+        }
+    }
+
+    public void dispose() throws Exception {
+        Field[] fields = UIActivator.class.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals("plugin")) {
+                fields[i].setAccessible(true);
+                fields[i].set(this, null);
             }
         }
     }
@@ -59,5 +70,13 @@ public class TestUIActivator extends UIActivator {
     @Override
     public IRepositoryService getRepositoryService() {
         return new RepositoryService();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#getImageRegistry()
+     */
+    @Override
+    public ImageRegistry getImageRegistry() {
+        return null;
     }
 }

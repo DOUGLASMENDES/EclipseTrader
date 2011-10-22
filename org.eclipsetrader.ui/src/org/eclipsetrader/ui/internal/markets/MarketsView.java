@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
@@ -52,6 +53,8 @@ public class MarketsView extends ViewPart {
 
     Display display;
     TableViewer viewer;
+
+    private Image marketIcon;
 
     Action newMarketAction;
     Action deleteAction;
@@ -141,6 +144,8 @@ public class MarketsView extends ViewPart {
 
         site.setSelectionProvider(new SelectionProvider());
 
+        marketIcon = UIActivator.getDefault().getImageRegistry().get(UIConstants.MARKET_OBJECT);
+
         newMarketAction = new NewMarketAction(site.getShell());
 
         deleteAction = new Action("Delete") {
@@ -208,7 +213,7 @@ public class MarketsView extends ViewPart {
         tableColumn.setText("Message");
         tableColumn.setWidth(250);
 
-        viewer.setLabelProvider(new MarketLabelProvider());
+        viewer.setLabelProvider(new MarketLabelProvider(marketIcon));
         viewer.setComparator(new ViewerComparator());
         viewer.setContentProvider(new ArrayContentProvider());
     }

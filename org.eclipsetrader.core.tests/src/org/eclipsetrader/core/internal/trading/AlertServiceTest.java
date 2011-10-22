@@ -17,11 +17,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
+import org.eclipsetrader.core.markets.IMarket;
+import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.trading.AbstractAlert;
 import org.eclipsetrader.core.trading.AlertEvent;
 import org.eclipsetrader.core.trading.IAlert;
@@ -44,6 +48,12 @@ public class AlertServiceTest extends TestCase {
     }
 
     public void testFireSingleAlertEvent() throws Exception {
+        IMarketService marketService = EasyMock.createNiceMock(IMarketService.class);
+        EasyMock.expect(marketService.getMarkets()).andStubReturn(new IMarket[0]);
+        EasyMock.replay(marketService);
+
+        MarketPricingEnvironment pricingEnvironment = new MarketPricingEnvironment(marketService);
+
         ISecurity security = new Security("Test", null);
         IAlert alert = new AbstractAlert() {
 
@@ -52,6 +62,7 @@ public class AlertServiceTest extends TestCase {
                 return true;
             }
         };
+
         PricingEvent pricingEvent = new PricingEvent(security, new PricingDelta[] {
             new PricingDelta(null, new Trade(10.0)),
             new PricingDelta(null, new Trade(10.1))
@@ -60,6 +71,7 @@ public class AlertServiceTest extends TestCase {
         final List<AlertEvent> events = new ArrayList<AlertEvent>();
 
         AlertService service = new AlertService();
+        service.pricingEnvironment = pricingEnvironment;
         service.map.put(security, Arrays.asList(new IAlert[] {
             alert
         }));

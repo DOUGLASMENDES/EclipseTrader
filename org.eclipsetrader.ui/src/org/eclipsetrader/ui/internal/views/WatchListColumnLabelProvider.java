@@ -44,9 +44,11 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
 
     public WatchListColumnLabelProvider(WatchListViewColumn column, IDecoratorManager decoratorManager) {
         this.column = column;
-        this.labelDecorator = decoratorManager.getLabelDecorator();
-        if (this.labelDecorator instanceof IColorDecorator) {
-            this.colorDecorator = (IColorDecorator) this.labelDecorator;
+        if (decoratorManager != null) {
+            this.labelDecorator = decoratorManager.getLabelDecorator();
+            if (this.labelDecorator instanceof IColorDecorator) {
+                this.colorDecorator = (IColorDecorator) this.labelDecorator;
+            }
         }
     }
 
@@ -97,11 +99,13 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
         }
 
         Color decoratedBackgroundColor = colorMap.get(viewItem);
-        boolean ready = "*".equals(labelDecorator.decorateText("", viewItem));
-        if (ready) {
-            if (colorDecorator != null) {
-                decoratedBackgroundColor = colorDecorator.decorateBackground(viewItem);
-                colorMap.put(viewItem, decoratedBackgroundColor);
+        if (labelDecorator != null) {
+            boolean ready = "*".equals(labelDecorator.decorateText("", viewItem));
+            if (ready) {
+                if (colorDecorator != null) {
+                    decoratedBackgroundColor = colorDecorator.decorateBackground(viewItem);
+                    colorMap.put(viewItem, decoratedBackgroundColor);
+                }
             }
         }
         if (decoratedBackgroundColor != null) {
@@ -170,7 +174,9 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
      */
     @Override
     public void addListener(ILabelProviderListener listener) {
-        labelDecorator.addListener(listener);
+        if (labelDecorator != null) {
+            labelDecorator.addListener(listener);
+        }
         super.addListener(listener);
     }
 
@@ -179,7 +185,9 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
      */
     @Override
     public void removeListener(ILabelProviderListener listener) {
-        labelDecorator.removeListener(listener);
+        if (labelDecorator != null) {
+            labelDecorator.removeListener(listener);
+        }
         super.removeListener(listener);
     }
 
@@ -188,7 +196,9 @@ public class WatchListColumnLabelProvider extends ColumnLabelProvider {
      */
     @Override
     public void dispose() {
-        labelDecorator.dispose();
+        if (labelDecorator != null) {
+            labelDecorator.dispose();
+        }
         super.dispose();
     }
 }

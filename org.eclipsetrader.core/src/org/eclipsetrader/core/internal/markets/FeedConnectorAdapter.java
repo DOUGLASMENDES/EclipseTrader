@@ -61,7 +61,7 @@ public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
          */
         @Override
         public String getName() {
-            return null;
+            return id;
         }
 
         /* (non-Javadoc)
@@ -119,6 +119,10 @@ public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
         } catch (Exception e) {
             Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error reading feed service", e);
             CoreActivator.log(status);
+        }
+
+        if (connector == null) {
+            connector = new FailsafeFeedConnector(v);
         }
 
         return connector;

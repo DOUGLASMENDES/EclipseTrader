@@ -36,6 +36,11 @@ public class MarketLabelProviderTest extends TestCase {
             @Override
             protected void initializeImageRegistry(ImageRegistry reg) {
             }
+
+            @Override
+            public ImageRegistry getImageRegistry() {
+                return null;
+            }
         };
     }
 
@@ -130,8 +135,8 @@ public class MarketLabelProviderTest extends TestCase {
         DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
         IMarketDay day = market.getNextDay();
         assertEquals(NLS.bind(Messages.MarketLabelProvider_OpenDate, new Object[] {
-                dateFormat.format(day.getOpenTime()),
-                timeFormat.format(day.getOpenTime()),
+            dateFormat.format(day.getOpenTime()),
+            timeFormat.format(day.getOpenTime()),
         }), new MarketLabelProvider().getColumnText(market, 2));
     }
 }

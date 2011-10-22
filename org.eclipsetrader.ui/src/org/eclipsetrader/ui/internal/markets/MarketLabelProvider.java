@@ -24,18 +24,17 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.markets.IMarket;
 import org.eclipsetrader.core.markets.IMarketDay;
-import org.eclipsetrader.ui.UIConstants;
-import org.eclipsetrader.ui.internal.UIActivator;
 
 public class MarketLabelProvider extends LabelProvider implements ITableLabelProvider, IColorProvider {
 
-    private Image market;
+    private Image marketImage;
     private Color closedColor = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 
     public MarketLabelProvider() {
-        if (UIActivator.getDefault() != null) {
-            market = UIActivator.getDefault().getImageRegistry().get(UIConstants.MARKET_OBJECT);
-        }
+    }
+
+    public MarketLabelProvider(Image marketImage) {
+        this.marketImage = marketImage;
     }
 
     /* (non-Javadoc)
@@ -45,7 +44,7 @@ public class MarketLabelProvider extends LabelProvider implements ITableLabelPro
     public Image getColumnImage(Object element, int columnIndex) {
         if (columnIndex == 0) {
             if (element instanceof IMarket) {
-                return market;
+                return marketImage;
             }
         }
         return null;
@@ -102,8 +101,8 @@ public class MarketLabelProvider extends LabelProvider implements ITableLabelPro
                             }
                             else {
                                 return NLS.bind(Messages.MarketLabelProvider_ClosesInHours, new Object[] {
-                                        minutesToClose / 60,
-                                        minutesToClose % 60
+                                    minutesToClose / 60,
+                                    minutesToClose % 60
                                 });
                             }
                         }
@@ -131,16 +130,16 @@ public class MarketLabelProvider extends LabelProvider implements ITableLabelPro
                                 }
                                 else if (day.getOpenTime().before(midnight.getTime()) && minutesToNextOpen < 1440) {
                                     return NLS.bind(Messages.MarketLabelProvider_OpensInHours, new Object[] {
-                                            minutesToNextOpen / 60,
-                                            minutesToNextOpen % 60
+                                        minutesToNextOpen / 60,
+                                        minutesToNextOpen % 60
                                     });
                                 }
                                 else {
                                     DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG); // Util.getDateFormat();
                                     DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
                                     return NLS.bind(Messages.MarketLabelProvider_OpenDate, new Object[] {
-                                            dateFormat.format(day.getOpenTime()),
-                                            timeFormat.format(day.getOpenTime()),
+                                        dateFormat.format(day.getOpenTime()),
+                                        timeFormat.format(day.getOpenTime()),
                                     });
                                 }
                             }

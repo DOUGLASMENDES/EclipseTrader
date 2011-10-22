@@ -258,7 +258,7 @@ public class ConnectorsPage extends PropertyPage {
             return service;
         } catch (Exception e) {
             Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading feed service", e);
-            UIActivator.getDefault().getLog().log(status);
+            UIActivator.log(status);
         }
         return null;
     }
@@ -275,7 +275,7 @@ public class ConnectorsPage extends PropertyPage {
             return service;
         } catch (Exception e) {
             Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error reading trading service", e);
-            UIActivator.getDefault().getLog().log(status);
+            UIActivator.log(status);
         }
         return null;
     }

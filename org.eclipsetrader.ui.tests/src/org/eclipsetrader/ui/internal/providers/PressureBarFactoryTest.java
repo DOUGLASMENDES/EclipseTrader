@@ -107,7 +107,7 @@ public class PressureBarFactoryTest extends TestCase {
         book = new Book(new BookEntry[] {
             new BookEntry(null, 10.0, 100L, null, null),
         }, new BookEntry[] {
-            new BookEntry(null, 10.0, 50L, null, null),
+            new BookEntry(null, 10.0, 75L, null, null),
         });
         assertNotSame(value, provider.getValue(sourceAdaptable));
     }

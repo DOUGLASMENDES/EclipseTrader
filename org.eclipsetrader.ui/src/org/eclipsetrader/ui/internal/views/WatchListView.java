@@ -77,6 +77,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.internal.WorkbenchPlugin;
+import org.eclipse.ui.internal.decorators.DecoratorManager;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.PricingEvent;
@@ -131,6 +132,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
     private MarketPricingEnvironment pricingEnvironment;
     private Set<WatchListViewItem> updatedItems = new HashSet<WatchListViewItem>();
+    DecoratorManager decoratorManager;
 
     private ControlAdapter columnControlListener = new ControlAdapter() {
 
@@ -296,6 +298,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
             UIActivator.getDefault().getLog().log(status);
         }
 
+        decoratorManager = WorkbenchPlugin.getDefault().getDecoratorManager();
+
         deleteAction = new Action("Delete") {
 
             @Override
@@ -349,8 +353,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
             }
         });
         viewer.addDropSupport(DND.DROP_COPY | DND.DROP_MOVE, new Transfer[] {
-                SecurityObjectTransfer.getInstance(),
-                RepositoryObjectTransfer.getInstance(),
+            SecurityObjectTransfer.getInstance(),
+            RepositoryObjectTransfer.getInstance(),
         }, new ViewerDropAdapter(viewer) {
 
             @Override
@@ -631,7 +635,9 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         return viewer;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     protected int compareValues(IAdaptable v1, IAdaptable v2) {
         Number n1 = (Number) (v1 != null ? v1.getAdapter(Number.class) : null);
         Number n2 = (Number) (v2 != null ? v2.getAdapter(Number.class) : null);
@@ -701,7 +707,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
                 TableViewerColumn viewerColumn = new TableViewerColumn(viewer, alignment);
                 viewerColumn.getColumn().setText(column.getName() != null ? column.getName() : column.getDataProviderFactory().getName());
 
-                WatchListColumnLabelProvider labelProvider = new WatchListColumnLabelProvider(column, WorkbenchPlugin.getDefault().getDecoratorManager());
+                WatchListColumnLabelProvider labelProvider = new WatchListColumnLabelProvider(column, decoratorManager);
                 labelProvider.setColors(evenRowsColor, oddRowsColor, tickBackgroundColor, tickEvenRowsFade, tickOddRowsFade);
                 viewerColumn.setLabelProvider(labelProvider);
                 viewerColumn.setEditingSupport(new WatchListColumEditingSupport(this, column));
