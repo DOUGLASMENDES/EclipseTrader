@@ -17,8 +17,8 @@ import java.beans.PropertyChangeSupport;
 
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.map.WritableMap;
-import org.eclipsetrader.core.NullRealm;
 import org.eclipsetrader.core.ats.ITradingSystemInstrument;
+import org.eclipsetrader.ui.NullRealm;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
 public class TradingSystemInstrumentItem implements ViewItem {

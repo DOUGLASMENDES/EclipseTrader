@@ -3,7 +3,7 @@
  * All Rights Reserved
  */
 
-package org.eclipsetrader.core;
+package org.eclipsetrader.ui;
 
 import org.eclipse.core.databinding.observable.Realm;
 

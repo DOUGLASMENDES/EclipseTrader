@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.core.internal.CoreActivator
 Bundle-Vendor: Eclipsetrader.org
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.databinding.observable,
  javax.xml.bind,
  org.apache.commons.logging,
  org.mozilla.rhino,

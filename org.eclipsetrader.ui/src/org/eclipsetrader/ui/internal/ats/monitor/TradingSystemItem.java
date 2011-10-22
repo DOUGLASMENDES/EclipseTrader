@@ -19,9 +19,9 @@ import java.util.List;
 import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.WritableMap;
-import org.eclipsetrader.core.NullRealm;
 import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.ui.NullRealm;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
 public class TradingSystemItem implements ViewItem {
