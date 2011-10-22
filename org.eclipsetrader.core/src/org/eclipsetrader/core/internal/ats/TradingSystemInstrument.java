@@ -116,6 +116,11 @@ public class TradingSystemInstrument implements ITradingSystemInstrument {
             return changeSupport;
         }
 
+        Object result = instrument.getAdapter(adapter);
+        if (result != null) {
+            return result;
+        }
+
         if (adapter.isAssignableFrom(getClass())) {
             return this;
         }

@@ -11,15 +11,22 @@
 
 package org.eclipsetrader.ui.internal.ats;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class ViewColumn {
 
+    public static final String PROP_NAME = "name"; //$NON-NLS-1$
+
     private final IDataProviderFactory factory;
     private final IDataProvider dataProvider;
 
     private String name;
+
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     public ViewColumn(IDataProviderFactory factory) {
         this.factory = factory;
@@ -29,7 +36,15 @@ public class ViewColumn {
     public ViewColumn(String name, IDataProviderFactory factory) {
         this.factory = factory;
         this.dataProvider = factory.createProvider();
-        this.name = name;
+        this.name = name != null ? name : factory.getName();
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(propertyName, listener);
     }
 
     public String getName() {
@@ -37,7 +52,7 @@ public class ViewColumn {
     }
 
     public void setName(String name) {
-        this.name = name;
+        changeSupport.firePropertyChange(PROP_NAME, this.name, this.name = name);
     }
 
     public IDataProviderFactory getDataProviderFactory() {
@@ -46,5 +61,20 @@ public class ViewColumn {
 
     public IDataProvider getDataProvider() {
         return dataProvider;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ViewColumn)) {
+            return false;
+        }
+        ViewColumn other = (ViewColumn) obj;
+        if (!factory.getId().equals(other.factory.getId())) {
+            return false;
+        }
+        return true;
     }
 }

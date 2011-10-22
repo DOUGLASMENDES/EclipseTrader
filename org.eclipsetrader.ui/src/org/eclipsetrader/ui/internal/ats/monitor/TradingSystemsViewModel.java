@@ -23,8 +23,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.databinding.viewers.TreeStructureAdvisor;
 import org.eclipsetrader.core.ats.ITradingSystem;
 import org.eclipsetrader.core.ats.ITradingSystemService;
-import org.eclipsetrader.core.internal.CoreActivator;
-import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.eclipsetrader.ui.internal.ats.ViewColumn;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
@@ -34,24 +32,41 @@ public class TradingSystemsViewModel extends TreeStructureAdvisor implements IOb
     private final WritableList root = new WritableList(list, TradingSystemItem.class);
 
     private final List<ViewColumn> dataProviders = new ArrayList<ViewColumn>();
-    private final WritableList columns = new WritableList(dataProviders, IDataProviderFactory.class);
+    private final WritableList columns = new WritableList(dataProviders, ViewColumn.class);
 
     public TradingSystemsViewModel(ITradingSystemService tradingSystemService) {
         for (ITradingSystem tradingSystem : tradingSystemService.getTradeSystems()) {
             root.add(new TradingSystemItem(this, tradingSystem));
         }
+    }
 
-        CoreActivator activator = CoreActivator.getDefault();
-        dataProviders.add(new ViewColumn("Last", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.LastTrade")));
-        dataProviders.add(new ViewColumn("Bid", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.BidPrice")));
-        dataProviders.add(new ViewColumn("Ask", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.AskPrice")));
-        dataProviders.add(new ViewColumn("Position", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.Position")));
-        dataProviders.add(new ViewColumn("Date / Time", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.LastTradeDateTime")));
-        dataProviders.add(new ViewColumn("Gain", activator.getDataProviderFactory("org.eclipsetrader.ui.providers.gain")));
+    public WritableList getObservableDataProviders() {
+        return columns;
     }
 
     public List<ViewColumn> getDataProviders() {
         return dataProviders;
+    }
+
+    public void setDataProviders(List<ViewColumn> list) {
+        for (int i = 0; i < list.size(); i++) {
+            int index = columns.indexOf(list.get(i));
+            if (index != i) {
+                if (index != -1) {
+                    columns.remove(index);
+                }
+                columns.add(i, list.get(i));
+            }
+            else {
+                dataProviders.get(index).setName(list.get(index).getName());
+            }
+        }
+        for (ViewColumn column : new ArrayList<ViewColumn>(dataProviders)) {
+            if (!list.contains(column)) {
+                columns.remove(column);
+            }
+        }
+        updateAll();
     }
 
     public List<TradingSystemItem> getList() {
@@ -73,6 +88,14 @@ public class TradingSystemsViewModel extends TreeStructureAdvisor implements IOb
             }
         }
         return null;
+    }
+
+    public void updateAll() {
+        for (TradingSystemItem tradingSystemItem : list) {
+            for (TradingSystemInstrumentItem instrumentItem : tradingSystemItem.getList()) {
+                updateValues(instrumentItem);
+            }
+        }
     }
 
     public void updateValues(TradingSystemInstrumentItem instrumentItem) {

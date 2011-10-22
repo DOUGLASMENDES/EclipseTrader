@@ -51,6 +51,7 @@ public class TradingSystemItem implements ViewItem {
                         if (tradingSystem.getStatus() != ITradingSystem.STATUS_STOPPED) {
                             instrumentItem.setStatus(TradingSystemInstrumentItem.STATUS_ADDED);
                         }
+                        model.updateValues(instrumentItem);
                         childs.add(instrumentItem);
                     }
                 }
