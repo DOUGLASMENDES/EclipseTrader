@@ -24,16 +24,22 @@ import javax.xml.bind.ValidationEventHandler;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipsetrader.core.ats.IStrategy;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemListener;
 import org.eclipsetrader.core.ats.ITradingSystemService;
+import org.eclipsetrader.core.ats.TradingSystemEvent;
 import org.eclipsetrader.core.internal.CoreActivator;
 import org.eclipsetrader.core.internal.ats.repository.SettingsCollection;
 import org.eclipsetrader.core.markets.IMarketService;
+import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
+import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
+import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 
 public class TradingSystemService implements ITradingSystemService {
 
@@ -43,6 +49,39 @@ public class TradingSystemService implements ITradingSystemService {
     private final List<TradingSystem> list = new ArrayList<TradingSystem>();
 
     private SettingsCollection collection;
+    private final ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
+
+    private final IRepositoryChangeListener repositoryChangeListener = new IRepositoryChangeListener() {
+
+        @Override
+        public void repositoryResourceChanged(RepositoryChangeEvent event) {
+            RepositoryResourceDelta[] delta = event.getDeltas();
+            for (int i = 0; i < delta.length; i++) {
+                if (delta[i].getResource() instanceof IStrategy) {
+                    IStrategy strategy = (IStrategy) delta[i].getResource();
+                    if ((delta[i].getKind() & RepositoryResourceDelta.ADDED) != 0) {
+                        TradingSystem tradingSystem = new TradingSystem(strategy);
+                        TradingSystemProperties properties = collection.getSettingsFor(strategy);
+                        if (properties != null) {
+                            tradingSystem.setProperties(properties);
+                        }
+                        list.add(tradingSystem);
+                        fireTradingSystemEvent(new TradingSystemEvent(TradingSystemEvent.KIND_ADDED, tradingSystem));
+                    }
+                    else if ((delta[i].getKind() & RepositoryResourceDelta.REMOVED) != 0) {
+                        for (TradingSystem tradingSystem : list) {
+                            if (tradingSystem.getStrategy() == strategy) {
+                                tradingSystem.stop();
+                                list.remove(tradingSystem);
+                                fireTradingSystemEvent(new TradingSystemEvent(TradingSystemEvent.KIND_REMOVED, tradingSystem));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
 
     public TradingSystemService(IRepositoryService repositoryService, IMarketService marketService) {
         this.repositoryService = repositoryService;
@@ -56,9 +95,11 @@ public class TradingSystemService implements ITradingSystemService {
             }
         }
         loadSettings(CoreActivator.getDefault().getStateLocation().append("trade_systems.xml").toFile());
+        repositoryService.addRepositoryResourceListener(repositoryChangeListener);
     }
 
     public void shutDown() {
+        repositoryService.removeRepositoryResourceListener(repositoryChangeListener);
         for (TradingSystem system : list) {
             try {
                 system.stop();
@@ -154,6 +195,34 @@ public class TradingSystemService implements ITradingSystemService {
         };
         job.setUser(false);
         job.schedule();
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradingSystemService#addTradingSystemListener(org.eclipsetrader.core.ats.ITradingSystemListener)
+     */
+    @Override
+    public void addTradingSystemListener(ITradingSystemListener listener) {
+        listeners.add(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradingSystemService#removeTradingSystemListener(org.eclipsetrader.core.ats.ITradingSystemListener)
+     */
+    @Override
+    public void removeTradingSystemListener(ITradingSystemListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireTradingSystemEvent(TradingSystemEvent event) {
+        Object[] l = listeners.getListeners();
+        for (int i = 0; i < l.length; i++) {
+            try {
+                ((ITradingSystemListener) l[i]).tradingSystemChanged(event);
+            } catch (Throwable t) {
+                Status status = new Status(IStatus.ERROR, CoreActivator.PLUGIN_ID, 0, "Error notifying listeners", t); //$NON-NLS-1$
+                CoreActivator.log(status);
+            }
+        }
     }
 
     private void loadSettings(File file) {

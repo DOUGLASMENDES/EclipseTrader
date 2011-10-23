@@ -293,6 +293,15 @@ public class TradingSystemsViewPart extends ViewPart {
         viewer.expandAll();
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+     */
+    @Override
+    public void dispose() {
+        model.dispose();
+        super.dispose();
+    }
+
     private void createLabelProvider(IObservableMap[] properties) {
         ObservableMapLabelProvider labelProvider = new ObservableMapLabelProvider(properties) {
 

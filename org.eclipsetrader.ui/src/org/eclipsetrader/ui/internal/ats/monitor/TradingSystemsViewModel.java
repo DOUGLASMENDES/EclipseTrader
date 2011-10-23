@@ -22,11 +22,15 @@ import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.databinding.viewers.TreeStructureAdvisor;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemListener;
 import org.eclipsetrader.core.ats.ITradingSystemService;
+import org.eclipsetrader.core.ats.TradingSystemEvent;
 import org.eclipsetrader.ui.internal.ats.ViewColumn;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
 public class TradingSystemsViewModel extends TreeStructureAdvisor implements IObservableFactory {
+
+    private final ITradingSystemService tradingSystemService;
 
     private final List<TradingSystemItem> list = new ArrayList<TradingSystemItem>();
     private final WritableList root = new WritableList(list, TradingSystemItem.class);
@@ -34,10 +38,36 @@ public class TradingSystemsViewModel extends TreeStructureAdvisor implements IOb
     private final List<ViewColumn> dataProviders = new ArrayList<ViewColumn>();
     private final WritableList columns = new WritableList(dataProviders, ViewColumn.class);
 
+    private final ITradingSystemListener tradingSystemListener = new ITradingSystemListener() {
+
+        @Override
+        public void tradingSystemChanged(TradingSystemEvent event) {
+            if ((event.getKind() & TradingSystemEvent.KIND_ADDED) != 0) {
+                root.add(new TradingSystemItem(TradingSystemsViewModel.this, event.getTradingSystem()));
+            }
+            else if ((event.getKind() & TradingSystemEvent.KIND_REMOVED) != 0) {
+                for (TradingSystemItem tradingSystem : list) {
+                    if (tradingSystem.getTradingSystem() == event.getTradingSystem()) {
+                        root.remove(tradingSystem);
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
     public TradingSystemsViewModel(ITradingSystemService tradingSystemService) {
+        this.tradingSystemService = tradingSystemService;
+
         for (ITradingSystem tradingSystem : tradingSystemService.getTradeSystems()) {
             root.add(new TradingSystemItem(this, tradingSystem));
         }
+
+        tradingSystemService.addTradingSystemListener(tradingSystemListener);
+    }
+
+    public void dispose() {
+        tradingSystemService.addTradingSystemListener(tradingSystemListener);
     }
 
     public WritableList getObservableDataProviders() {

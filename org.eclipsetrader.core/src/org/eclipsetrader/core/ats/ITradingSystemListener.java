@@ -11,19 +11,7 @@
 
 package org.eclipsetrader.core.ats;
 
-public interface ITradingSystemService {
+public interface ITradingSystemListener {
 
-    public ITradingSystem[] getTradeSystems();
-
-    public void start();
-
-    public void stop();
-
-    public void start(ITradingSystem system);
-
-    public void stop(ITradingSystem system);
-
-    public void addTradingSystemListener(ITradingSystemListener listener);
-
-    public void removeTradingSystemListener(ITradingSystemListener listener);
+    public void tradingSystemChanged(TradingSystemEvent event);
 }
