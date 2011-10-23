@@ -67,15 +67,18 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 
         // Add "new wizards".
         layout.addNewWizardShortcut("org.eclipsetrader.ui.ats.scriptstrategy.wizard");//$NON-NLS-1$
-        layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.security");//$NON-NLS-1$
         layout.addNewWizardShortcut("org.eclipsetrader.ui.wizard.script");//$NON-NLS-1$
+        layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.stock");//$NON-NLS-1$
+        layout.addNewWizardShortcut("org.eclipsetrader.ui.wizards.new.currency");//$NON-NLS-1$
 
         // Add "actionsets".
+        layout.addActionSet("org.eclipsetrader.ui.launcher");
 
         // Add "show views".
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.navigator"); //$NON-NLS-1$
         layout.addShowViewShortcut("org.eclipsetrader.ui.views.markets"); //$NON-NLS-1$
-        layout.addShowViewShortcut("org.eclipsetrader.ui.views.repositories"); //$NON-NLS-1$
+        layout.addShowViewShortcut(TradingSystemsViewPart.VIEW_ID);
+        layout.addShowViewShortcut(ExplorerViewPart.VIEW_ID);
 
         // Add "perspectives".
     }

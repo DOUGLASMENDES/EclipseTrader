@@ -174,7 +174,7 @@
             class="org.eclipsetrader.ui.internal.ats.monitor.TradingSystemsViewPart"
             icon="icons/eview16/server.png"
             id="org.eclipsetrader.ui.views.ats.monitor"
-            name="Trading Systems Monitor"
+            name="Trading Systems"
             restorable="true">
       </view>
       <view
