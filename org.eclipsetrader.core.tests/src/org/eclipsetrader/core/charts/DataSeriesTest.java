@@ -21,10 +21,17 @@ import org.eclipse.core.runtime.IAdaptable;
 public class DataSeriesTest extends TestCase {
 
     private IAdaptable[] sampleValues = new IAdaptable[] {
-            new Value(getTime(11, Calendar.NOVEMBER, 2007), 10.0),
-            new Value(getTime(12, Calendar.NOVEMBER, 2007), 20.0),
-            new Value(getTime(13, Calendar.NOVEMBER, 2007), 5.0),
+        new NumberValue(getTime(11, Calendar.NOVEMBER, 2007), 10.0),
+        new NumberValue(getTime(12, Calendar.NOVEMBER, 2007), 20.0),
+        new NumberValue(getTime(13, Calendar.NOVEMBER, 2007), 5.0),
     };
+
+    private Date getTime(int day, int month, int year) {
+        Calendar date = Calendar.getInstance();
+        date.set(year, month, day, 0, 0, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date.getTime();
+    }
 
     public void testGetFirst() throws Exception {
         DataSeries series = new DataSeries("Test", sampleValues);
@@ -48,11 +55,11 @@ public class DataSeriesTest extends TestCase {
 
     public void testGetSeries() throws Exception {
         IAdaptable[] sampleValues = new IAdaptable[] {
-                new Value(getTime(11, Calendar.NOVEMBER, 2007), 10.0),
-                new Value(getTime(12, Calendar.NOVEMBER, 2007), 20.0),
-                new Value(getTime(13, Calendar.NOVEMBER, 2007), 5.0),
-                new Value(getTime(14, Calendar.NOVEMBER, 2007), 15.0),
-                new Value(getTime(15, Calendar.NOVEMBER, 2007), 10.0),
+            new NumberValue(getTime(11, Calendar.NOVEMBER, 2007), 10.0),
+            new NumberValue(getTime(12, Calendar.NOVEMBER, 2007), 20.0),
+            new NumberValue(getTime(13, Calendar.NOVEMBER, 2007), 5.0),
+            new NumberValue(getTime(14, Calendar.NOVEMBER, 2007), 15.0),
+            new NumberValue(getTime(15, Calendar.NOVEMBER, 2007), 10.0),
         };
         DataSeries series = new DataSeries("Test", sampleValues);
         IDataSeries subSeries = series.getSeries(sampleValues[1], sampleValues[3]);
@@ -63,36 +70,20 @@ public class DataSeriesTest extends TestCase {
         assertSame(sampleValues[3], values[2]);
     }
 
-    private class Value implements IAdaptable {
+    public void testCrossAbove() throws Exception {
+        IAdaptable[] sampleValues1 = new IAdaptable[] {
+            new NumberValue(getTime(11, Calendar.NOVEMBER, 2007), 3.7692),
+            new NumberValue(getTime(12, Calendar.NOVEMBER, 2007), 3.7794),
+        };
+        DataSeries series1 = new DataSeries("Test1", sampleValues1);
 
-        private Date date;
-        private Double value;
+        IAdaptable[] sampleValues2 = new IAdaptable[] {
+            new NumberValue(getTime(11, Calendar.NOVEMBER, 2007), 3.7762),
+            new NumberValue(getTime(12, Calendar.NOVEMBER, 2007), 3.7793),
+        };
+        DataSeries series2 = new DataSeries("Test2", sampleValues2);
 
-        public Value(Date date, Double value) {
-            this.date = date;
-            this.value = value;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (date != null && adapter.isAssignableFrom(date.getClass())) {
-                return date;
-            }
-            if (value != null && adapter.isAssignableFrom(value.getClass())) {
-                return value;
-            }
-            return null;
-        }
-    }
-
-    private Date getTime(int day, int month, int year) {
-        Calendar date = Calendar.getInstance();
-        date.set(year, month, day, 0, 0, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        return date.getTime();
+        int result = series1.cross(series2, new NumberValue(getTime(12, Calendar.NOVEMBER, 2007), 3.7794));
+        assertEquals(result, IDataSeries.ABOVE);
     }
 }

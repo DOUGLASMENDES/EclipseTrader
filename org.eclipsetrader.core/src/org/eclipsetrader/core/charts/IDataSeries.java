@@ -21,6 +21,10 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public interface IDataSeries {
 
+    public static final int NONE = 0;
+    public static final int ABOVE = 1;
+    public static final int BELOW = -1;
+
     /**
      * Gets the name of the receiver.
      *
@@ -36,6 +40,22 @@ public interface IDataSeries {
     public IAdaptable[] getValues();
 
     /**
+     * Returns the size of the data series.
+     * 
+     * @return the size
+     */
+    public int size();
+
+    /**
+     * Returns wether this data series crosses another data series at the given value.
+     * 
+     * @param series the other data series
+     * @param value the value to check
+     * @return one of the constants <code>ABOVE</code>, <code>BELOW</code> or <code>NONE</code>
+     */
+    public int cross(IDataSeries series, IAdaptable value);
+
+    /**
      * Gets the highest numeric value in this series.
      *
      * @return the highest value.
@@ -43,25 +63,11 @@ public interface IDataSeries {
     public IAdaptable getHighest();
 
     /**
-     * Returns the highest value override state.
-     *
-     * @return <code>true</code> if the highest value is overridden.
-     */
-    public boolean isHighestOverride();
-
-    /**
      * Gets the lowest numeric value in this series.
      *
      * @return the lowest value.
      */
     public IAdaptable getLowest();
-
-    /**
-     * Returns the lowest value override state.
-     *
-     * @return <code>true</code> if the lowest value is overridden.
-     */
-    public boolean isLowestOverride();
 
     /**
      * Gets the first value, in temporal order, in this series.

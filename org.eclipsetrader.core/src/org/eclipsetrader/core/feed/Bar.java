@@ -14,13 +14,15 @@ package org.eclipsetrader.core.feed;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 /**
  * Default implementation of the <code>IBar</code> interface.
  *
  * @since 1.0
  * @see org.eclipsetrader.core.feed.IBar
  */
-public class Bar implements IBar, Serializable {
+public class Bar implements IBar, IAdaptable, Serializable {
 
     private static final long serialVersionUID = -2696239765800738013L;
 
@@ -116,6 +118,26 @@ public class Bar implements IBar, Serializable {
     @Override
     public int hashCode() {
         return 3 * (date != null ? date.hashCode() : 0) + 7 * (timeSpan != null ? timeSpan.hashCode() : 0) + 11 * (open != null ? open.hashCode() : 0) + 13 * (high != null ? high.hashCode() : 0) + 17 * (low != null ? low.hashCode() : 0) + 19 * (close != null ? close.hashCode() : 0) + 23 * (volume != null ? volume.hashCode() : 0);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(Date.class)) {
+            return date;
+        }
+        if (adapter.isAssignableFrom(IOHLC.class)) {
+            return new OHLC(date, open, high, low, close, volume);
+        }
+        if (adapter.isAssignableFrom(getClass())) {
+            return this;
+        }
+        return null;
     }
 
     /* (non-Javadoc)

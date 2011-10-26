@@ -39,7 +39,9 @@ public class OHLCDataSeries extends DataSeries {
          * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
          */
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({
+            "unchecked", "rawtypes"
+        })
         public Object getAdapter(Class adapter) {
             if (ohlc != null && adapter.isAssignableFrom(ohlc.getClass())) {
                 return ohlc;
@@ -47,29 +49,8 @@ public class OHLCDataSeries extends DataSeries {
             if (adapter.isAssignableFrom(Date.class)) {
                 return ohlc.getDate();
             }
-            if (adapter.isAssignableFrom(Number.class)) {
+            if (adapter.isAssignableFrom(Double.class) || adapter.isAssignableFrom(Number.class)) {
                 return ohlc.getClose();
-            }
-            return null;
-        }
-    }
-
-    private static class DoubleWrapper implements IAdaptable {
-
-        private Double value;
-
-        public DoubleWrapper(Double value) {
-            this.value = value;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (value != null && adapter.isAssignableFrom(value.getClass())) {
-                return value;
             }
             return null;
         }
@@ -110,7 +91,7 @@ public class OHLCDataSeries extends DataSeries {
         if (v != null) {
             IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
             if (ohlc != null) {
-                v = new DoubleWrapper(ohlc.getHigh());
+                v = new NumberValue(ohlc.getDate(), ohlc.getHigh());
             }
         }
         return v;
@@ -125,7 +106,7 @@ public class OHLCDataSeries extends DataSeries {
         if (v != null) {
             IOHLC ohlc = (IOHLC) v.getAdapter(IOHLC.class);
             if (ohlc != null) {
-                v = new DoubleWrapper(ohlc.getLow());
+                v = new NumberValue(ohlc.getDate(), ohlc.getLow());
             }
         }
         return v;

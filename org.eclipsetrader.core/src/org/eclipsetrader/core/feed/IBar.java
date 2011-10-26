@@ -13,12 +13,14 @@ package org.eclipsetrader.core.feed;
 
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdaptable;
+
 /**
  * Interface to get bar values (open, high, low and close prices) for a time period.
  *
  * @since 1.0
  */
-public interface IBar {
+public interface IBar extends IAdaptable {
 
     /**
      * Returns the starting time of the time period.

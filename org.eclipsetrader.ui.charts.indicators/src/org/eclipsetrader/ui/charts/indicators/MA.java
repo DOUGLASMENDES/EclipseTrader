@@ -33,7 +33,6 @@ import org.eclipsetrader.ui.internal.charts.indicators.IGeneralPropertiesAdapter
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-@SuppressWarnings("restriction")
 public class MA implements IChartObjectFactory, IGeneralPropertiesAdapter, ILineDecorator, IExecutableExtension {
 
     private String id;

@@ -25,12 +25,14 @@ import org.eclipsetrader.core.feed.IOHLC;
  */
 public class DataSeries implements IDataSeries {
 
-    private String name;
+    private final String name;
+    private final IAdaptable[] values;
+
     private IAdaptable first;
     private IAdaptable last;
     private IAdaptable highest;
     private IAdaptable lowest;
-    private IAdaptable[] values;
+
     private IDataSeries[] childrens;
 
     private boolean highestOverride = false;
@@ -71,11 +73,13 @@ public class DataSeries implements IDataSeries {
                 }
             }
 
-            if (data.isHighestOverride()) {
-                highest = data.getHighest();
-            }
-            if (data.isLowestOverride()) {
-                lowest = data.getLowest();
+            if (data instanceof DataSeries) {
+                if (((DataSeries) data).highestOverride) {
+                    highest = data.getHighest();
+                }
+                if (((DataSeries) data).lowestOverride) {
+                    lowest = data.getLowest();
+                }
             }
 
             return true;
@@ -142,17 +146,13 @@ public class DataSeries implements IDataSeries {
         return highest;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.IDataSeries#isHighestOverride()
-     */
-    @Override
-    public boolean isHighestOverride() {
-        return highestOverride;
-    }
-
     public void setHighest(IAdaptable highest) {
         this.highest = highest;
         this.highestOverride = true;
+    }
+
+    protected boolean isHighestOverride() {
+        return highestOverride;
     }
 
     /* (non-Javadoc)
@@ -163,17 +163,21 @@ public class DataSeries implements IDataSeries {
         return lowest;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipsetrader.core.charts.IDataSeries#isLowestOverride()
-     */
-    @Override
-    public boolean isLowestOverride() {
-        return lowestOverride;
-    }
-
     public void setLowest(IAdaptable lowest) {
         this.lowest = lowest;
         this.lowestOverride = true;
+    }
+
+    protected boolean isLowestOverride() {
+        return lowestOverride;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.charts.IDataSeries#size()
+     */
+    @Override
+    public int size() {
+        return values.length;
     }
 
     /* (non-Javadoc)
@@ -190,10 +194,10 @@ public class DataSeries implements IDataSeries {
     @Override
     public IDataSeries getSeries(IAdaptable first, IAdaptable last) {
         DataSeries series = new DataSeries(getName(), getSubset(first, last));
-        if (isHighestOverride()) {
+        if (highestOverride) {
             series.setHighest(getHighest());
         }
-        if (isLowestOverride()) {
+        if (lowestOverride) {
             series.setLowest(getLowest());
         }
         return series;
@@ -204,14 +208,64 @@ public class DataSeries implements IDataSeries {
         Date lastValue = last != null ? (Date) last.getAdapter(Date.class) : null;
 
         List<IAdaptable> list = new ArrayList<IAdaptable>(values.length);
-        for (IAdaptable v : values) {
-            Date date = (Date) v.getAdapter(Date.class);
+        for (int i = 0; i < values.length; i++) {
+            Date date = (Date) values[i].getAdapter(Date.class);
             if ((firstValue == null || !date.before(firstValue)) && (lastValue == null || !date.after(lastValue))) {
-                list.add(v);
+                list.add(values[i]);
             }
         }
 
         return list.toArray(new IAdaptable[list.size()]);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.charts.IDataSeries#cross(org.eclipsetrader.core.charts.IDataSeries, org.eclipse.core.runtime.IAdaptable)
+     */
+    @Override
+    public int cross(IDataSeries series, IAdaptable value) {
+        if (values.length <= 1 || series.size() <= 1) {
+            return NONE;
+        }
+
+        int index = indexOf(this, value);
+        if (index <= 0) {
+            return NONE;
+        }
+
+        int otherIndex = indexOf(series, value);
+        if (otherIndex <= 0) {
+            return NONE;
+        }
+
+        Number ourValue = (Number) values[index - 1].getAdapter(Number.class);
+        Number ourNextValue = (Number) values[index].getAdapter(Number.class);
+        Number otherValue = (Number) series.getValues()[otherIndex - 1].getAdapter(Number.class);
+        Number otherNextValue = (Number) series.getValues()[otherIndex].getAdapter(Number.class);
+        if (ourValue.doubleValue() < otherValue.doubleValue() && ourNextValue.doubleValue() > otherNextValue.doubleValue()) {
+            return ABOVE;
+        }
+        if (ourValue.doubleValue() > otherValue.doubleValue() && ourNextValue.doubleValue() < otherNextValue.doubleValue()) {
+            return BELOW;
+        }
+
+        return NONE;
+    }
+
+    protected int indexOf(IDataSeries series, IAdaptable value) {
+        IAdaptable[] values = series.getValues();
+        Date valueDate = (Date) value.getAdapter(Date.class);
+
+        for (int i = 0; i < values.length; i++) {
+            if (values[i].equals(value)) {
+                return i;
+            }
+            Date date = (Date) values[i].getAdapter(Date.class);
+            if (date != null && date.equals(valueDate)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /* (non-Javadoc)

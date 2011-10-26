@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipsetrader.core.charts.DataSeries;
 import org.eclipsetrader.core.charts.IDataSeries;
+import org.eclipsetrader.core.charts.NumberValue;
 import org.eclipsetrader.ui.charts.ChartObjectFocusEvent;
 import org.eclipsetrader.ui.charts.ChartParameters;
 import org.eclipsetrader.ui.charts.DataBounds;
@@ -51,6 +52,140 @@ public class TREND implements IChartObjectFactory, IExecutableExtension {
     private RGB middleLineColor;
     private RenderStyle lowerLineStyle = RenderStyle.Line;
     private RGB lowerLineColor;
+
+    private class LineToolObject implements IChartObject {
+    
+        private RenderStyle style;
+        private RGB color;
+    
+        private Date d1;
+        private Date d2;
+        private Double v1;
+        private Double v2;
+    
+        private Point p1;
+        private Point p2;
+        private boolean hasFocus;
+    
+        public LineToolObject(RenderStyle style, RGB color, Date d1, Double v1, Date d2, Double v2) {
+            this.style = style;
+            this.color = color;
+            this.d1 = d1;
+            this.v1 = v1;
+            this.d2 = d2;
+            this.v2 = v2;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
+         */
+        @Override
+        public void setDataBounds(DataBounds bounds) {
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
+         */
+        @Override
+        public IDataSeries getDataSeries() {
+            return new DataSeries(name, new IAdaptable[] {
+                new NumberValue(d1, v1), new NumberValue(d2, v2)
+            });
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
+         */
+        @Override
+        public boolean containsPoint(int x, int y) {
+            if (p1 != null && p2 != null) {
+                return PixelTools.isPointOnLine(x, y, p1.x, p1.y, p2.x, p2.y);
+            }
+            return false;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
+         */
+        @Override
+        public String getToolTip() {
+            return name;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
+         */
+        @Override
+        public String getToolTip(int x, int y) {
+            return null;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+         */
+        @Override
+        public void handleFocusGained(ChartObjectFocusEvent event) {
+            hasFocus = true;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
+         */
+        @Override
+        public void handleFocusLost(ChartObjectFocusEvent event) {
+            hasFocus = false;
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
+         */
+        @Override
+        public void invalidate() {
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
+         */
+        @Override
+        public void paint(IGraphics graphics) {
+            p1 = new Point(graphics.mapToHorizontalAxis(d1), graphics.mapToVerticalAxis(v1));
+            p2 = new Point(graphics.mapToHorizontalAxis(d2), graphics.mapToVerticalAxis(v2));
+    
+            graphics.pushState();
+    
+            switch (style) {
+                case Dash:
+                    graphics.setLineStyle(SWT.LINE_DASH);
+                    break;
+                case Dot:
+                    graphics.setLineStyle(SWT.LINE_DOT);
+                    break;
+                default:
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                    break;
+            }
+    
+            graphics.setForegroundColor(color);
+            graphics.setLineWidth(hasFocus ? 2 : 0);
+            graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
+    
+            graphics.popState();
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
+         */
+        @Override
+        public void paintScale(Graphics graphics) {
+        }
+    
+        /* (non-Javadoc)
+         * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
+         */
+        @Override
+        public void accept(IChartObjectVisitor visitor) {
+        }
+    }
 
     public TREND() {
     }
@@ -238,181 +373,5 @@ public class TREND implements IChartObjectFactory, IExecutableExtension {
         middleLineColor = parameters.getColor("middle-line-color");
         lowerLineStyle = parameters.hasParameter("lower-line-style") ? RenderStyle.getStyleFromName(parameters.getString("lower-line-style")) : RenderStyle.Line;
         lowerLineColor = parameters.getColor("lower-line-color");
-    }
-
-    public static class Value implements IAdaptable {
-
-        private Date date;
-        private Number value;
-
-        public Value(Date date, Number value) {
-            this.date = date;
-            this.value = value;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-
-        public Number getValue() {
-            return value;
-        }
-
-        public void setValue(Number value) {
-            this.value = value;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (adapter.isAssignableFrom(Date.class)) {
-                return date;
-            }
-            if (adapter.isAssignableFrom(Number.class)) {
-                return value;
-            }
-            return null;
-        }
-    }
-
-    private class LineToolObject implements IChartObject {
-
-        private RenderStyle style;
-        private RGB color;
-
-        private Date d1;
-        private Date d2;
-        private Double v1;
-        private Double v2;
-
-        private Point p1;
-        private Point p2;
-        private boolean hasFocus;
-
-        public LineToolObject(RenderStyle style, RGB color, Date d1, Double v1, Date d2, Double v2) {
-            this.style = style;
-            this.color = color;
-            this.d1 = d1;
-            this.v1 = v1;
-            this.d2 = d2;
-            this.v2 = v2;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#setDataBounds(org.eclipsetrader.ui.charts.DataBounds)
-         */
-        @Override
-        public void setDataBounds(DataBounds bounds) {
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#getDataSeries()
-         */
-        @Override
-        public IDataSeries getDataSeries() {
-            return new DataSeries(name, new IAdaptable[] {
-                    new Value(d1, v1), new Value(d2, v2)
-            });
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#containsPoint(int, int)
-         */
-        @Override
-        public boolean containsPoint(int x, int y) {
-            if (p1 != null && p2 != null) {
-                return PixelTools.isPointOnLine(x, y, p1.x, p1.y, p2.x, p2.y);
-            }
-            return false;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip()
-         */
-        @Override
-        public String getToolTip() {
-            return name;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#getToolTip(int, int)
-         */
-        @Override
-        public String getToolTip(int x, int y) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusGained(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-         */
-        @Override
-        public void handleFocusGained(ChartObjectFocusEvent event) {
-            hasFocus = true;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#handleFocusLost(org.eclipsetrader.ui.charts.ChartObjectFocusEvent)
-         */
-        @Override
-        public void handleFocusLost(ChartObjectFocusEvent event) {
-            hasFocus = false;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#invalidate()
-         */
-        @Override
-        public void invalidate() {
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#paint(org.eclipsetrader.ui.charts.IGraphics)
-         */
-        @Override
-        public void paint(IGraphics graphics) {
-            p1 = new Point(graphics.mapToHorizontalAxis(d1), graphics.mapToVerticalAxis(v1));
-            p2 = new Point(graphics.mapToHorizontalAxis(d2), graphics.mapToVerticalAxis(v2));
-
-            graphics.pushState();
-
-            switch (style) {
-                case Dash:
-                    graphics.setLineStyle(SWT.LINE_DASH);
-                    break;
-                case Dot:
-                    graphics.setLineStyle(SWT.LINE_DOT);
-                    break;
-                default:
-                    graphics.setLineStyle(SWT.LINE_SOLID);
-                    break;
-            }
-
-            graphics.setForegroundColor(color);
-            graphics.setLineWidth(hasFocus ? 2 : 0);
-            graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
-
-            graphics.popState();
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#paintScale(org.eclipsetrader.ui.charts.Graphics)
-         */
-        @Override
-        public void paintScale(Graphics graphics) {
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipsetrader.ui.charts.IChartObject#accept(org.eclipsetrader.ui.charts.IChartObjectVisitor)
-         */
-        @Override
-        public void accept(IChartObjectVisitor visitor) {
-        }
     }
 }

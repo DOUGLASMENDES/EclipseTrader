@@ -23,32 +23,6 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public class NumericDataSeries extends DataSeries {
 
-    private static class NumberWrapper implements IAdaptable {
-
-        private Date date;
-        private Number number;
-
-        public NumberWrapper(Date date, Number number) {
-            this.date = date;
-            this.number = number;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (adapter.isAssignableFrom(Number.class)) {
-                return number;
-            }
-            if (adapter.isAssignableFrom(Date.class)) {
-                return date;
-            }
-            return null;
-        }
-    }
-
     public NumericDataSeries(String name, Number[] values, IDataSeries parent) {
         super(name, convertValues(values, parent));
     }
@@ -76,7 +50,7 @@ public class NumericDataSeries extends DataSeries {
         IAdaptable[] v = new IAdaptable[values.length];
         for (int i = 0; i < values.length; i++, refIndex++) {
             Date date = (Date) reference[refIndex].getAdapter(Date.class);
-            v[i] = new NumberWrapper(date, values[i]);
+            v[i] = new NumberValue(date, values[i]);
         }
 
         return v;
@@ -89,7 +63,7 @@ public class NumericDataSeries extends DataSeries {
         IAdaptable[] v = new IAdaptable[values.length];
         for (int i = 0; i < values.length; i++, refIndex++) {
             Date date = (Date) reference[refIndex].getAdapter(Date.class);
-            v[i] = new NumberWrapper(date, values[i]);
+            v[i] = new NumberValue(date, values[i]);
         }
 
         return v;
@@ -102,7 +76,7 @@ public class NumericDataSeries extends DataSeries {
         IAdaptable[] v = new IAdaptable[values.length];
         for (int i = 0; i < values.length; i++, refIndex++) {
             Date date = (Date) reference[refIndex].getAdapter(Date.class);
-            v[i] = new NumberWrapper(date, values[i]);
+            v[i] = new NumberValue(date, values[i]);
         }
 
         return v;
@@ -115,7 +89,7 @@ public class NumericDataSeries extends DataSeries {
         IAdaptable[] v = new IAdaptable[values.length];
         for (int i = 0; i < values.length; i++, refIndex++) {
             Date date = (Date) reference[refIndex].getAdapter(Date.class);
-            v[i] = new NumberWrapper(date, values[i]);
+            v[i] = new NumberValue(date, values[i]);
         }
 
         return v;
