@@ -8,8 +8,7 @@ Bundle-Vendor: Eclipsetrader.org
 Require-Bundle: org.eclipse.core.runtime,
  javax.xml.bind,
  org.apache.commons.logging,
- org.mozilla.rhino,
- com.tictactec.ta.lib
+ org.mozilla.rhino
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipsetrader.core,
  org.eclipsetrader.core.ats,

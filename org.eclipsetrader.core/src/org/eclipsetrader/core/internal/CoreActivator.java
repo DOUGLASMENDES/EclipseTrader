@@ -68,6 +68,7 @@ public class CoreActivator extends Plugin {
     public static final String BROKERS_EXTENSION_ID = "org.eclipsetrader.core.trading.brokers";
     public static final String ALERTS_EXTENSION_ID = "org.eclipsetrader.core.trading.alerts";
     public static final String STRATEGIES_EXTENSION_ID = "org.eclipsetrader.core.ats.systems";
+    public static final String SCRIPTS_EXTENSION_ID = "org.eclipsetrader.core.ats.javascript";
 
     // Preferences IDs
     public static final String DEFAULT_CONNECTOR_ID = "DEFAULT_CONNECTOR";

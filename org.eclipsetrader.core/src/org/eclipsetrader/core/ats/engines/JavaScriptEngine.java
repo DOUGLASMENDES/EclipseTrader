@@ -16,8 +16,9 @@ import java.util.Map;
 import java.util.Observable;
 
 import org.eclipsetrader.core.ats.IScriptStrategy;
-import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemInstrument;
+import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IBarOpen;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
@@ -119,8 +120,9 @@ public class JavaScriptEngine extends Observable {
             scope.putConst("Sell", scope, BaseOrderFunction.Sell);
             scope.putConst("Limit", scope, BaseOrderFunction.Limit);
             scope.putConst("Market", scope, BaseOrderFunction.Market);
-            scope.putConst("Above", scope, 1);
-            scope.putConst("Below", scope, -1);
+            scope.putConst("Above", scope, IDataSeries.ABOVE);
+            scope.putConst("Below", scope, IDataSeries.BELOW);
+            scope.putConst("None", scope, IDataSeries.NONE);
 
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
