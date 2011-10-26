@@ -8,7 +8,8 @@ Bundle-Vendor: EclipseTrader.org
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipsetrader.core,
- org.eclipsetrader.ui
+ org.eclipsetrader.ui,
+ org.mozilla.rhino
 Bundle-ActivationPolicy: lazy
 Import-Package: com.tictactec.ta.lib;version="0.4.0",
  com.tictactec.ta.lib.meta;version="0.4.0",
