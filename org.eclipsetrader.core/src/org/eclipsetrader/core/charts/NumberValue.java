@@ -25,6 +25,14 @@ public class NumberValue implements IAdaptable {
         this.value = value;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public Number getValue() {
+        return value;
+    }
+
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
@@ -40,5 +48,13 @@ public class NumberValue implements IAdaptable {
             return value;
         }
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "NumberValue [D=" + date + " V=" + value + "]";
     }
 }
