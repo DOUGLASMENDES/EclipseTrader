@@ -20,7 +20,9 @@ import org.easymock.EasyMock;
 import org.eclipsetrader.core.ats.BarFactoryEvent;
 import org.eclipsetrader.core.ats.IBarFactoryListener;
 import org.eclipsetrader.core.feed.FeedIdentifier;
+import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.PricingEnvironment;
+import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.feed.Trade;
 import org.eclipsetrader.core.instruments.Security;
@@ -39,9 +41,16 @@ public class BarFactoryTest extends TestCase {
     protected void setUp() throws Exception {
         security = new Security("Test", new FeedIdentifier("TST", null));
 
-        pricingEnvironment = new PricingEnvironment();
+        factory = new BarFactory();
 
-        factory = new BarFactory(pricingEnvironment);
+        pricingEnvironment = new PricingEnvironment();
+        pricingEnvironment.addPricingListener(new IPricingListener() {
+
+            @Override
+            public void pricingUpdate(PricingEvent event) {
+                factory.pricingUpdate(event);
+            }
+        });
 
         currentTime = Calendar.getInstance();
         currentTime.set(Calendar.MILLISECOND, 0);

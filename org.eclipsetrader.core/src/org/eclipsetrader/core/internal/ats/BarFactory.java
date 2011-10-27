@@ -23,8 +23,6 @@ import java.util.TimerTask;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipsetrader.core.ats.BarFactoryEvent;
 import org.eclipsetrader.core.ats.IBarFactoryListener;
-import org.eclipsetrader.core.feed.IPricingEnvironment;
-import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
@@ -32,8 +30,6 @@ import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 
 public class BarFactory {
-
-    private final IPricingEnvironment pricingEnvironment;
 
     final Map<ISecurity, Set<Data>> map = new HashMap<ISecurity, Set<Data>>();
     private final Timer timer;
@@ -61,24 +57,6 @@ public class BarFactory {
         }
     }
 
-    private IPricingListener pricingListener = new IPricingListener() {
-
-        @Override
-        public void pricingUpdate(PricingEvent event) {
-            Set<Data> set = map.get(event.getSecurity());
-            if (set == null) {
-                return;
-            }
-            for (PricingDelta delta : event.getDelta()) {
-                if (delta.getNewValue() instanceof ITrade) {
-                    for (Data data : set) {
-                        processTrade(data, (ITrade) delta.getNewValue());
-                    }
-                }
-            }
-        }
-    };
-
     private class BarCloseTimerTask extends TimerTask {
 
         private final Data data;
@@ -97,10 +75,7 @@ public class BarFactory {
         }
     }
 
-    public BarFactory(IPricingEnvironment pricingEnvironment) {
-        this.pricingEnvironment = pricingEnvironment;
-
-        this.pricingEnvironment.addPricingListener(pricingListener);
+    public BarFactory() {
         this.timer = new Timer(true);
     }
 
@@ -124,7 +99,20 @@ public class BarFactory {
     public void dispose() {
         timer.cancel();
         listeners.clear();
-        pricingEnvironment.removePricingListener(pricingListener);
+    }
+
+    public void pricingUpdate(PricingEvent event) {
+        Set<Data> set = map.get(event.getSecurity());
+        if (set == null) {
+            return;
+        }
+        for (PricingDelta delta : event.getDelta()) {
+            if (delta.getNewValue() instanceof ITrade) {
+                for (Data data : set) {
+                    processTrade(data, (ITrade) delta.getNewValue());
+                }
+            }
+        }
     }
 
     private void processTrade(Data data, ITrade trade) {

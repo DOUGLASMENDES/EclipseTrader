@@ -112,6 +112,7 @@ public class TradingSystemContext implements ITradingSystemContext {
                     }
                 }
             }
+            barFactory.pricingUpdate(event);
         }
     };
 
@@ -126,7 +127,7 @@ public class TradingSystemContext implements ITradingSystemContext {
         marketPricingEnvironment.addSecurities(strategy.getInstruments());
         marketPricingEnvironment.addPricingListener(pricingListener);
 
-        barFactory = new BarFactory(marketPricingEnvironment);
+        barFactory = new BarFactory();
         for (ISecurity security : strategy.getInstruments()) {
             for (TimeSpan timeSpan : strategy.getBarsTimeSpan()) {
                 if (timeSpan.getUnits() == TimeSpan.Units.Days && timeSpan.getLength() == 1) {
