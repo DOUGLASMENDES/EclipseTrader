@@ -232,24 +232,38 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
      */
     @Override
     public void run() {
-        final ISecurePreferences preferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
-        try {
+        final IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+
+        final ISecurePreferences securePreferences;
+        if (preferenceStore.getBoolean(Activator.PREFS_USE_SECURE_PREFERENCE_STORE)) {
+            securePreferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
+            try {
+                if (userName == null) {
+                    userName = securePreferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
+                }
+                if (password == null) {
+                    password = securePreferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
+                }
+            } catch (Exception e) {
+                final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Activator.log(status);
+                        ErrorDialog.openError(null, null, null, status);
+                    }
+                });
+            }
+        }
+        else {
+            securePreferences = null;
             if (userName == null) {
-                userName = preferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
+                userName = preferenceStore.getString(Activator.PREFS_USERNAME);
             }
             if (password == null) {
-                password = preferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
+                password = preferenceStore.getString(Activator.PREFS_PASSWORD);
             }
-        } catch (Exception e) {
-            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
-            Display.getDefault().syncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    Activator.log(status);
-                    ErrorDialog.openError(null, null, null, status);
-                }
-            });
         }
 
         client = new HttpClient();
@@ -280,13 +294,19 @@ public class SnapshotConnector implements Runnable, IFeedConnector, IExecutableE
                             userName = dlg.getUserName();
                             password = dlg.getPassword();
                             if (dlg.isSavePassword()) {
-                                try {
-                                    preferences.put(Activator.PREFS_USERNAME, userName, true);
-                                    preferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
-                                } catch (Exception e) {
-                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
-                                    Activator.log(status);
-                                    ErrorDialog.openError(null, null, null, status);
+                                if (preferenceStore.getBoolean(Activator.PREFS_USE_SECURE_PREFERENCE_STORE)) {
+                                    try {
+                                        securePreferences.put(Activator.PREFS_USERNAME, userName, true);
+                                        securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
+                                    } catch (Exception e) {
+                                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
+                                        Activator.log(status);
+                                        ErrorDialog.openError(null, null, null, status);
+                                    }
+                                }
+                                else {
+                                    preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
+                                    preferenceStore.putValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : ""); //$NON-NLS-1$
                                 }
                             }
                         }

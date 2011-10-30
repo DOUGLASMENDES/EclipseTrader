@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.directa.internal.ui.preferences;
+package org.eclipsetrader.directaworld.internal.ui.preferences;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,16 +30,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipsetrader.directa.internal.Activator;
+import org.eclipsetrader.directaworld.internal.Activator;
 
-public class GeneralPage extends PreferencePage implements IWorkbenchPreferencePage {
+public class GeneralPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
     private Button useSecureStorage;
     private Text userName;
     private Text password;
     private Label warningLabel;
 
-    public GeneralPage() {
+    public GeneralPreferencePage() {
     }
 
     /* (non-Javadoc)

@@ -115,24 +115,38 @@ public class WebConnector {
     }
 
     public synchronized void login() {
-        final ISecurePreferences securePreferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
-        try {
+        final IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
+
+        final ISecurePreferences securePreferences;
+        if (preferenceStore.getBoolean(Activator.PREFS_USE_SECURE_PREFERENCE_STORE)) {
+            securePreferences = SecurePreferencesFactory.getDefault().node(Activator.PLUGIN_ID);
+            try {
+                if (userName == null) {
+                    userName = securePreferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
+                }
+                if (password == null) {
+                    password = securePreferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
+                }
+            } catch (Exception e) {
+                final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Activator.log(status);
+                        ErrorDialog.openError(null, null, null, status);
+                    }
+                });
+            }
+        }
+        else {
+            securePreferences = null;
             if (userName == null) {
-                userName = securePreferences.get(Activator.PREFS_USERNAME, ""); //$NON-NLS-1$
+                userName = preferenceStore.getString(Activator.PREFS_USERNAME);
             }
             if (password == null) {
-                password = securePreferences.get(Activator.PREFS_PASSWORD, ""); //$NON-NLS-1$
+                password = preferenceStore.getString(Activator.PREFS_PASSWORD);
             }
-        } catch (Exception e) {
-            final Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
-            Display.getDefault().syncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    Activator.log(status);
-                    ErrorDialog.openError(null, null, null, status);
-                }
-            });
         }
 
         prt = ""; //$NON-NLS-1$
@@ -150,13 +164,19 @@ public class WebConnector {
                             userName = dlg.getUserName();
                             password = dlg.getPassword();
                             if (dlg.isSavePassword()) {
-                                try {
-                                    securePreferences.put(Activator.PREFS_USERNAME, userName, true);
-                                    securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
-                                } catch (Exception e) {
-                                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
-                                    Activator.log(status);
-                                    ErrorDialog.openError(null, null, null, status);
+                                if (preferenceStore.getBoolean(Activator.PREFS_USE_SECURE_PREFERENCE_STORE)) {
+                                    try {
+                                        securePreferences.put(Activator.PREFS_USERNAME, userName, true);
+                                        securePreferences.put(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : "", true); //$NON-NLS-1$
+                                    } catch (Exception e) {
+                                        Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error accessing secure storage", e); //$NON-NLS-1$
+                                        Activator.log(status);
+                                        ErrorDialog.openError(null, null, null, status);
+                                    }
+                                }
+                                else {
+                                    preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
+                                    preferenceStore.putValue(Activator.PREFS_PASSWORD, dlg.isSavePassword() ? password : ""); //$NON-NLS-1$
                                 }
                             }
                         }
@@ -228,9 +248,6 @@ public class WebConnector {
             }
 
         } while (user.equals("") || prt.equals("") || urt.equals("")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-        IPreferenceStore preferenceStore = Activator.getDefault().getPreferenceStore();
-        preferenceStore.putValue(Activator.PREFS_USERNAME, userName);
 
         account.setId(userName);
     }
@@ -500,7 +517,7 @@ public class WebConnector {
                 new NameValuePair("INCR", "N"), //$NON-NLS-1$ //$NON-NLS-2$
             });
 
-            logger.info(method.getURI().toString());
+            logger.debug(method.getURI().toString());
             client.executeMethod(method);
 
             Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$
@@ -532,7 +549,7 @@ public class WebConnector {
                 new NameValuePair("DEVAR", id), //$NON-NLS-1$
             });
 
-            logger.info(method.getURI().toString());
+            logger.debug(method.getURI().toString());
             client.executeMethod(method);
 
             Parser parser = Parser.createParser(method.getResponseBodyAsString(), ""); //$NON-NLS-1$

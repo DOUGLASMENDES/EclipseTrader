@@ -401,7 +401,7 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
                     if (key.isWritable()) {
-                        logger.info(">" + LOGIN + WebConnector.getInstance().getUser()); //$NON-NLS-1$
+                        logger.trace(">" + LOGIN + WebConnector.getInstance().getUser()); //$NON-NLS-1$
                         socketChannel.write(ByteBuffer.wrap(new String(LOGIN + WebConnector.getInstance().getUser() + "\r\n").getBytes())); //$NON-NLS-1$
 
                         // Register an interest in reading on this channel
@@ -413,12 +413,12 @@ public class BrokerConnector implements IBroker, IExecutableExtension, IExecutab
                         if (readed > 0) {
                             String[] s = new String(dst.array(), 0, readed).split("\r\n"); //$NON-NLS-1$
                             for (int i = 0; i < s.length; i++) {
-                                logger.info("<" + s[i]); //$NON-NLS-1$
+                                logger.trace("<" + s[i]); //$NON-NLS-1$
 
                                 if (s[i].endsWith(";" + WebConnector.getInstance().getUser() + ";")) { //$NON-NLS-1$ //$NON-NLS-2$
-                                    logger.info(">" + UNKNOWN70); //$NON-NLS-1$
+                                    logger.trace(">" + UNKNOWN70); //$NON-NLS-1$
                                     socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN70 + "\r\n").getBytes())); //$NON-NLS-1$
-                                    logger.info(">" + UNKNOWN55); //$NON-NLS-1$
+                                    logger.trace(">" + UNKNOWN55); //$NON-NLS-1$
                                     socketChannel.write(ByteBuffer.wrap(new String(UNKNOWN55 + "\r\n").getBytes())); //$NON-NLS-1$
                                 }
 

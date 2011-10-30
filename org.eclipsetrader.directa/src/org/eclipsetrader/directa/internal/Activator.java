@@ -50,6 +50,7 @@ public class Activator extends AbstractUIPlugin {
     public static final String PREFS_PASSWORD = "PASSWORD"; //$NON-NLS-1$
     public static final String PREFS_CONNECTION_METHOD = "CONNECTION_METHOD"; //$NON-NLS-1$
     public static final String PREFS_TRADING_HOST = "TRADING_HOST"; //$NON-NLS-1$
+    public static final String PREFS_USE_SECURE_PREFERENCE_STORE = "USE_SECURE_PREFERENCE_STORE"; //$NON-NLS-1$
 
     // The shared instance
     private static Activator plugin;
