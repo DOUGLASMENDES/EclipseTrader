@@ -125,13 +125,13 @@ public class IdentifierType {
     public ILastClose getLastClose() {
         if (lastClose == null) {
             getPriceData();
-            lastClose = new LastClose(priceData.getClose(), null);
+            lastClose = new LastClose(priceData.getLastClose(), null);
         }
         return lastClose;
     }
 
-    public void setLastClose(ILastClose close) {
-        this.lastClose = close;
+    public void setLastClose(ILastClose lastClose) {
+        this.lastClose = lastClose;
     }
 
     /* (non-Javadoc)
