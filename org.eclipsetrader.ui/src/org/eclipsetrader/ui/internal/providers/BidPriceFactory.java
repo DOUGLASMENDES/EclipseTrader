@@ -49,30 +49,8 @@ public class BidPriceFactory extends AbstractProviderFactory {
         public IAdaptable getValue(IAdaptable adaptable) {
             IQuote quote = (IQuote) adaptable.getAdapter(IQuote.class);
             if (quote != null && quote.getBid() != null) {
-                final Double value = quote.getBid();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = quote.getBid();
+                return new NumberValue(value, formatter.format(value));
             }
             return null;
         }
@@ -104,10 +82,10 @@ public class BidPriceFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

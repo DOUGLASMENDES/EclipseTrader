@@ -43,8 +43,6 @@ import org.eclipsetrader.ui.internal.navigator.NavigatorViewItem;
 import org.eclipsetrader.ui.internal.navigator.NavigatorViewItemAdapterFactory;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItem;
 import org.eclipsetrader.ui.internal.repositories.RepositoryViewItemAdapterFactory;
-import org.eclipsetrader.ui.internal.views.WatchListViewItem;
-import org.eclipsetrader.ui.internal.views.WatchListViewItemAdapterFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -119,7 +117,6 @@ public class UIActivator extends AbstractUIPlugin {
 
         AdapterManager.getDefault().registerAdapters(new NavigatorViewItemAdapterFactory(), NavigatorViewItem.class);
         AdapterManager.getDefault().registerAdapters(new RepositoryViewItemAdapterFactory(), RepositoryViewItem.class);
-        AdapterManager.getDefault().registerAdapters(new WatchListViewItemAdapterFactory(), WatchListViewItem.class);
 
         NotificationService notificationService = new NotificationService();
         notificationServiceRegistration = context.registerService(new String[] {

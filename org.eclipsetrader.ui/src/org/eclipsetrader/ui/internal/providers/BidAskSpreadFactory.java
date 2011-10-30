@@ -55,7 +55,7 @@ public class BidAskSpreadFactory extends AbstractProviderFactory {
                 return null;
             }
             Double result = Math.abs((quote.getAsk() - quote.getBid()) / quote.getBid() * 100.0);
-            return new Value(result);
+            return new NumberValue(result, formatter.format(result) + "%");
         }
 
         /* (non-Javadoc)
@@ -63,42 +63,6 @@ public class BidAskSpreadFactory extends AbstractProviderFactory {
          */
         @Override
         public void dispose() {
-        }
-    }
-
-    public class Value implements IAdaptable {
-
-        Double value;
-
-        public Value(Double value) {
-            this.value = value;
-        }
-
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (adapter.isAssignableFrom(String.class)) {
-                return formatter.format(value) + "%";
-            }
-            if (adapter.isAssignableFrom(Double.class)) {
-                return value;
-            }
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof IAdaptable)) {
-                return false;
-            }
-            Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-            return s == value || value != null && value.equals(s);
         }
     }
 
@@ -121,10 +85,10 @@ public class BidAskSpreadFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

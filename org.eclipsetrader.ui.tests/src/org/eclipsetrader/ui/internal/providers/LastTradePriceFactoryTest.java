@@ -50,9 +50,9 @@ public class LastTradePriceFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         Trade element = new Trade(null, 10.0, 2000L, 300000L);
         IAdaptable value = provider.getValue(new AdaptableWrapper(element));
-        assertTrue(value.equals(new AdaptableWrapper(new Double(10.0))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(10.5))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(10))));
+        assertTrue(value.equals(new NumberValue(new Double(10.0), "")));
+        assertFalse(value.equals(new NumberValue(new Double(10.5), "")));
+        assertFalse(value.equals(new NumberValue(new Long(10), "")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

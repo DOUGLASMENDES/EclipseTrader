@@ -49,9 +49,9 @@ public class AskSizeFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         Quote quote = new Quote(10.0, 20.0, 1000L, 2000L);
         IAdaptable value = provider.getValue(new AdaptableWrapper(quote));
-        assertTrue(value.equals(new AdaptableWrapper(new Long(2000))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(2100))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(2000))));
+        assertTrue(value.equals(new NumberValue(new Long(2000), "2000")));
+        assertFalse(value.equals(new NumberValue(new Long(2100), "2100")));
+        assertFalse(value.equals(new NumberValue(new Double(2000), "2000.0")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

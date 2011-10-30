@@ -49,9 +49,9 @@ public class TradeVolumeFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         Trade element = new Trade(null, 10.0, 2000L, 300000L);
         IAdaptable value = provider.getValue(new AdaptableWrapper(element));
-        assertTrue(value.equals(new AdaptableWrapper(new Long(300000))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(310000))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(300000))));
+        assertTrue(value.equals(new NumberValue(new Long(300000), "")));
+        assertFalse(value.equals(new NumberValue(new Long(310000), "")));
+        assertFalse(value.equals(new NumberValue(new Double(300000), "")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

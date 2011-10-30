@@ -91,20 +91,18 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
-        name.setText(resource.getName());
+        WatchListViewModel model = (WatchListViewModel) getElement().getAdapter(WatchListViewModel.class);
+        name.setText(model.getName());
 
-        IStoreObject storeObject = (IStoreObject) resource.getAdapter(IStoreObject.class);
+        IStoreObject storeObject = (IStoreObject) getElement().getAdapter(IStoreObject.class);
         repository.setSelection(new StructuredSelection(storeObject.getStore().getRepository()));
 
         super.performDefaults();
     }
 
     protected void applyChanges() {
-        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
-        if (resource != null) {
-            resource.setName(name.getText());
-        }
+        WatchListViewModel model = (WatchListViewModel) getElement().getAdapter(WatchListViewModel.class);
+        model.setName(name.getText());
     }
 
     /* (non-Javadoc)

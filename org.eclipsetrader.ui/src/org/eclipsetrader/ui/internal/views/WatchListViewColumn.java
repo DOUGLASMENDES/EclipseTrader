@@ -11,31 +11,48 @@
 
 package org.eclipsetrader.ui.internal.views;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import org.eclipsetrader.core.views.IColumn;
+import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 import org.eclipsetrader.core.views.IWatchListColumn;
+import org.eclipsetrader.core.views.WatchListColumn;
 
 public class WatchListViewColumn {
 
-    private IWatchListColumn reference;
+    public static final String PROP_NAME = "name"; //$NON-NLS-1$
+
+    private final IWatchListColumn column;
 
     private String name;
-    private IDataProviderFactory dataProviderFactory;
+    private IDataProvider provider;
 
-    public WatchListViewColumn(IWatchListColumn reference) {
-        this.reference = reference;
-        this.name = reference.getName();
-        this.dataProviderFactory = reference.getDataProviderFactory();
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    public WatchListViewColumn(IWatchListColumn column) {
+        this.column = column;
+        this.name = column.getName();
+        this.provider = column.getDataProviderFactory().createProvider();
     }
 
     public WatchListViewColumn(IColumn column) {
+        this.column = new WatchListColumn(column);
         this.name = column.getName();
-        this.dataProviderFactory = column.getDataProviderFactory();
+        this.provider = column.getDataProviderFactory().createProvider();
     }
 
-    public WatchListViewColumn(String name, IDataProviderFactory dataProviderFactory) {
-        this.name = name;
-        this.dataProviderFactory = dataProviderFactory;
+    public String getId() {
+        return column.getDataProviderFactory().getId();
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(propertyName, listener);
     }
 
     public String getName() {
@@ -43,15 +60,19 @@ public class WatchListViewColumn {
     }
 
     public void setName(String name) {
-        this.name = name;
+        changeSupport.firePropertyChange(PROP_NAME, this.name, this.name = name);
+    }
+
+    public IDataProvider getDataProvider() {
+        return provider;
+    }
+
+    public IWatchListColumn getColumn() {
+        return column;
     }
 
     public IDataProviderFactory getDataProviderFactory() {
-        return dataProviderFactory;
-    }
-
-    public IWatchListColumn getReference() {
-        return reference;
+        return column.getDataProviderFactory();
     }
 
     /* (non-Javadoc)
@@ -62,15 +83,7 @@ public class WatchListViewColumn {
         if (!(obj instanceof WatchListViewColumn)) {
             return false;
         }
-        if (!dataProviderFactory.getId().equals(((WatchListViewColumn) obj).dataProviderFactory.getId())) {
-            return false;
-        }
-        if (name != null && !name.equals(((WatchListViewColumn) obj).name)) {
-            return false;
-        }
-        if (name != ((WatchListViewColumn) obj).name) {
-            return false;
-        }
-        return true;
+        WatchListViewColumn other = (WatchListViewColumn) obj;
+        return getId().equals(other.getId());
     }
 }

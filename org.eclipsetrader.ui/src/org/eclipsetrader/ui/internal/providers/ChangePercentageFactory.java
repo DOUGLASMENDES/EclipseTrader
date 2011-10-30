@@ -56,34 +56,9 @@ public class ChangePercentageFactory extends AbstractProviderFactory {
             ILastClose close = (ILastClose) adaptable.getAdapter(ILastClose.class);
             ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
             if (close != null && close.getPrice() != null && trade != null && trade.getPrice() != null) {
-                final Double value = (trade.getPrice() - close.getPrice()) / close.getPrice() * 100.0;
-                final Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return (value > 0 ? "+" : "") + formatter.format(value) + "%";
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        if (adapter.isAssignableFrom(Color.class)) {
-                            return color;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = (trade.getPrice() - close.getPrice()) / close.getPrice() * 100.0;
+                Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
+                return new NumberValue(value, (value > 0 ? "+" : "") + formatter.format(value) + "%", color);
             }
             return null;
         }
@@ -115,10 +90,10 @@ public class ChangePercentageFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

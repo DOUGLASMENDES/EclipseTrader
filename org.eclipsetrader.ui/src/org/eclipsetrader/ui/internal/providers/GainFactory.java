@@ -63,99 +63,23 @@ public class GainFactory extends AbstractProviderFactory {
             if (holding != null && holding.getPosition() != null && holding.getPurchasePrice() != null) {
                 Double purchaseValue = holding.getPosition() * holding.getPurchasePrice();
                 Double marketValue = holding.getPosition() * trade.getPrice();
-                final Double value = marketValue - purchaseValue;
-                final Double percentage = value / purchaseValue * 100.0;
-                final Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        if (adapter.isAssignableFrom(Color.class)) {
-                            return color;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = marketValue - purchaseValue;
+                Double percentage = value / purchaseValue * 100.0;
+                String text = (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
+                Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
+                return new GainValue(value, purchaseValue, marketValue, text, color);
             }
             final IPosition position = (IPosition) adaptable.getAdapter(IPosition.class);
             if (position != null && position.getQuantity() != null && position.getPrice() != null) {
                 Double purchaseValue = position.getQuantity() * position.getPrice();
                 Double marketValue = position.getQuantity() * trade.getPrice();
-                final Double value = marketValue - purchaseValue;
-                final Double percentage = value / purchaseValue * 100.0;
-                final Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        if (adapter.isAssignableFrom(Color.class)) {
-                            return color;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = marketValue - purchaseValue;
+                Double percentage = value / purchaseValue * 100.0;
+                String text = (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
+                Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
+                return new GainValue(value, purchaseValue, marketValue, text, color);
             }
-            return new IAdaptable() {
-
-                @Override
-                @SuppressWarnings({
-                    "unchecked", "rawtypes"
-                })
-                public Object getAdapter(Class adapter) {
-                    if (adapter.isAssignableFrom(String.class)) {
-                        return "";
-                    }
-                    if (adapter.isAssignableFrom(Double.class)) {
-                        return null;
-                    }
-                    return null;
-                }
-
-                @Override
-                public boolean equals(Object obj) {
-                    if (!(obj instanceof IAdaptable)) {
-                        return false;
-                    }
-                    Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                    return s == null;
-                }
-            };
+            return null;
         }
 
         /* (non-Javadoc)
@@ -190,7 +114,7 @@ public class GainFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
             Long.class, String.class,

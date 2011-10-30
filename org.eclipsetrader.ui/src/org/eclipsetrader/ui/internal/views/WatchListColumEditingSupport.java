@@ -14,22 +14,23 @@ package org.eclipsetrader.ui.internal.views;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.widgets.Table;
-import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IEditableDataProvider;
 
 public class WatchListColumEditingSupport extends EditingSupport {
 
-    private WatchListView view;
-    private WatchListViewColumn column;
+    private final String id;
+    private final IEditableDataProvider dataProvider;
     private CellEditor editor;
 
-    public WatchListColumEditingSupport(WatchListView view, WatchListViewColumn column) {
-        super(view.getViewer());
-        this.view = view;
-        this.column = column;
-        this.editor = new TextCellEditor((Table) view.getViewer().getControl());
+    public WatchListColumEditingSupport(TableViewer viewer, IEditableDataProvider dataProvider, String id) {
+        super(viewer);
+
+        this.id = id;
+        this.dataProvider = dataProvider;
+
+        this.editor = new TextCellEditor(viewer.getTable());
     }
 
     /* (non-Javadoc)
@@ -37,9 +38,7 @@ public class WatchListColumEditingSupport extends EditingSupport {
      */
     @Override
     protected boolean canEdit(Object element) {
-        WatchListViewItem viewItem = (WatchListViewItem) element;
-        IDataProvider dataProvider = viewItem.getDataProvider(column.getDataProviderFactory().getId());
-        return dataProvider instanceof IEditableDataProvider;
+        return true;
     }
 
     /* (non-Javadoc)
@@ -57,7 +56,7 @@ public class WatchListColumEditingSupport extends EditingSupport {
     protected Object getValue(Object element) {
         WatchListViewItem viewItem = (WatchListViewItem) element;
 
-        IAdaptable value = viewItem.getValue(column.getDataProviderFactory().getId());
+        IAdaptable value = (IAdaptable) viewItem.getValue(id);
         if (value != null) {
             String s = (String) value.getAdapter(String.class);
             return s;
@@ -72,15 +71,8 @@ public class WatchListColumEditingSupport extends EditingSupport {
     @Override
     protected void setValue(Object element, Object value) {
         WatchListViewItem viewItem = (WatchListViewItem) element;
-
-        IDataProvider dataProvider = viewItem.getDataProvider(column.getDataProviderFactory().getId());
-        if (dataProvider instanceof IEditableDataProvider) {
-            if (!value.equals(getValue(element))) {
-                ((IEditableDataProvider) dataProvider).setValue(viewItem, value);
-
-                view.doUpdateItem(viewItem);
-                view.setDirty();
-            }
+        if (!value.equals(getValue(element))) {
+            dataProvider.setValue(viewItem, value);
         }
     }
 }

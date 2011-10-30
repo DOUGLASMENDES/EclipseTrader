@@ -11,126 +11,175 @@
 
 package org.eclipsetrader.ui.internal.views;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.core.databinding.observable.list.ObservableList;
+import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
-import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.views.Holding;
-import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IWatchListElement;
+import org.eclipsetrader.ui.NullRealm;
+import org.eclipsetrader.ui.internal.ats.ViewItem;
 
-public class WatchListViewItem extends PlatformObject {
+public class WatchListViewItem implements ViewItem {
 
-    private IWatchListElement reference;
+    public static final String PROP_QUANTITY = "position";
+    public static final String PROP_PRICE = "purchasePrice";
 
-    private ISecurity security;
-    private Holding holding;
+    private final IWatchListElement element;
+
+    private final ISecurity security;
 
     private ITrade trade;
     private IQuote quote;
     private ITodayOHL todayOHL;
     private ILastClose lastClose;
     private IBook book;
-    private MarketPricingEnvironment pricingEnvironment;
 
-    private Map<String, IDataProvider> dataProviders = new HashMap<String, IDataProvider>();
-    private Map<String, IAdaptable> values = new HashMap<String, IAdaptable>();
-    private Map<String, Integer> updateTime = new HashMap<String, Integer>();
+    private Long position;
+    private Double purchasePrice;
 
-    public WatchListViewItem() {
+    private final WritableMap observableValues = new WritableMap(NullRealm.getInstance(), String.class, Object.class);
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    public WatchListViewItem(IWatchListElement element) {
+        this.element = element;
+        this.security = element.getSecurity();
+        this.position = element.getPosition();
+        this.purchasePrice = element.getPurchasePrice();
     }
 
-    public WatchListViewItem(IWatchListElement reference) {
-        this(reference.getSecurity(), reference.getPosition(), reference.getPurchasePrice(), reference.getDate());
-        this.reference = reference;
+    public IWatchListElement getElement() {
+        return element;
     }
 
-    public WatchListViewItem(ISecurity security) {
-        this(security, null, null, null);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+     */
+    @Override
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(propertyName, listener);
     }
 
-    public WatchListViewItem(ISecurity security, Long position, Double purchasePrice) {
-        this(security, position, purchasePrice, null);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+     */
+    @Override
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(propertyName, listener);
     }
 
-    public WatchListViewItem(ISecurity security, Long position, Double purchasePrice, Date date) {
-        this.security = security;
-        this.holding = new Holding(security, position, purchasePrice, date);
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#getValue(java.lang.String)
+     */
+    @Override
+    public Object getValue(String name) {
+        return observableValues.get(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#putValue(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public void putValue(final String name, final Object value) {
+        final Object oldValue = observableValues.get(name);
+        if (oldValue != null && value != null && oldValue.equals(value)) {
+            return;
+        }
+
+        observableValues.put(name, value);
+        changeSupport.firePropertyChange(name, oldValue, value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#getParent()
+     */
+    @Override
+    public ViewItem getParent() {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#hasChildren()
+     */
+    @Override
+    public boolean hasChildren() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.ui.internal.ats.ViewItem#getItems()
+     */
+    @Override
+    public ObservableList getItems() {
+        return null;
     }
 
     public ISecurity getSecurity() {
         return security;
     }
 
-    public Date getDate() {
-        return holding != null ? holding.getDate() : null;
+    public ITrade getTrade() {
+        return trade;
+    }
+
+    public void setTrade(ITrade trade) {
+        this.trade = trade;
+    }
+
+    public IQuote getQuote() {
+        return quote;
+    }
+
+    public void setQuote(IQuote quote) {
+        this.quote = quote;
+    }
+
+    public ITodayOHL getTodayOHL() {
+        return todayOHL;
+    }
+
+    public void setTodayOHL(ITodayOHL todayOHL) {
+        this.todayOHL = todayOHL;
+    }
+
+    public ILastClose getLastClose() {
+        return lastClose;
+    }
+
+    public void setLastClose(ILastClose lastClose) {
+        this.lastClose = lastClose;
+    }
+
+    public IBook getBook() {
+        return book;
+    }
+
+    public void setBook(IBook book) {
+        this.book = book;
     }
 
     public Long getPosition() {
-        return holding != null ? holding.getPosition() : null;
+        return position;
     }
 
     public Double getPurchasePrice() {
-        return holding != null ? holding.getPurchasePrice() : null;
-    }
-
-    public IWatchListElement getReference() {
-        return reference;
-    }
-
-    public IDataProvider getDataProvider(String propertyName) {
-        return dataProviders.get(propertyName);
-    }
-
-    public void setDataProvider(String propertyName, IDataProvider value) {
-        this.dataProviders.put(propertyName, value);
-    }
-
-    public void clearDataProvider(String propertyName) {
-        this.dataProviders.remove(propertyName);
-    }
-
-    public IAdaptable getValue(String propertyName) {
-        return values.get(propertyName);
-    }
-
-    public void setValue(String propertyName, IAdaptable value) {
-        this.values.put(propertyName, value);
-    }
-
-    public void clearValue(String propertyName) {
-        values.remove(propertyName);
-        updateTime.remove(propertyName);
-    }
-
-    public String[] getValueProperties() {
-        Set<String> s = values.keySet();
-        return s.toArray(new String[s.size()]);
-    }
-
-    public Integer getUpdateTime(String propertyName) {
-        return updateTime.get(propertyName);
-    }
-
-    public void setUpdateTime(String propertyName, Integer value) {
-        this.updateTime.put(propertyName, value);
+        return purchasePrice;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (security != null) {
             Object obj = security.getAdapter(adapter);
@@ -140,7 +189,28 @@ public class WatchListViewItem extends PlatformObject {
         }
 
         if (adapter.isAssignableFrom(Holding.class)) {
-            return holding;
+            return new Holding() {
+
+                @Override
+                public Long getPosition() {
+                    return WatchListViewItem.this.position;
+                }
+
+                @Override
+                public void setPosition(Long position) {
+                    changeSupport.firePropertyChange(PROP_QUANTITY, WatchListViewItem.this.position, WatchListViewItem.this.position = position);
+                }
+
+                @Override
+                public Double getPurchasePrice() {
+                    return WatchListViewItem.this.purchasePrice;
+                }
+
+                @Override
+                public void setPurchasePrice(Double purchasePrice) {
+                    changeSupport.firePropertyChange(WatchListViewItem.PROP_PRICE, WatchListViewItem.this.purchasePrice, WatchListViewItem.this.purchasePrice = purchasePrice);
+                }
+            };
         }
 
         if (adapter.isAssignableFrom(ITrade.class)) {
@@ -158,57 +228,20 @@ public class WatchListViewItem extends PlatformObject {
         if (adapter.isAssignableFrom(IBook.class)) {
             return book;
         }
-        if (adapter.isAssignableFrom(MarketPricingEnvironment.class)) {
-            return pricingEnvironment;
+
+        if (adapter.isAssignableFrom(element.getClass())) {
+            return element;
+        }
+
+        Object result = element.getAdapter(adapter);
+        if (result != null) {
+            return result;
         }
 
         if (adapter.isAssignableFrom(getClass())) {
             return this;
         }
 
-        if (reference != null) {
-            Object obj = reference.getAdapter(adapter);
-            if (obj != null) {
-                return obj;
-            }
-        }
-
-        if (adapter.isAssignableFrom(getClass())) {
-            return this;
-        }
-
-        return super.getAdapter(adapter);
-    }
-
-    public void setTrade(ITrade trade) {
-        this.trade = trade;
-    }
-
-    public void setQuote(IQuote quote) {
-        this.quote = quote;
-    }
-
-    public void setTodayOHL(ITodayOHL todayOHL) {
-        this.todayOHL = todayOHL;
-    }
-
-    public void setLastClose(ILastClose lastClose) {
-        this.lastClose = lastClose;
-    }
-
-    public IBook getBook() {
-        return book;
-    }
-
-    public void setBook(IBook book) {
-        this.book = book;
-    }
-
-    public MarketPricingEnvironment getPricingEnvironment() {
-        return pricingEnvironment;
-    }
-
-    public void setPricingEnvironment(MarketPricingEnvironment pricingEnvironment) {
-        this.pricingEnvironment = pricingEnvironment;
+        return null;
     }
 }

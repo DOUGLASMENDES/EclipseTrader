@@ -49,30 +49,8 @@ public class LowestPriceFactory extends AbstractProviderFactory {
         public IAdaptable getValue(IAdaptable adaptable) {
             ITodayOHL todayOHL = (ITodayOHL) adaptable.getAdapter(ITodayOHL.class);
             if (todayOHL != null && todayOHL.getLow() != null) {
-                final Double value = todayOHL.getLow();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = todayOHL.getLow();
+                return new NumberValue(value, formatter.format(value));
             }
             return null;
         }
@@ -104,10 +82,10 @@ public class LowestPriceFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

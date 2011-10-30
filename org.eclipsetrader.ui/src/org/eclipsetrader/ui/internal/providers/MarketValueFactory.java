@@ -55,61 +55,13 @@ public class MarketValueFactory extends AbstractProviderFactory {
             }
             final IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);
             if (holding != null && holding.getPosition() != null) {
-                final Double value = trade.getPrice() * holding.getPosition();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = trade.getPrice() * holding.getPosition();
+                return new NumberValue(value, formatter.format(value));
             }
             final IPosition position = (IPosition) adaptable.getAdapter(IPosition.class);
             if (position != null && position.getQuantity() != null) {
-                final Double value = trade.getPrice() * position.getPrice();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Double value = trade.getPrice() * position.getPrice();
+                return new NumberValue(value, formatter.format(value));
             }
             return null;
         }
@@ -141,7 +93,7 @@ public class MarketValueFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
             Double.class, String.class,

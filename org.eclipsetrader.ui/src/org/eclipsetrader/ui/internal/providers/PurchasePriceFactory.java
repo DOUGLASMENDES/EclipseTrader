@@ -54,29 +54,7 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
             IHolding element = (IHolding) adaptable.getAdapter(IHolding.class);
             if (element != null) {
                 final Double value = element.getPurchasePrice();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return value != null ? formatter.format(value) : "";
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                return new NumberValue(value, value != null ? formatter.format(value) : "");
             }
             return null;
         }
@@ -94,7 +72,9 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
                 }
                 else if (value != null) {
                     try {
-                        l = formatter.parse(value.toString()).doubleValue();
+                        if (!"".equals(value.toString())) {
+                            l = formatter.parse(value.toString()).doubleValue();
+                        }
                     } catch (ParseException e) {
                         UIActivator.log("Error parsing edited purchase price value", e);
                     }
@@ -130,10 +110,10 @@ public class PurchasePriceFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

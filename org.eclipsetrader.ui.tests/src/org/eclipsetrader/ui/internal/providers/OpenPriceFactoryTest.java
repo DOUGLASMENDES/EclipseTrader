@@ -50,9 +50,9 @@ public class OpenPriceFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         TodayOHL element = new TodayOHL(20.0, 30.0, 10.0);
         IAdaptable value = provider.getValue(new AdaptableWrapper(element));
-        assertTrue(value.equals(new AdaptableWrapper(new Double(20.0))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(20.5))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(20))));
+        assertTrue(value.equals(new NumberValue(new Double(20.0), "")));
+        assertFalse(value.equals(new NumberValue(new Double(20.5), "")));
+        assertFalse(value.equals(new NumberValue(new Long(20), "")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

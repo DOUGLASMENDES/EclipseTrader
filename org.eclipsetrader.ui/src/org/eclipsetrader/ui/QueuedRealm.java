@@ -10,9 +10,8 @@ import org.eclipse.swt.widgets.Display;
 
 public class QueuedRealm extends Realm {
 
-    static final int GROW_SIZE = 4;
-    static final int MESSAGE_LIMIT = 64;
-    static final int DELAY = 100;
+    static final int GROW_SIZE = 16;
+    static final int MESSAGE_LIMIT = 256;
     static final Realm instance = new QueuedRealm();
 
     private Display display;
@@ -87,7 +86,7 @@ public class QueuedRealm extends Realm {
             wake = messageCount == 1;
         }
         if (wake) {
-            display.timerExec(DELAY, delayedRunnable);
+            display.asyncExec(delayedRunnable);
         }
     }
 

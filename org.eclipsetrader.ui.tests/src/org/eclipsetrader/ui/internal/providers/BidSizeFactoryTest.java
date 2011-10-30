@@ -49,9 +49,9 @@ public class BidSizeFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         Quote quote = new Quote(10.0, 20.0, 1000L, 2000L);
         IAdaptable value = provider.getValue(new AdaptableWrapper(quote));
-        assertTrue(value.equals(new AdaptableWrapper(new Long(1000))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(1100))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(1000))));
+        assertTrue(value.equals(new NumberValue(new Long(1000), "1000")));
+        assertFalse(value.equals(new NumberValue(new Long(1100), "1100")));
+        assertFalse(value.equals(new NumberValue(new Double(1000), "1000.0")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

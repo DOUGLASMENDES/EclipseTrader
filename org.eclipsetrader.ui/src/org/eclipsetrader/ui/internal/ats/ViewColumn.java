@@ -39,6 +39,10 @@ public class ViewColumn {
         this.name = name != null ? name : factory.getName();
     }
 
+    public String getId() {
+        return factory.getId();
+    }
+
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         changeSupport.addPropertyChangeListener(propertyName, listener);
     }

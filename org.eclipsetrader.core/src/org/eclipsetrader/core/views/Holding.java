@@ -11,6 +11,7 @@
 
 package org.eclipsetrader.core.views;
 
+import java.beans.PropertyChangeSupport;
 import java.util.Date;
 
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -28,6 +29,9 @@ import org.eclipsetrader.core.repositories.StoreProperties;
  */
 public class Holding implements IHolding, IStoreObject {
 
+    public static final String PROP_QUANTITY = "position";
+    public static final String PROP_PRICE = "purchasePrice";
+
     private ISecurity security;
     private Long position;
     private Double purchasePrice;
@@ -35,6 +39,8 @@ public class Holding implements IHolding, IStoreObject {
 
     private IStore store;
     private IStoreProperties storeProperties;
+
+    private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
     protected Holding() {
     }
@@ -84,7 +90,7 @@ public class Holding implements IHolding, IStoreObject {
     }
 
     public void setPosition(Long position) {
-        this.position = position;
+        changeSupport.firePropertyChange(PROP_QUANTITY, this.position, this.position = position);
     }
 
     /* (non-Javadoc)
@@ -96,14 +102,16 @@ public class Holding implements IHolding, IStoreObject {
     }
 
     public void setPurchasePrice(Double purchasePrice) {
-        this.purchasePrice = purchasePrice;
+        changeSupport.firePropertyChange(PROP_PRICE, this.purchasePrice, this.purchasePrice = purchasePrice);
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (security != null) {
             if (security.getIdentifier() != null && adapter.isAssignableFrom(security.getIdentifier().getClass())) {
@@ -112,6 +120,10 @@ public class Holding implements IHolding, IStoreObject {
             if (adapter.isAssignableFrom(security.getClass())) {
                 return security;
             }
+        }
+
+        if (adapter.isAssignableFrom(changeSupport.getClass())) {
+            return changeSupport;
         }
 
         if (adapter.isAssignableFrom(getClass())) {

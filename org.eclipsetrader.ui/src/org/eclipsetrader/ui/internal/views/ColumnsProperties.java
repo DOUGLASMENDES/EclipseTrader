@@ -58,12 +58,12 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
      */
     @Override
     protected void performDefaults() {
-        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
+        WatchListViewModel resource = (WatchListViewModel) getElement().getAdapter(WatchListViewModel.class);
 
-        WatchListViewColumn[] columns = resource.getColumns();
-        Column[] selectedColumns = new Column[columns.length];
+        List<WatchListViewColumn> columns = resource.getColumns();
+        Column[] selectedColumns = new Column[columns.size()];
         for (int i = 0; i < selectedColumns.length; i++) {
-            selectedColumns[i] = new Column(columns[i].getName(), columns[i].getDataProviderFactory());
+            selectedColumns[i] = new Column(columns.get(i).getName(), columns.get(i).getDataProviderFactory());
         }
 
         providers.setSelectedColumns(selectedColumns);
@@ -72,14 +72,13 @@ public class ColumnsProperties extends PropertyPage implements IWorkbenchPropert
     }
 
     protected void applyChanges() {
-        WatchListView resource = (WatchListView) getElement().getAdapter(WatchListView.class);
-        if (resource != null) {
-            List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
-            for (IColumn column : providers.getSelection()) {
-                c.add(new WatchListViewColumn(column));
-            }
-            resource.setColumns(c.toArray(new WatchListViewColumn[c.size()]));
+        WatchListViewModel resource = (WatchListViewModel) getElement().getAdapter(WatchListViewModel.class);
+
+        List<WatchListViewColumn> c = new ArrayList<WatchListViewColumn>();
+        for (IColumn column : providers.getSelection()) {
+            c.add(new WatchListViewColumn(column));
         }
+        resource.setColumns(c);
     }
 
     /* (non-Javadoc)

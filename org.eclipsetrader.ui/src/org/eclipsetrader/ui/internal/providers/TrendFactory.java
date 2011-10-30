@@ -75,28 +75,8 @@ public class TrendFactory extends AbstractProviderFactory {
                 }
 
                 double direction = oldTrades.size() > 1 ? getSlope(oldTrades.toArray(new Double[oldTrades.size()])) : 0.0;
-                final Image value = direction == 0 ? stable : direction < 0 ? down : up;
-
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(Image.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Image s = (Image) ((IAdaptable) obj).getAdapter(Image.class);
-                        return s == value;
-                    }
-                };
+                Image value = direction == 0 ? stable : direction < 0 ? down : up;
+                return new ImageValue(value);
             }
             return null;
         }
@@ -106,6 +86,41 @@ public class TrendFactory extends AbstractProviderFactory {
          */
         @Override
         public void dispose() {
+        }
+    }
+
+    public static class ImageValue implements IAdaptable {
+
+        private final Image value;
+
+        public ImageValue(Image value) {
+            this.value = value;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof IAdaptable)) {
+                return false;
+            }
+            Image s = (Image) ((IAdaptable) obj).getAdapter(Image.class);
+            return s == value;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+         */
+        @Override
+        @SuppressWarnings({
+            "unchecked", "rawtypes"
+        })
+        public Object getAdapter(Class adapter) {
+            if (adapter.isAssignableFrom(Image.class)) {
+                return value;
+            }
+            return null;
         }
     }
 
@@ -128,7 +143,7 @@ public class TrendFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
             Image.class,

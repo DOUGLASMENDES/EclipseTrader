@@ -15,40 +15,41 @@ import junit.framework.TestCase;
 
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
+import org.eclipsetrader.core.views.WatchListColumn;
 
 public class WatchListViewColumnTest extends TestCase {
 
     public void testSetName() throws Exception {
-        WatchListViewColumn column = new WatchListViewColumn(null, new DataProviderFactory("id1", "Factory1"));
+        WatchListViewColumn column = new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id1", "Factory1")));
         assertNull(column.getName());
         column.setName("New Name");
         assertEquals("New Name", column.getName());
     }
 
     public void testSetNameFromConstructor() throws Exception {
-        WatchListViewColumn column = new WatchListViewColumn("Name", new DataProviderFactory("id1", "Factory1"));
+        WatchListViewColumn column = new WatchListViewColumn(new WatchListColumn("Name", new DataProviderFactory("id1", "Factory1")));
         assertEquals("Name", column.getName());
     }
 
     public void testSetDataProviderFactoryFromConstructor() throws Exception {
         DataProviderFactory factory = new DataProviderFactory("id1", "Factory1");
-        WatchListViewColumn column = new WatchListViewColumn("Name", factory);
+        WatchListViewColumn column = new WatchListViewColumn(new WatchListColumn("Name", factory));
         assertSame(factory, column.getDataProviderFactory());
     }
 
     public void testEqualsWithoutName() throws Exception {
-        WatchListViewColumn column1 = new WatchListViewColumn(null, new DataProviderFactory("id1", "Factory1"));
-        assertTrue(column1.equals(new WatchListViewColumn(null, new DataProviderFactory("id1", "Factory1"))));
-        assertFalse(column1.equals(new WatchListViewColumn("Test", new DataProviderFactory("id1", "Factory1"))));
-        assertFalse(column1.equals(new WatchListViewColumn(null, new DataProviderFactory("id2", "Factory2"))));
+        WatchListViewColumn column1 = new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id1", "Factory1")));
+        assertTrue(column1.equals(new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id1", "Factory1")))));
+        assertTrue(column1.equals(new WatchListViewColumn(new WatchListColumn("Test", new DataProviderFactory("id1", "Factory1")))));
+        assertFalse(column1.equals(new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id2", "Factory2")))));
     }
 
     public void testEqualsWithName() throws Exception {
-        WatchListViewColumn column1 = new WatchListViewColumn("Column1", new DataProviderFactory("id1", "Factory1"));
-        assertFalse(column1.equals(new WatchListViewColumn(null, new DataProviderFactory("id1", "Factory1"))));
-        assertTrue(column1.equals(new WatchListViewColumn("Column1", new DataProviderFactory("id1", "Factory1"))));
-        assertFalse(column1.equals(new WatchListViewColumn("Test", new DataProviderFactory("id1", "Factory1"))));
-        assertFalse(column1.equals(new WatchListViewColumn(null, new DataProviderFactory("id2", "Factory2"))));
+        WatchListViewColumn column1 = new WatchListViewColumn(new WatchListColumn("Column1", new DataProviderFactory("id1", "Factory1")));
+        assertTrue(column1.equals(new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id1", "Factory1")))));
+        assertTrue(column1.equals(new WatchListViewColumn(new WatchListColumn("Column1", new DataProviderFactory("id1", "Factory1")))));
+        assertTrue(column1.equals(new WatchListViewColumn(new WatchListColumn("Test", new DataProviderFactory("id1", "Factory1")))));
+        assertFalse(column1.equals(new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactory("id2", "Factory2")))));
     }
 
     private class DataProviderFactory implements IDataProviderFactory {

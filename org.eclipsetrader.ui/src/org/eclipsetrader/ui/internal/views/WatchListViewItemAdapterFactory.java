@@ -24,7 +24,7 @@ public class WatchListViewItemAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(Object adaptableObject, Class adapterType) {
         if (adaptableObject instanceof WatchListViewItem) {
             return ((WatchListViewItem) adaptableObject).getAdapter(adapterType);
@@ -36,10 +36,11 @@ public class WatchListViewItemAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getAdapterList() {
         return new Class[] {
-                Security.class, ISecurity.class,
+            Security.class,
+            ISecurity.class,
         };
     }
 }

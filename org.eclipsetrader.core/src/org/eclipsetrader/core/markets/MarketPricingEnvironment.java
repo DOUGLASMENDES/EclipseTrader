@@ -247,10 +247,24 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
             }
 
             pricingStatus.trade = subscription.getTrade();
+            if (pricingStatus.trade != null) {
+                pricingStatus.deltas.add(new PricingDelta(null, pricingStatus.trade));
+            }
             pricingStatus.quote = subscription.getQuote();
+            if (pricingStatus.quote != null) {
+                pricingStatus.deltas.add(new PricingDelta(null, pricingStatus.quote));
+            }
             pricingStatus.todayOHL = subscription.getTodayOHL();
+            if (pricingStatus.todayOHL != null) {
+                pricingStatus.deltas.add(new PricingDelta(null, pricingStatus.todayOHL));
+            }
             pricingStatus.lastClose = subscription.getLastClose();
+            if (pricingStatus.lastClose != null) {
+                pricingStatus.deltas.add(new PricingDelta(null, pricingStatus.lastClose));
+            }
         }
+
+        notifyListeners();
     }
 
     protected void subscribeSecurity2(ISecurity security, IFeedConnector2 connector) {

@@ -19,6 +19,10 @@ public class DataProviderFactoryMock implements IDataProviderFactory {
     private String id;
     private String name;
 
+    public DataProviderFactoryMock(String id) {
+        this.id = id;
+    }
+
     public DataProviderFactoryMock(String id, String name) {
         this.id = id;
         this.name = name;

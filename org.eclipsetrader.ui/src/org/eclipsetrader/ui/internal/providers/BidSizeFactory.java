@@ -49,30 +49,8 @@ public class BidSizeFactory extends AbstractProviderFactory {
         public IAdaptable getValue(IAdaptable adaptable) {
             IQuote quote = (IQuote) adaptable.getAdapter(IQuote.class);
             if (quote != null && quote.getBidSize() != null) {
-                final Long value = quote.getBidSize();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Long.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Long s = (Long) ((IAdaptable) obj).getAdapter(Long.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Long value = quote.getBidSize();
+                return new NumberValue(value, formatter.format(value));
             }
             return null;
         }
@@ -104,10 +82,10 @@ public class BidSizeFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Long.class, String.class,
+            Long.class, String.class,
         };
     }
 }

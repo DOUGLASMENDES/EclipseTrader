@@ -50,9 +50,9 @@ public class HighestPriceFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         TodayOHL element = new TodayOHL(20.0, 30.0, 10.0);
         IAdaptable value = provider.getValue(new AdaptableWrapper(element));
-        assertTrue(value.equals(new AdaptableWrapper(new Double(30.0))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(30.5))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(30))));
+        assertTrue(value.equals(new NumberValue(new Double(30.0), "")));
+        assertFalse(value.equals(new NumberValue(new Double(30.5), "")));
+        assertFalse(value.equals(new NumberValue(new Long(30), "")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }

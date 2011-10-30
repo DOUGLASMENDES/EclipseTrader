@@ -53,88 +53,16 @@ public class PositionFactory extends AbstractProviderFactory {
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
             IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);
-            if (holding != null) {
-                final Long value = holding.getPosition();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return value != null ? formatter.format(value) : "";
-                        }
-                        if (adapter.isAssignableFrom(Long.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Long s = (Long) ((IAdaptable) obj).getAdapter(Long.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+            if (holding != null && holding.getPosition() != null) {
+                Long value = holding.getPosition();
+                return new NumberValue(value, formatter.format(value));
             }
             IPosition position = (IPosition) adaptable.getAdapter(IPosition.class);
-            if (position != null) {
-                final Long value = position.getQuantity();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings({
-                        "unchecked", "rawtypes"
-                    })
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return value != null ? formatter.format(value) : "";
-                        }
-                        if (adapter.isAssignableFrom(Long.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Long s = (Long) ((IAdaptable) obj).getAdapter(Long.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+            if (position != null && position.getQuantity() != null) {
+                Long value = position.getQuantity();
+                return new NumberValue(value, formatter.format(value));
             }
-            return new IAdaptable() {
-
-                @Override
-                @SuppressWarnings({
-                    "unchecked", "rawtypes"
-                })
-                public Object getAdapter(Class adapter) {
-                    if (adapter.isAssignableFrom(String.class)) {
-                        return "";
-                    }
-                    if (adapter.isAssignableFrom(Long.class)) {
-                        return null;
-                    }
-                    return null;
-                }
-
-                @Override
-                public boolean equals(Object obj) {
-                    if (!(obj instanceof IAdaptable)) {
-                        return false;
-                    }
-                    Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                    return s == null;
-                }
-            };
+            return new NumberValue(null, "");
         }
 
         /* (non-Javadoc)
@@ -150,7 +78,9 @@ public class PositionFactory extends AbstractProviderFactory {
                 }
                 else if (value != null) {
                     try {
-                        l = formatter.parse(value.toString()).longValue();
+                        if (!"".equals(value.toString())) {
+                            l = formatter.parse(value.toString()).longValue();
+                        }
                     } catch (ParseException e) {
                         UIActivator.log("Error parsing edited position value", e);
                     }
@@ -186,7 +116,7 @@ public class PositionFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
             Long.class, String.class,

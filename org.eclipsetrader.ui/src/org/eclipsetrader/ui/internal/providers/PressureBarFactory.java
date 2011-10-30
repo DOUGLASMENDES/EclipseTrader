@@ -100,9 +100,9 @@ public class PressureBarFactory extends AbstractProviderFactory {
         }
     }
 
-    class ImageValue implements IAdaptable {
+    public static class ImageValue implements IAdaptable {
 
-        Image value;
+        private final Image value;
 
         public ImageValue(Image value) {
             this.value = value;
@@ -112,25 +112,34 @@ public class PressureBarFactory extends AbstractProviderFactory {
             value.dispose();
         }
 
-        /* (non-Javadoc)
-         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getAdapter(Class adapter) {
-            if (adapter.isAssignableFrom(Image.class) && !value.isDisposed()) {
-                return value;
-            }
-            return null;
+        public boolean isDisposed() {
+            return value.isDisposed();
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof IAdaptable)) {
                 return false;
             }
             Image s = (Image) ((IAdaptable) obj).getAdapter(Image.class);
-            return s == value || value != null && value.equals(s);
+            return s == value;
+        }
+
+        /* (non-Javadoc)
+         * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+         */
+        @Override
+        @SuppressWarnings({
+            "unchecked", "rawtypes"
+        })
+        public Object getAdapter(Class adapter) {
+            if (adapter.isAssignableFrom(Image.class)) {
+                return value;
+            }
+            return null;
         }
     }
 
@@ -149,7 +158,7 @@ public class PressureBarFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
             Image.class,

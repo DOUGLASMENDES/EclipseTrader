@@ -1494,6 +1494,16 @@
                type="org.eclipsetrader.core.ats.ITradingSystem">
          </adapter>
       </factory>
+      <factory
+            adaptableType="org.eclipsetrader.ui.internal.views.WatchListViewItem"
+            class="org.eclipsetrader.ui.internal.views.WatchListViewItemAdapterFactory">
+         <adapter
+               type="org.eclipsetrader.core.instruments.Security">
+         </adapter>
+         <adapter
+               type="org.eclipsetrader.core.instruments.ISecurity">
+         </adapter>
+      </factory>
    </extension>
    <extension
          point="org.eclipsetrader.ui.indicators">

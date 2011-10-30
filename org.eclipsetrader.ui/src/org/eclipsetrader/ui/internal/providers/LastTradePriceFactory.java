@@ -49,30 +49,7 @@ public class LastTradePriceFactory extends AbstractProviderFactory {
         public IAdaptable getValue(IAdaptable adaptable) {
             ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
             if (trade != null && trade.getPrice() != null) {
-                final Double value = trade.getPrice();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Double.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Double s = (Double) ((IAdaptable) obj).getAdapter(Double.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                return new NumberValue(trade.getPrice(), formatter.format(trade.getPrice()));
             }
             return null;
         }
@@ -104,10 +81,10 @@ public class LastTradePriceFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Double.class, String.class,
+            Double.class, String.class,
         };
     }
 }

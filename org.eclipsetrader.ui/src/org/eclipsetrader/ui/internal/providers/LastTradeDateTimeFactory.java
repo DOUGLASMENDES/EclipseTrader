@@ -51,30 +51,8 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
         public IAdaptable getValue(IAdaptable adaptable) {
             ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
             if (trade != null && trade.getTime() != null) {
-                final Date value = trade.getTime();
-                return new IAdaptable() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public Object getAdapter(Class adapter) {
-                        if (adapter.isAssignableFrom(String.class)) {
-                            return formatter.format(value);
-                        }
-                        if (adapter.isAssignableFrom(Date.class)) {
-                            return value;
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public boolean equals(Object obj) {
-                        if (!(obj instanceof IAdaptable)) {
-                            return false;
-                        }
-                        Date s = (Date) ((IAdaptable) obj).getAdapter(Date.class);
-                        return s == value || value != null && value.equals(s);
-                    }
-                };
+                Date value = trade.getTime();
+                return new DateValue(value, formatter.format(value));
             }
             return null;
         }
@@ -102,10 +80,10 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-                Date.class, String.class,
+            Date.class, String.class,
         };
     }
 }

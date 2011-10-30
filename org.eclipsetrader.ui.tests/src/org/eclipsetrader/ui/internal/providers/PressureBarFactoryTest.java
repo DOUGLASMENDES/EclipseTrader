@@ -29,7 +29,9 @@ public class PressureBarFactoryTest extends TestCase {
     private IAdaptable sourceAdaptable = new IAdaptable() {
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({
+            "unchecked", "rawtypes"
+        })
         public Object getAdapter(Class adapter) {
             if (adapter.isAssignableFrom(Security.class)) {
                 return security;
@@ -122,6 +124,6 @@ public class PressureBarFactoryTest extends TestCase {
         IDataProvider provider = factory.createProvider();
         IAdaptable value = provider.getValue(sourceAdaptable);
         provider.getValue(sourceAdaptable);
-        assertFalse(((ImageValue) value).value.isDisposed());
+        assertFalse(((ImageValue) value).isDisposed());
     }
 }

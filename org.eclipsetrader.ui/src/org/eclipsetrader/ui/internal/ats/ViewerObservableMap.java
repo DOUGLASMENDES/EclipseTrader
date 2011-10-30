@@ -60,6 +60,9 @@ public class ViewerObservableMap implements IObservableMap {
 
         @Override
         public void propertyChange(final PropertyChangeEvent evt) {
+            if (!key.equals(evt.getPropertyName())) {
+                return;
+            }
             realm.exec(new Runnable() {
 
                 @Override
@@ -71,7 +74,11 @@ public class ViewerObservableMap implements IObservableMap {
     };
 
     public ViewerObservableMap(IObservableSet knownElements, String key) {
-        this.realm = Realm.getDefault();
+        this(Realm.getDefault(), knownElements, key);
+    }
+
+    public ViewerObservableMap(Realm realm, IObservableSet knownElements, String key) {
+        this.realm = realm;
         this.key = key;
         this.delegate = new WritableMap(realm);
 
@@ -82,6 +89,10 @@ public class ViewerObservableMap implements IObservableMap {
         }
 
         knownElements.addSetChangeListener(changeListener);
+    }
+
+    public String getKey() {
+        return key;
     }
 
     /* (non-Javadoc)

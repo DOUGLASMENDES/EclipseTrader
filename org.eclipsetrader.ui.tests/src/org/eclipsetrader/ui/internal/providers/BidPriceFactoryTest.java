@@ -50,9 +50,9 @@ public class BidPriceFactoryTest extends TestCase {
     public void testEquals() throws Exception {
         Quote quote = new Quote(10.0, 20.0, 1000L, 2000L);
         IAdaptable value = provider.getValue(new AdaptableWrapper(quote));
-        assertTrue(value.equals(new AdaptableWrapper(new Double(10.0))));
-        assertFalse(value.equals(new AdaptableWrapper(new Double(10.5))));
-        assertFalse(value.equals(new AdaptableWrapper(new Long(10))));
+        assertTrue(value.equals(new NumberValue(new Double(10.0), "10.0")));
+        assertFalse(value.equals(new NumberValue(new Double(10.5), "10.5")));
+        assertFalse(value.equals(new NumberValue(new Long(10), "10")));
         assertFalse(value.equals(new AdaptableWrapper(null)));
     }
 }
