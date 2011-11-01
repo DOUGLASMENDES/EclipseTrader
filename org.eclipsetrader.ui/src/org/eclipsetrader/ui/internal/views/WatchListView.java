@@ -34,7 +34,9 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -68,8 +70,11 @@ import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.themes.ITheme;
+import org.eclipse.ui.themes.IThemeManager;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.markets.MarketPricingEnvironment;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
@@ -118,6 +123,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
     private int sortColumn = 0;
     private int sortDirection = SWT.UP;
+    IPreferenceStore preferenceStore;
+    IThemeManager themeManager;
 
     private ControlAdapter columnControlListener = new ControlAdapter() {
 
@@ -172,6 +179,82 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         }
     };
 
+    private final IPropertyChangeListener preferencesChangeListener = new IPropertyChangeListener() {
+
+        @Override
+        public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
+            if (UIActivator.PREFS_WATCHLIST_ALTERNATE_BACKGROUND.equals(event.getProperty())) {
+                boolean enabled = ((Boolean) event.getNewValue()).booleanValue();
+                tickDecorator.setRowColors(evenRowsColor, enabled ? oddRowsColor : evenRowsColor);
+                updateBackgrounds();
+            }
+            else if (UIActivator.PREFS_WATCHLIST_ENABLE_TICK_DECORATORS.equals(event.getProperty())) {
+                boolean enabled = ((Boolean) event.getNewValue()).booleanValue();
+                tickDecorator.setEnabled(enabled);
+            }
+            else if (UIActivator.PREFS_WATCHLIST_DRAW_TICK_OUTLINE.equals(event.getProperty())) {
+                boolean enabled = ((Boolean) event.getNewValue()).booleanValue();
+                tickDecorator.setDrawOutline(enabled);
+            }
+            else if (UIActivator.PREFS_WATCHLIST_FADE_TO_BACKGROUND.equals(event.getProperty())) {
+                boolean enabled = ((Boolean) event.getNewValue()).booleanValue();
+                tickDecorator.setFadeEffect(enabled);
+            }
+            else if (UIActivator.PREFS_WATCHLIST_POSITIVE_TICK_COLOR.equals(event.getProperty())) {
+                if (positiveTickColor != null) {
+                    positiveTickColor.dispose();
+                    positiveTickColor = null;
+                }
+                RGB rgb = (RGB) event.getNewValue();
+                if (rgb != null) {
+                    positiveTickColor = new Color(Display.getDefault(), rgb);
+                }
+                tickDecorator.setTickColors(positiveTickColor, negativeTickColor);
+            }
+            else if (UIActivator.PREFS_WATCHLIST_NEGATIVE_TICK_COLOR.equals(event.getProperty())) {
+                if (negativeTickColor != null) {
+                    negativeTickColor.dispose();
+                    negativeTickColor = null;
+                }
+                RGB rgb = (RGB) event.getNewValue();
+                if (rgb != null) {
+                    negativeTickColor = new Color(Display.getDefault(), rgb);
+                }
+                tickDecorator.setTickColors(positiveTickColor, negativeTickColor);
+            }
+            else if (IThemeManager.CHANGE_CURRENT_THEME.equals(event.getProperty())) {
+                ITheme oldTheme = (ITheme) event.getOldValue();
+                if (oldTheme != null) {
+                    oldTheme.removePropertyChangeListener(preferencesChangeListener);
+                }
+
+                if (positiveTickColor != null) {
+                    positiveTickColor.dispose();
+                    positiveTickColor = null;
+                }
+                if (negativeTickColor != null) {
+                    negativeTickColor.dispose();
+                    negativeTickColor = null;
+                }
+
+                ITheme newTheme = (ITheme) event.getOldValue();
+                if (newTheme != null) {
+                    RGB rgb = newTheme.getColorRegistry().getRGB(UIActivator.PREFS_WATCHLIST_POSITIVE_TICK_COLOR);
+                    if (rgb != null) {
+                        positiveTickColor = new Color(Display.getDefault(), rgb);
+                    }
+                    rgb = newTheme.getColorRegistry().getRGB(UIActivator.PREFS_WATCHLIST_NEGATIVE_TICK_COLOR);
+                    if (rgb != null) {
+                        negativeTickColor = new Color(Display.getDefault(), rgb);
+                    }
+                    newTheme.addPropertyChangeListener(preferencesChangeListener);
+                }
+
+                tickDecorator.setTickColors(positiveTickColor, negativeTickColor);
+            }
+        }
+    };
+
     public WatchListView() {
     }
 
@@ -213,6 +296,8 @@ public class WatchListView extends ViewPart implements ISaveablePart {
             columnsSection = dialogSettings.addNewSection(COLUMNS_SECTION);
         }
 
+        preferenceStore = UIActivator.getDefault().getPreferenceStore();
+
         pricingEnvironment = new MarketPricingEnvironment(UIActivator.getDefault().getMarketService());
 
         deleteAction = new Action("Delete") {
@@ -248,9 +333,10 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
         model = new WatchListViewModel(watchList, pricingEnvironment);
 
-        initColors();
         createViewer(parent);
         initializeContextMenu();
+
+        applyPreferences();
 
         if (sortColumn >= viewer.getTable().getColumnCount()) {
             sortColumn = 0;
@@ -294,47 +380,24 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
         model.addPropertyChangeListener(WatchListViewModel.PROP_DIRTY, modelChangeListener);
 
+        preferenceStore.addPropertyChangeListener(preferencesChangeListener);
+
         getSite().setSelectionProvider(viewer);
 
         Job job = new Job(watchList.getName() + " Startup") {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                pricingEnvironment.addSecurities(getSecurities());
+                Set<ISecurity> list = new HashSet<ISecurity>();
+                for (IWatchListElement element : watchList.getItems()) {
+                    list.add(element.getSecurity());
+                }
+                pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
                 return Status.OK_STATUS;
             }
         };
         job.setUser(false);
         job.schedule();
-    }
-
-    private void initColors() {
-        RGB rgb = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND).getRGB();
-        if (rgb.red > 0) {
-            rgb.red--;
-        }
-        if (rgb.green > 0) {
-            rgb.green--;
-        }
-        if (rgb.blue > 0) {
-            rgb.blue--;
-        }
-        evenRowsColor = new Color(Display.getDefault(), rgb);
-
-        rgb = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW).getRGB();
-        if (rgb.red > 0) {
-            rgb.red--;
-        }
-        if (rgb.green > 0) {
-            rgb.green--;
-        }
-        if (rgb.blue > 0) {
-            rgb.blue--;
-        }
-        oddRowsColor = new Color(Display.getDefault(), rgb);
-
-        positiveTickColor = new Color(Display.getDefault(), 0, 224, 0);
-        negativeTickColor = new Color(Display.getDefault(), 224, 0, 0);
     }
 
     TableViewer createViewer(Composite parent) {
@@ -343,13 +406,9 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         viewer.getTable().setLinesVisible(false);
 
         final ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+        viewer.setContentProvider(contentProvider);
 
         tickDecorator = new WatchListViewTickDecorator(contentProvider.getKnownElements());
-        tickDecorator.setRowColors(evenRowsColor, oddRowsColor);
-        tickDecorator.setTickColors(positiveTickColor, negativeTickColor);
-        tickDecorator.setEnabled(true);
-
-        viewer.setContentProvider(contentProvider);
 
         int index = 0;
         for (WatchListViewColumn column : model.getColumns()) {
@@ -415,8 +474,6 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         });
 
         viewer.setInput(model.getObservableItems());
-
-        updateBackgrounds();
 
         model.getObservableItems().addListChangeListener(new IListChangeListener() {
 
@@ -530,13 +587,6 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         return 0;
     }
 
-    private void updateBackgrounds() {
-        TableItem[] tableItem = viewer.getTable().getItems();
-        for (int i = 0; i < tableItem.length; i++) {
-            tableItem[i].setBackground((i & 1) != 0 ? oddRowsColor : evenRowsColor);
-        }
-    }
-
     private void initializeContextMenu() {
         MenuManager menuMgr = new MenuManager("#popupMenu", "popupMenu"); //$NON-NLS-1$ //$NON-NLS-2$
         menuMgr.setRemoveAllWhenShown(true);
@@ -567,6 +617,70 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         getSite().registerContextMenu(menuMgr, getSite().getSelectionProvider());
     }
 
+    private void applyPreferences() {
+        RGB rgb = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND).getRGB();
+        if (rgb.red > 0) {
+            rgb.red--;
+        }
+        if (rgb.green > 0) {
+            rgb.green--;
+        }
+        if (rgb.blue > 0) {
+            rgb.blue--;
+        }
+        evenRowsColor = new Color(Display.getDefault(), rgb);
+
+        rgb = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW).getRGB();
+        if (rgb.red > 0) {
+            rgb.red--;
+        }
+        if (rgb.green > 0) {
+            rgb.green--;
+        }
+        if (rgb.blue > 0) {
+            rgb.blue--;
+        }
+        oddRowsColor = new Color(Display.getDefault(), rgb);
+
+        themeManager = PlatformUI.getWorkbench().getThemeManager();
+        themeManager.addPropertyChangeListener(preferencesChangeListener);
+
+        ITheme theme = themeManager.getCurrentTheme();
+        if (theme != null) {
+            rgb = theme.getColorRegistry().getRGB(UIActivator.PREFS_WATCHLIST_POSITIVE_TICK_COLOR);
+            if (rgb != null) {
+                positiveTickColor = new Color(Display.getDefault(), rgb);
+            }
+            rgb = theme.getColorRegistry().getRGB(UIActivator.PREFS_WATCHLIST_NEGATIVE_TICK_COLOR);
+            if (rgb != null) {
+                negativeTickColor = new Color(Display.getDefault(), rgb);
+            }
+            theme.addPropertyChangeListener(preferencesChangeListener);
+        }
+
+        tickDecorator.setRowColors(evenRowsColor, preferenceStore.getBoolean(UIActivator.PREFS_WATCHLIST_ALTERNATE_BACKGROUND) ? oddRowsColor : evenRowsColor);
+        tickDecorator.setTickColors(positiveTickColor, negativeTickColor);
+        tickDecorator.setDrawOutline(preferenceStore.getBoolean(UIActivator.PREFS_WATCHLIST_DRAW_TICK_OUTLINE));
+        tickDecorator.setFadeEffect(preferenceStore.getBoolean(UIActivator.PREFS_WATCHLIST_FADE_TO_BACKGROUND));
+        tickDecorator.setEnabled(preferenceStore.getBoolean(UIActivator.PREFS_WATCHLIST_ENABLE_TICK_DECORATORS));
+
+        updateBackgrounds();
+    }
+
+    private void updateBackgrounds() {
+        TableItem[] tableItem = viewer.getTable().getItems();
+        if (preferenceStore.getBoolean(UIActivator.PREFS_WATCHLIST_ALTERNATE_BACKGROUND)) {
+            for (int i = 0; i < tableItem.length; i++) {
+                tableItem[i].setBackground((i & 1) != 0 ? oddRowsColor : evenRowsColor);
+            }
+        }
+        else {
+            for (int i = 0; i < tableItem.length; i++) {
+                tableItem[i].setBackground(evenRowsColor);
+            }
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
      */
@@ -583,24 +697,22 @@ public class WatchListView extends ViewPart implements ISaveablePart {
         BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
         bundleContext.ungetService(bundleContext.getServiceReference(IRepositoryService.class));
 
+        preferenceStore.removePropertyChangeListener(preferencesChangeListener);
+
         pricingEnvironment.dispose();
+
+        tickDecorator.dispose();
 
         evenRowsColor.dispose();
         oddRowsColor.dispose();
-        positiveTickColor.dispose();
-        negativeTickColor.dispose();
-
-        super.dispose();
-    }
-
-    public ISecurity[] getSecurities() {
-        Set<ISecurity> list = new HashSet<ISecurity>();
-
-        for (IWatchListElement element : watchList.getItems()) {
-            list.add(element.getSecurity());
+        if (positiveTickColor != null) {
+            positiveTickColor.dispose();
+        }
+        if (negativeTickColor != null) {
+            negativeTickColor.dispose();
         }
 
-        return list.toArray(new ISecurity[list.size()]);
+        super.dispose();
     }
 
     /* (non-Javadoc)

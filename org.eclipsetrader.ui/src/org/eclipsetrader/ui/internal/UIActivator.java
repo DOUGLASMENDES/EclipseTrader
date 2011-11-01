@@ -66,6 +66,12 @@ public class UIActivator extends AbstractUIPlugin {
     public static final String PREFS_INITIAL_BACKFILL_METHOD = "INITIAL_BACKFILL_METHOD"; //$NON-NLS-1$
     public static final String PREFS_INITIAL_BACKFILL_START_DATE = "INITIAL_BACKFILL_START_DATE"; //$NON-NLS-1$
     public static final String PREFS_INITIAL_BACKFILL_YEARS = "INITIAL_BACKFILL_YEARS"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_ALTERNATE_BACKGROUND = "WATCHLIST_ALTERNATE_BACKGROUND"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_ENABLE_TICK_DECORATORS = "WATCHLIST_ENABLE_TICK_DECORATORS"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_POSITIVE_TICK_COLOR = "WATCHLIST_POSITIVE_TICK_COLOR"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_NEGATIVE_TICK_COLOR = "WATCHLIST_NEGATIVE_TICK_COLOR"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_DRAW_TICK_OUTLINE = "WATCHLIST_DRAW_TICK_OUTLINE"; //$NON-NLS-1$
+    public static final String PREFS_WATCHLIST_FADE_TO_BACKGROUND = "WATCHLIST_FADE_TO_BACKGROUND"; //$NON-NLS-1$
 
     public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image"; //$NON-NLS-1$
     public static final String ALERT_ADD_IMAGE = "alert_add_image"; //$NON-NLS-1$

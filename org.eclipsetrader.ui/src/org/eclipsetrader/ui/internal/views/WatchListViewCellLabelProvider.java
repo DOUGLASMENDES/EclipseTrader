@@ -14,14 +14,17 @@ package org.eclipsetrader.ui.internal.views;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLabelProvider {
 
@@ -30,7 +33,8 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
     private ColumnViewer viewer;
     private ViewerColumn column;
 
-    private int columnIndex = -1;
+    private boolean ownerDrawEnabled;
+    private boolean win32 = Platform.isRunning() && Platform.WS_WIN32.equals(Platform.getWS());
 
     public WatchListViewCellLabelProvider(IObservableMap attributeMap) {
         super(attributeMap);
@@ -48,7 +52,14 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
         Assert.isTrue(this.viewer == null && this.column == null, "Label provider instance already in use"); //$NON-NLS-1$
         this.viewer = viewer;
         this.column = column;
-        super.initialize(viewer, column);
+        initialize(viewer, column, ownerDrawEnabled);
+    }
+
+    public void setOwnerDrawEnabled(boolean enabled) {
+        this.ownerDrawEnabled = enabled;
+        if (viewer != null && column != null) {
+            setOwnerDrawEnabled(viewer, column, enabled);
+        }
     }
 
     /* (non-Javadoc)
@@ -71,7 +82,7 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
      */
     @Override
     protected void paint(Event event, Object element) {
-        if (attributeMaps.length == 1) {
+        if (attributeMaps.length == 1 || !ownerDrawEnabled) {
             return;
         }
         WatchListViewCellAttribute attribute = (WatchListViewCellAttribute) attributeMaps[1].get(element);
@@ -79,18 +90,22 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
             return;
         }
 
-        int rowIndex = event.index;
-        Color color = (rowIndex & 1) != 0 ? attribute.oddBackground : attribute.evenBackground;
-        if (color == null || columnIndex == -1) {
-            return;
-        }
-
         Table table = (Table) event.widget;
-        int width = table.getColumn(columnIndex).getWidth();
+        int width = table.getColumn(event.index).getWidth();
+
+        int rowIndex = table.indexOf((TableItem) event.item);
+        Color color = (rowIndex & 1) != 0 ? attribute.oddBackground : attribute.evenBackground;
 
         event.gc.setLineWidth(LINE_WIDTH);
-        event.gc.setForeground(color);
-        event.gc.drawRectangle(event.x, event.y + 1, width - LINE_WIDTH - 1, event.height - LINE_WIDTH - 1);
+        if (color != null && !color.isDisposed()) {
+            event.gc.setForeground(color);
+        }
+        if (win32) {
+            event.gc.drawRectangle(event.x + 1, event.y + 1, width - LINE_WIDTH, event.height - LINE_WIDTH);
+        }
+        else {
+            event.gc.drawRectangle(event.x, event.y + 1, width - LINE_WIDTH - 1, event.height - LINE_WIDTH - 1);
+        }
     }
 
     /* (non-Javadoc)
@@ -100,21 +115,53 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
     public void update(ViewerCell cell) {
         WatchListViewItem element = (WatchListViewItem) cell.getElement();
 
-        this.columnIndex = cell.getColumnIndex();
-
         Object value = attributeMaps[0].get(element);
         if (!(value instanceof IAdaptable)) {
-            cell.setText(value == null ? "" : value.toString()); //$NON-NLS-1$
+            String text = value == null ? "" : value.toString(); //$NON-NLS-1$
+            if (!text.equals(cell.getText())) {
+                cell.setText(text);
+            }
             return;
         }
 
         IAdaptable adaptableValue = (IAdaptable) value;
 
         String text = (String) adaptableValue.getAdapter(String.class);
-        cell.setText(text == null ? "" : text); //$NON-NLS-1$
+        if (text == null) {
+            text = ""; //$NON-NLS-1$
+        }
+        if (!text.equals(cell.getText())) {
+            cell.setText(text);
+        }
 
         cell.setForeground((Color) adaptableValue.getAdapter(Color.class));
         cell.setFont((Font) adaptableValue.getAdapter(Font.class));
         cell.setImage((Image) adaptableValue.getAdapter(Image.class));
+
+        if (ownerDrawEnabled) {
+            cell.setBackground(null);
+            Rectangle rect = cell.getBounds();
+            cell.getControl().redraw(rect.x, rect.y, rect.width, rect.height, false);
+        }
+        else {
+            if (attributeMaps.length == 1) {
+                return;
+            }
+            WatchListViewCellAttribute attribute = (WatchListViewCellAttribute) attributeMaps[1].get(element);
+            if (attribute == null) {
+                cell.setBackground(null);
+                return;
+            }
+            if (attribute.oddBackground != null && attribute.oddBackground.isDisposed()) {
+                return;
+            }
+            if (attribute.evenBackground != null && attribute.evenBackground.isDisposed()) {
+                return;
+            }
+
+            TableItem tableItem = (TableItem) cell.getViewerRow().getItem();
+            int rowIndex = tableItem.getParent().indexOf(tableItem);
+            cell.setBackground((rowIndex & 1) != 0 ? attribute.oddBackground : attribute.evenBackground);
+        }
     }
 }

@@ -11,7 +11,9 @@
 
 package org.eclipsetrader.ui.internal.views;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +41,8 @@ public class WatchListViewTickDecorator {
     private Color negativeBackgroundColor;
     private Color evenRowsColor;
     private Color oddRowsColor;
+    private boolean drawOutline;
+    private boolean fadeEffect;
 
     private WatchListViewCellAttribute positiveTickAttribute;
     private WatchListViewCellAttribute[] positiveFadeAttributes = new WatchListViewCellAttribute[3];
@@ -46,6 +50,7 @@ public class WatchListViewTickDecorator {
     private WatchListViewCellAttribute[] negativeFadeAttributes = new WatchListViewCellAttribute[3];
 
     private final Map<String, Map<Object, TickData>> decoratorMap = new HashMap<String, Map<Object, TickData>>();
+    private final List<WatchListViewCellLabelProvider> labelProviders = new ArrayList<WatchListViewCellLabelProvider>();
 
     private Timer timer;
 
@@ -67,18 +72,18 @@ public class WatchListViewTickDecorator {
         public void setValue(Object value) {
             Object oldValue = this.value;
             if (timer != null) {
-                if ((oldValue instanceof IAdaptable) && (value instanceof IAdaptable)) {
+                if (oldValue instanceof IAdaptable && value instanceof IAdaptable) {
                     Number oldNumber = (Number) ((IAdaptable) oldValue).getAdapter(Number.class);
                     Number newNumber = (Number) ((IAdaptable) value).getAdapter(Number.class);
                     if (oldNumber != null && newNumber != null) {
                         diff = newNumber.doubleValue() - oldNumber.doubleValue();
                         if (diff > 0) {
                             attributeMap.put(element, positiveTickAttribute);
-                            counter = 5;
+                            counter = positiveFadeAttributes.length + 2;
                         }
                         else if (diff < 0) {
                             attributeMap.put(element, negativeTickAttribute);
-                            counter = 5;
+                            counter = negativeFadeAttributes.length + 2;
                         }
                     }
                 }
@@ -93,39 +98,21 @@ public class WatchListViewTickDecorator {
 
             counter--;
 
-            realm.exec(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (counter < 0) {
-                        attributeMap.put(element, null);
-                    }
-                    else if (diff > 0) {
-                        if (counter < positiveFadeAttributes.length) {
-                            attributeMap.put(element, positiveFadeAttributes[counter]);
-                        }
-                    }
-                    else if (diff < 0) {
-                        if (counter < negativeFadeAttributes.length) {
-                            attributeMap.put(element, negativeFadeAttributes[counter]);
-                        }
-                    }
+            if (counter < 0) {
+                attributeMap.put(element, null);
+            }
+            else if (diff > 0) {
+                if (counter < positiveFadeAttributes.length) {
+                    attributeMap.put(element, positiveFadeAttributes[counter]);
                 }
-            });
-        }
-    }
-
-    private TimerTask tickTimerTask = new TimerTask() {
-
-        @Override
-        public void run() {
-            for (Map<Object, TickData> tickMap : decoratorMap.values()) {
-                for (TickData data : tickMap.values()) {
-                    data.reset();
+            }
+            else if (diff < 0) {
+                if (counter < negativeFadeAttributes.length) {
+                    attributeMap.put(element, negativeFadeAttributes[counter]);
                 }
             }
         }
-    };
+    }
 
     public WatchListViewTickDecorator(IObservableSet knownElements) {
         this.knownElements = knownElements;
@@ -135,7 +122,32 @@ public class WatchListViewTickDecorator {
         if (enable) {
             if (timer == null) {
                 timer = new Timer();
-                timer.schedule(tickTimerTask, 100, 500);
+                timer.schedule(new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        Display.getDefault().syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                for (Map<Object, TickData> tickMap : decoratorMap.values()) {
+                                    for (TickData data : tickMap.values()) {
+                                        data.reset();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }, 100, 500);
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        for (WatchListViewCellLabelProvider labelProvider : labelProviders) {
+                            labelProvider.setOwnerDrawEnabled(drawOutline);
+                        }
+                    }
+                });
             }
         }
         else {
@@ -145,9 +157,14 @@ public class WatchListViewTickDecorator {
 
                     @Override
                     public void run() {
+                        for (WatchListViewCellLabelProvider labelProvider : labelProviders) {
+                            labelProvider.setOwnerDrawEnabled(false);
+                        }
                         for (Map<Object, TickData> tickMap : decoratorMap.values()) {
                             for (TickData data : tickMap.values()) {
-                                data.attributeMap.clear();
+                                for (Object element : data.attributeMap.keySet()) {
+                                    data.attributeMap.put(element, null);
+                                }
                             }
                         }
                     }
@@ -176,6 +193,18 @@ public class WatchListViewTickDecorator {
         negativeTickAttribute.oddBackground = negativeColor;
 
         buildColors();
+    }
+
+    public void setFadeEffect(boolean fadeEffect) {
+        this.fadeEffect = fadeEffect;
+        buildColors();
+    }
+
+    public void setDrawOutline(boolean enabled) {
+        this.drawOutline = enabled;
+        for (WatchListViewCellLabelProvider labelProvider : labelProviders) {
+            labelProvider.setOwnerDrawEnabled(enabled);
+        }
     }
 
     public CellLabelProvider createCellLabelProvider(final String key) {
@@ -208,6 +237,8 @@ public class WatchListViewTickDecorator {
         WatchListViewCellLabelProvider labelProvider = new WatchListViewCellLabelProvider(new IObservableMap[] {
             valueMap, attributeMap
         });
+        labelProvider.setOwnerDrawEnabled(drawOutline);
+        labelProviders.add(labelProvider);
 
         return labelProvider;
     }
@@ -228,13 +259,23 @@ public class WatchListViewTickDecorator {
         RGB backgroundColor = positiveBackgroundColor.getRGB();
         int steps = 100 / (positiveFadeAttributes.length + 1);
         for (int i = 0, ratio = steps; i < positiveFadeAttributes.length; i++, ratio += steps) {
-            RGB rgb = blend(backgroundColor, evenRowsColor.getRGB(), ratio);
-            positiveFadeAttributes[i].evenBackground = new Color(Display.getDefault(), rgb);
+            if (fadeEffect) {
+                RGB rgb = blend(backgroundColor, evenRowsColor.getRGB(), ratio);
+                positiveFadeAttributes[i].evenBackground = new Color(Display.getDefault(), rgb);
+            }
+            else {
+                positiveFadeAttributes[i].evenBackground = new Color(Display.getDefault(), evenRowsColor.getRGB());
+            }
         }
         steps = 100 / (positiveFadeAttributes.length + 1);
         for (int i = 0, ratio = steps; i < positiveFadeAttributes.length; i++, ratio += steps) {
-            RGB rgb = blend(backgroundColor, oddRowsColor.getRGB(), ratio);
-            positiveFadeAttributes[i].oddBackground = new Color(Display.getDefault(), rgb);
+            if (fadeEffect) {
+                RGB rgb = blend(backgroundColor, oddRowsColor.getRGB(), ratio);
+                positiveFadeAttributes[i].oddBackground = new Color(Display.getDefault(), rgb);
+            }
+            else {
+                positiveFadeAttributes[i].oddBackground = new Color(Display.getDefault(), oddRowsColor.getRGB());
+            }
         }
 
         for (int i = 0; i < negativeFadeAttributes.length; i++) {
@@ -247,13 +288,23 @@ public class WatchListViewTickDecorator {
         backgroundColor = negativeBackgroundColor.getRGB();
         steps = 100 / (negativeFadeAttributes.length + 1);
         for (int i = 0, ratio = steps; i < negativeFadeAttributes.length; i++, ratio += steps) {
-            RGB rgb = blend(backgroundColor, evenRowsColor.getRGB(), ratio);
-            negativeFadeAttributes[i].evenBackground = new Color(Display.getDefault(), rgb);
+            if (fadeEffect) {
+                RGB rgb = blend(backgroundColor, evenRowsColor.getRGB(), ratio);
+                negativeFadeAttributes[i].evenBackground = new Color(Display.getDefault(), rgb);
+            }
+            else {
+                negativeFadeAttributes[i].evenBackground = new Color(Display.getDefault(), evenRowsColor.getRGB());
+            }
         }
         steps = 100 / (negativeFadeAttributes.length + 1);
         for (int i = 0, ratio = steps; i < negativeFadeAttributes.length; i++, ratio += steps) {
-            RGB rgb = blend(backgroundColor, oddRowsColor.getRGB(), ratio);
-            negativeFadeAttributes[i].oddBackground = new Color(Display.getDefault(), rgb);
+            if (fadeEffect) {
+                RGB rgb = blend(backgroundColor, oddRowsColor.getRGB(), ratio);
+                negativeFadeAttributes[i].oddBackground = new Color(Display.getDefault(), rgb);
+            }
+            else {
+                negativeFadeAttributes[i].oddBackground = new Color(Display.getDefault(), oddRowsColor.getRGB());
+            }
         }
     }
 
@@ -269,7 +320,9 @@ public class WatchListViewTickDecorator {
     }
 
     public void dispose() {
-        timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         disposeColors();
     }
 

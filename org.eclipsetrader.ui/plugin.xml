@@ -52,6 +52,11 @@
             id="org.eclipsetrader.ui.charts.defaults"
             name="Default Values">
       </page>
+      <page
+            class="org.eclipsetrader.ui.internal.preferences.WatchListPreferencesPage"
+            id="org.eclipsetrader.ui.preferences.watchlist"
+            name="WatchLists">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -1604,6 +1609,27 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="NUMPAD_EQUAL">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.eclipsetrader.ui.internal.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <colorDefinition
+            id="WATCHLIST_POSITIVE_TICK_COLOR"
+            isEditable="false"
+            label="Positive Highlight"
+            value="0,224,0">
+      </colorDefinition>
+      <colorDefinition
+            id="WATCHLIST_NEGATIVE_TICK_COLOR"
+            isEditable="false"
+            label="Negative Highlight"
+            value="224,0,0">
+      </colorDefinition>
    </extension>
 
 </plugin>

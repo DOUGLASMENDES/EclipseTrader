@@ -13,6 +13,7 @@ package org.eclipsetrader.ui.internal.views;
 
 import java.util.Arrays;
 
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -50,6 +51,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 
@@ -64,6 +66,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 
@@ -89,6 +92,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 
@@ -112,6 +116,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 
@@ -140,6 +145,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 
@@ -173,6 +179,7 @@ public class WatchListViewTest extends DatabindingTestCase {
         });
 
         WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
         view.watchList = watchList;
         view.model = new WatchListViewModel(watchList, new PricingEnvironment());
 

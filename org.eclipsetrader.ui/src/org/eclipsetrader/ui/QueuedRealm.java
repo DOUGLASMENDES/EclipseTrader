@@ -1,6 +1,12 @@
 /*
- * Copyright (c) 2005-2011 Real Time Risk Systems LLC
- * All Rights Reserved
+ * Copyright (c) 2004-2011 Marco Maccaferri and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Marco Maccaferri - initial API and implementation
  */
 
 package org.eclipsetrader.ui;
@@ -10,14 +16,15 @@ import org.eclipse.swt.widgets.Display;
 
 public class QueuedRealm extends Realm {
 
-    static final int GROW_SIZE = 16;
-    static final int MESSAGE_LIMIT = 256;
+    static final int INITIAL_SIZE = 256;
+    static final int GROW_SIZE = 32;
+    static final int MESSAGE_LIMIT = 1024;
     static final Realm instance = new QueuedRealm();
 
     private Display display;
 
     int messageCount;
-    Runnable[] messages = new Runnable[4];
+    Runnable[] messages = new Runnable[INITIAL_SIZE];
     private Object messageLock = new Object();
 
     private Runnable delayedRunnable = new Runnable() {
@@ -75,12 +82,13 @@ public class QueuedRealm extends Realm {
         boolean wake = false;
         synchronized (messageLock) {
             if (messages == null) {
-                messages = new Runnable[GROW_SIZE];
+                messages = new Runnable[INITIAL_SIZE];
             }
             if (messageCount == messages.length) {
                 Runnable[] newMessages = new Runnable[messageCount + GROW_SIZE];
                 System.arraycopy(messages, 0, newMessages, 0, messageCount);
                 messages = newMessages;
+                System.out.println(messages.length);
             }
             messages[messageCount++] = runnable;
             wake = messageCount == 1;
