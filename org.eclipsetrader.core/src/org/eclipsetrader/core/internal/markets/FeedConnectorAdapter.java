@@ -110,10 +110,13 @@ public class FeedConnectorAdapter extends XmlAdapter<String, IFeedConnector> {
         IFeedConnector connector = null;
         try {
             BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(IFeedService.class.getName());
+            ServiceReference<IFeedService> serviceReference = context.getServiceReference(IFeedService.class);
 
-            IFeedService feedService = (IFeedService) context.getService(serviceReference);
+            IFeedService feedService = context.getService(serviceReference);
             connector = feedService.getConnector(v);
+            if (connector == null) {
+                connector = new FailsafeFeedConnector(v);
+            }
 
             context.ungetService(serviceReference);
         } catch (Exception e) {
