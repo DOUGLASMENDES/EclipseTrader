@@ -11,6 +11,9 @@
 
 package org.eclipsetrader.internal.brokers.paper;
 
+import java.util.Currency;
+import java.util.Locale;
+
 import junit.framework.TestCase;
 
 import org.eclipsetrader.core.trading.IOrderSide;
@@ -147,11 +150,12 @@ public class AccountTest extends TestCase {
         monitor.addTransaction(new StockTransaction(null, 1000L, 1.5));
 
         Account account = new Account();
+        account.setCurrency(Currency.getInstance(Locale.getDefault()));
         account.setBalance(10000.0);
         account.setExpenseScheme(new SimpleFixedScheme());
         account.processCompletedOrder(monitor);
 
-        assertEquals(10000.0 - 1500.0 - 9.95, account.getBalance());
+        assertEquals(10000.0 - 1500.0 - 9.95, account.getBalance().getAmount());
     }
 
     public void testSellUpdateBalance() throws Exception {
@@ -163,10 +167,11 @@ public class AccountTest extends TestCase {
         monitor.addTransaction(new StockTransaction(null, -1000L, 1.5));
 
         Account account = new Account();
+        account.setCurrency(Currency.getInstance(Locale.getDefault()));
         account.setBalance(10000.0);
         account.setExpenseScheme(new SimpleFixedScheme());
         account.processCompletedOrder(monitor);
 
-        assertEquals(10000.0 + 1500.0 - 9.95, account.getBalance());
+        assertEquals(10000.0 + 1500.0 - 9.95, account.getBalance().getAmount());
     }
 }

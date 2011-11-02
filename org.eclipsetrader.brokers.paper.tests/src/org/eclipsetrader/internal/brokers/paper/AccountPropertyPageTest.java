@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.internal.brokers.paper.schemes.NoExpensesScheme;
 import org.eclipsetrader.internal.brokers.paper.schemes.SimpleFixedScheme;
 
@@ -83,7 +84,7 @@ public class AccountPropertyPageTest extends TestCase {
         dialog.balance.setSelection(350000);
         dialog.performOk();
 
-        assertEquals(3500.0, account.getBalance());
+        assertEquals(new Cash(3500.0, Currency.getInstance("USD")), account.getBalance());
     }
 
     public void testUpdateDescription() throws Exception {

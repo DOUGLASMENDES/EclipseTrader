@@ -18,6 +18,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipsetrader.core.Cash;
 import org.eclipsetrader.internal.brokers.paper.schemes.NoExpensesScheme;
 
 public class NewAccountWizardTest extends TestCase {
@@ -69,7 +70,7 @@ public class NewAccountWizardTest extends TestCase {
 
         Account account = wizard.getAccount();
         assertEquals("Test", account.getDescription());
-        assertEquals(0.0, account.getBalance());
+        assertEquals(new Cash(0.0, Currency.getInstance(Locale.getDefault())), account.getBalance());
         assertTrue(account.getExpenseScheme() instanceof NoExpensesScheme);
         assertEquals(Currency.getInstance(Locale.getDefault()), account.getCurrency());
     }

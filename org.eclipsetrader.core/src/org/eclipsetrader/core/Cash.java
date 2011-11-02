@@ -50,4 +50,12 @@ public class Cash {
         Cash that = (Cash) obj;
         return getAmount().equals(that.getAmount()) && getCurrency().equals(that.getCurrency());
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return currency.getSymbol() + " " + String.valueOf(amount);
+    }
 }

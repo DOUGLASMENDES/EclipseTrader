@@ -32,9 +32,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
@@ -62,21 +59,18 @@ import org.eclipsetrader.core.trading.IOrderValidity;
 import org.eclipsetrader.core.trading.OrderChangeEvent;
 import org.eclipsetrader.core.trading.OrderDelta;
 import org.eclipsetrader.internal.brokers.paper.transactions.StockTransaction;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
-public class PaperBroker implements IBroker, IExecutableExtension {
+public class PaperBroker implements IBroker {
 
-    private String id;
-    private String name;
-    private IMarketService marketService;
+    private final String id;
+    private final String name;
+    private final IMarketService marketService;
+    private final IRepositoryService repositoryService;
+
     private MarketPricingEnvironment pricingEnvironment;
 
     private List<OrderMonitor> pendingOrders = new ArrayList<OrderMonitor>();
     private ListenerList listeners = new ListenerList(ListenerList.IDENTITY);
-
-    private BundleContext context;
-    private ServiceReference marketServiceReference;
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -95,11 +89,11 @@ public class PaperBroker implements IBroker, IExecutableExtension {
         }
     };
 
-    public PaperBroker() {
-    }
-
-    public PaperBroker(MarketPricingEnvironment pricingEnvironment) {
-        this.pricingEnvironment = pricingEnvironment;
+    public PaperBroker(String id, String name, IMarketService marketService, IRepositoryService repositoryService) {
+        this.id = id;
+        this.name = name;
+        this.marketService = marketService;
+        this.repositoryService = repositoryService;
     }
 
     /* (non-Javadoc)
@@ -119,29 +113,16 @@ public class PaperBroker implements IBroker, IExecutableExtension {
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.core.runtime.IExecutableExtension#setInitializationData(org.eclipse.core.runtime.IConfigurationElement, java.lang.String, java.lang.Object)
-     */
-    @Override
-    public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-        id = config.getAttribute("id");
-        name = config.getAttribute("name");
-        context = Activator.getDefault().getBundle().getBundleContext();
-    }
-
-    /* (non-Javadoc)
      * @see org.eclipsetrader.core.trading.IBrokerConnector#connect()
      */
     @Override
     public void connect() {
-        if (marketService == null) {
-            marketServiceReference = context.getServiceReference(IMarketService.class.getName());
-            if (marketServiceReference != null) {
-                marketService = (IMarketService) context.getService(marketServiceReference);
-            }
+        if (pricingEnvironment != null) {
+            pricingEnvironment.removePricingListener(pricingListener);
+            pricingEnvironment.dispose();
         }
-        if (pricingEnvironment == null) {
-            pricingEnvironment = new MarketPricingEnvironment(marketService);
-        }
+
+        pricingEnvironment = new MarketPricingEnvironment(marketService);
 
         List<OrderDelta> list = new ArrayList<OrderDelta>();
         for (OrderMonitor monitor : pendingOrders) {
@@ -150,9 +131,7 @@ public class PaperBroker implements IBroker, IExecutableExtension {
         }
         fireUpdateNotifications(list.toArray(new OrderDelta[list.size()]));
 
-        if (pricingEnvironment != null) {
-            pricingEnvironment.addPricingListener(pricingListener);
-        }
+        pricingEnvironment.addPricingListener(pricingListener);
     }
 
     /* (non-Javadoc)
@@ -162,13 +141,8 @@ public class PaperBroker implements IBroker, IExecutableExtension {
     public void disconnect() {
         if (pricingEnvironment != null) {
             pricingEnvironment.removePricingListener(pricingListener);
+            pricingEnvironment.dispose();
             pricingEnvironment = null;
-        }
-
-        if (marketServiceReference != null) {
-            marketService = null;
-            context.ungetService(marketServiceReference);
-            marketServiceReference = null;
         }
     }
 
@@ -187,22 +161,14 @@ public class PaperBroker implements IBroker, IExecutableExtension {
     public ISecurity getSecurityFromSymbol(String symbol) {
         ISecurity security = null;
 
-        if (Activator.getDefault() != null) {
-            BundleContext context = Activator.getDefault().getBundle().getBundleContext();
-            ServiceReference serviceReference = context.getServiceReference(IRepositoryService.class.getName());
-            if (serviceReference != null) {
-                IRepositoryService service = (IRepositoryService) context.getService(serviceReference);
-
-                ISecurity[] securities = service.getSecurities();
-                for (int i = 0; i < securities.length; i++) {
-                    IFeedIdentifier identifier = securities[i].getIdentifier();
-                    if (identifier != null && symbol.equals(identifier.getSymbol())) {
-                        security = securities[i];
-                        break;
-                    }
+        if (repositoryService != null) {
+            ISecurity[] securities = repositoryService.getSecurities();
+            for (int i = 0; i < securities.length; i++) {
+                IFeedIdentifier identifier = securities[i].getIdentifier();
+                if (identifier != null && symbol.equals(identifier.getSymbol())) {
+                    security = securities[i];
+                    break;
                 }
-
-                context.ungetService(serviceReference);
             }
         }
 
