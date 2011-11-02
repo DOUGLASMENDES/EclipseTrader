@@ -66,7 +66,7 @@ public class MarketOrderFunction extends BaseOrderFunction {
      */
     @Override
     public String getClassName() {
-        return "MarketOrder";
+        return "MarketOrder"; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

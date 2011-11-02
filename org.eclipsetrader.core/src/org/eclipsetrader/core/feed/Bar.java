@@ -145,6 +145,6 @@ public class Bar implements IBar, IAdaptable, Serializable {
      */
     @Override
     public String toString() {
-        return "[Bar: " + date + " TS=" + timeSpan.toString() + " O=" + open + " H=" + high + " L=" + low + " C=" + close + " V=" + volume + "]";
+        return "Bar [" + date + " TS=" + timeSpan.toString() + " O=" + open + " H=" + high + " L=" + low + " C=" + close + " V=" + volume + "]";
     }
 }

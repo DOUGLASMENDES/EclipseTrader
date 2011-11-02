@@ -39,9 +39,10 @@ import org.mozilla.javascript.ScriptableObject;
 
 public class JavaScriptEngine extends Observable {
 
-    public static final String PROPERTY_INSTRUMENTS = "instruments";
-    public static final String PROPERTY_POSITIONS = "positions";
-    public static final String PROPERTY_MARKET = "market";
+    public static final String PROPERTY_INSTRUMENTS = "instruments"; //$NON-NLS-1$
+    public static final String PROPERTY_POSITIONS = "positions"; //$NON-NLS-1$
+    public static final String PROPERTY_MARKET = "market"; //$NON-NLS-1$
+    public static final String PROPERTY_BARSIZE = "barSize"; //$NON-NLS-1$
 
     private final ITradingSystem tradingSystem;
     private final IScriptStrategy strategy;
@@ -128,6 +129,7 @@ public class JavaScriptEngine extends Observable {
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
             ScriptableObject.putProperty(scope, PROPERTY_INSTRUMENTS, instrumentsMap);
             ScriptableObject.putProperty(scope, PROPERTY_POSITIONS, positionsMap);
+            ScriptableObject.putProperty(scope, PROPERTY_BARSIZE, tradingSystem.getStrategy().getBarsTimeSpan());
 
             ScriptableObject.putProperty(scope, "out", Context.javaToJS(System.out, scope));
 

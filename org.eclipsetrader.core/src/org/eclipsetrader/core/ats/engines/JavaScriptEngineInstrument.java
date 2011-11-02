@@ -37,20 +37,20 @@ import org.mozilla.javascript.ScriptableObject;
 
 public class JavaScriptEngineInstrument {
 
-    public static final String FUNCTION_ON_STRATEGY_START = "onStrategyStart";
-    public static final String FUNCTION_ON_QUOTE = "onQuote";
-    public static final String FUNCTION_ON_TRADE = "onTrade";
-    public static final String FUNCTION_ON_BAR_OPEN = "onBarOpen";
-    public static final String FUNCTION_ON_BAR = "onBar";
-    public static final String FUNCTION_ON_POSITION_OPENED = "onPositionOpened";
-    public static final String FUNCTION_ON_POSITION_CHANGED = "onPositionChanged";
-    public static final String FUNCTION_ON_POSITION_CLOSED = "onPositionClosed";
+    public static final String FUNCTION_ON_STRATEGY_START = "onStrategyStart"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_QUOTE = "onQuote"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_TRADE = "onTrade"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_BAR_OPEN = "onBarOpen"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_BAR = "onBar"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_POSITION_OPENED = "onPositionOpened"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_POSITION_CHANGED = "onPositionChanged"; //$NON-NLS-1$
+    public static final String FUNCTION_ON_POSITION_CLOSED = "onPositionClosed"; //$NON-NLS-1$
 
-    public static final String PROPERTY_QUOTE = "quote";
-    public static final String PROPERTY_TRADE = "trade";
-    public static final String PROPERTY_BAR = "bar";
-    public static final String PROPERTY_BARS = "bars";
-    public static final String PROPERTY_POSITION = "position";
+    public static final String PROPERTY_QUOTE = "quote"; //$NON-NLS-1$
+    public static final String PROPERTY_TRADE = "trade"; //$NON-NLS-1$
+    public static final String PROPERTY_BAR = "bar"; //$NON-NLS-1$
+    public static final String PROPERTY_BARS = "bars"; //$NON-NLS-1$
+    public static final String PROPERTY_POSITION = "position"; //$NON-NLS-1$
 
     private final Scriptable scope;
     private final ISecurity instrument;
@@ -82,14 +82,15 @@ public class JavaScriptEngineInstrument {
             ScriptableObject.defineClass(scope, LimitOrderFunction.class);
             ScriptableObject.defineClass(scope, MarketOrderFunction.class);
             ScriptableObject.defineClass(scope, HasPositionFunction.class);
+            ScriptableObject.defineClass(scope, BackfillFunction.class);
             defineClasses();
 
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
             ScriptableObject.putProperty(scope, PROPERTY_BARS, bars);
 
-            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.feed);", strategy.getName(), 0, null);
-            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.instruments);", strategy.getName(), 0, null);
-            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.trading);", strategy.getName(), 0, null);
+            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.feed);", strategy.getName(), 0, null); //$NON-NLS-1$
+            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.instruments);", strategy.getName(), 0, null); //$NON-NLS-1$
+            cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.trading);", strategy.getName(), 0, null); //$NON-NLS-1$
 
             for (IScript script : strategy.getIncludes()) {
                 cx.evaluateString(scope, script.getText(), script.getName(), 1, null);
@@ -136,16 +137,19 @@ public class JavaScriptEngineInstrument {
     }
 
     protected void defineClasses() {
+        if (!Platform.isRunning() || Platform.getExtensionRegistry() == null) {
+            return;
+        }
         IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(CoreActivator.SCRIPTS_EXTENSION_ID);
         if (extensionPoint != null) {
             IConfigurationElement[] configElements = extensionPoint.getConfigurationElements();
             for (int j = 0; j < configElements.length; j++) {
                 String strID = configElements[j].getAttribute("class"); //$NON-NLS-1$
                 try {
-                    ScriptableObject object = (ScriptableObject) configElements[j].createExecutableExtension("class");
+                    ScriptableObject object = (ScriptableObject) configElements[j].createExecutableExtension("class"); //$NON-NLS-1$
                     ScriptableObject.defineClass(scope, object.getClass());
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Unable to define function " + strID, e);
+                    Status status = new Status(IStatus.WARNING, CoreActivator.PLUGIN_ID, 0, "Unable to define function " + strID, e); //$NON-NLS-1$
                     CoreActivator.log(status);
                 }
             }

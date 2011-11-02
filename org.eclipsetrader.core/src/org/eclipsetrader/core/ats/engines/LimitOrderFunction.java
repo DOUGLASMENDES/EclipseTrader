@@ -65,7 +65,7 @@ public class LimitOrderFunction extends BaseOrderFunction {
      */
     @Override
     public String getClassName() {
-        return "LimitOrder";
+        return "LimitOrder"; //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
