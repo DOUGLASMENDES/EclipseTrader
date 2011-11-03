@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.ats.editors;
+package org.eclipsetrader.ui.internal.editors;
 
 import java.net.URI;
 
@@ -18,30 +18,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
@@ -52,18 +37,13 @@ import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class ScriptEditor extends ViewPart implements ISaveablePart {
+public class ScriptStrategyEditor extends BaseJavaScriptEditor {
 
     public static final String VIEW_ID = "org.eclipsetrader.ui.ats.scritpstrategy.editor";
-
-    private StyledText text;
-    private Label cursorLocation;
-    private Font font;
 
     private URI uri;
     private ScriptStrategy script;
 
-    private boolean dirty;
     IDialogSettings dialogSettings;
     IRepositoryService repositoryService;
 
@@ -81,7 +61,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
                         @Override
                         public void run() {
                             IWorkbench workbench = PlatformUI.getWorkbench();
-                            workbench.getActiveWorkbenchWindow().getActivePage().hideView(ScriptEditor.this);
+                            workbench.getActiveWorkbenchWindow().getActivePage().hideView(ScriptStrategyEditor.this);
                         }
                     });
                 }
@@ -92,7 +72,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         }
     };
 
-    public ScriptEditor() {
+    public ScriptStrategyEditor() {
     }
 
     /* (non-Javadoc)
@@ -122,93 +102,16 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void createPartControl(Composite parent) {
-        font = new Font(parent.getDisplay(), "mono", 9, SWT.NORMAL);
-
-        Composite contents = new Composite(parent, SWT.NONE);
-        GridLayout gridLayout = new GridLayout(1, false);
-        gridLayout.marginWidth = gridLayout.marginHeight = 0;
-        gridLayout.verticalSpacing = 0;
-        contents.setLayout(gridLayout);
-
-        text = new StyledText(contents, SWT.FULL_SELECTION | SWT.WRAP | SWT.V_SCROLL);
-        text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        text.setFont(font);
-        text.setMargins(5, 5, 5, 5);
-        text.addLineStyleListener(new JavaScriptLineStyler());
-        text.addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                updateCursorLocation();
-            }
-        });
-
-        createStatusBar(contents);
+        super.createPartControl(parent);
 
         if (script != null) {
             setPartName(script.getName());
             if (script.getText() != null) {
-                text.setText(script.getText());
+                setText(script.getText());
             }
         }
 
-        text.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (!dirty) {
-                    dirty = true;
-                    firePropertyChange(PROP_DIRTY);
-                }
-            }
-        });
-
         repositoryService.addRepositoryResourceListener(changeListener);
-
-        updateCursorLocation();
-    }
-
-    private void createStatusBar(Composite parent) {
-        Composite contents = new Composite(parent, SWT.NONE);
-        contents.setLayout(new GridLayout(5, false));
-        contents.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        GC gc = new GC(parent);
-        FontMetrics fontMetrics = gc.getFontMetrics();
-        gc.dispose();
-
-        int heightHint = Dialog.convertVerticalDLUsToPixels(fontMetrics, 12);
-
-        Label label = new Label(contents, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
-        label = new Label(contents, SWT.SEPARATOR | SWT.VERTICAL);
-        label.setLayoutData(new GridData(SWT.DEFAULT, heightHint));
-
-        cursorLocation = new Label(contents, SWT.NONE);
-        cursorLocation.setLayoutData(new GridData(Dialog.convertHorizontalDLUsToPixels(fontMetrics, 60), SWT.DEFAULT));
-        cursorLocation.setAlignment(SWT.CENTER);
-
-        label = new Label(contents, SWT.SEPARATOR | SWT.VERTICAL);
-        label.setLayoutData(new GridData(SWT.DEFAULT, heightHint));
-
-        label = new Label(contents, SWT.NONE);
-        label.setLayoutData(new GridData(Dialog.convertHorizontalDLUsToPixels(fontMetrics, 16), SWT.DEFAULT));
-    }
-
-    private void updateCursorLocation() {
-        int caret = text.getCaretOffset();
-        int line = text.getLineAtOffset(caret);
-        int column = caret - text.getOffsetAtLine(line);
-        cursorLocation.setText(String.format("%d : %d", column + 1, line + 1));
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-     */
-    @Override
-    public void setFocus() {
-        text.getParent().setFocus();
     }
 
     /* (non-Javadoc)
@@ -216,7 +119,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void doSave(IProgressMonitor monitor) {
-        script.setText(text.getText());
+        script.setText(getText());
 
         IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
 
@@ -230,8 +133,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         }, monitor);
 
         if (status == Status.OK_STATUS) {
-            dirty = false;
-            firePropertyChange(PROP_DIRTY);
+            setDirty(false);
         }
     }
 
@@ -245,7 +147,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         if (dlg.open() == InputDialog.OK) {
             final ScriptStrategy newScript = new ScriptStrategy(dlg.getValue());
             newScript.setLanguage(script.getLanguage());
-            newScript.setText(text.getText());
+            newScript.setText(getText());
 
             IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
 
@@ -263,21 +165,9 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
                 uri = script.getStore().toURI();
                 dialogSettings.put(UIActivator.K_URI, uri.toString());
                 setPartName(script.getName());
-
-                if (dirty) {
-                    dirty = false;
-                    firePropertyChange(PROP_DIRTY);
-                }
+                setDirty(false);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.ISaveablePart#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        return dirty;
     }
 
     /* (non-Javadoc)
@@ -293,7 +183,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public boolean isSaveOnCloseNeeded() {
-        return dirty;
+        return isDirty();
     }
 
     /* (non-Javadoc)
@@ -303,14 +193,11 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
     public void dispose() {
         BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
 
+        repositoryService.removeRepositoryResourceListener(changeListener);
+
         ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
         if (serviceReference != null && repositoryService != null) {
-            repositoryService.removeRepositoryResourceListener(changeListener);
             bundleContext.ungetService(serviceReference);
-        }
-
-        if (font != null) {
-            font.dispose();
         }
 
         super.dispose();

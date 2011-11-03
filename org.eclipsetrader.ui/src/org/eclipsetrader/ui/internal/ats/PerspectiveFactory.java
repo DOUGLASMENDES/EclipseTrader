@@ -16,10 +16,10 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.IPlaceholderFolderLayout;
 import org.eclipsetrader.ui.UIConstants;
-import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
 import org.eclipsetrader.ui.internal.ats.explorer.ExplorerViewPart;
 import org.eclipsetrader.ui.internal.ats.monitor.TradingSystemsViewPart;
 import org.eclipsetrader.ui.internal.charts.views.HistoryDataEditorPart;
+import org.eclipsetrader.ui.internal.editors.ScriptEditor;
 
 public class PerspectiveFactory implements IPerspectiveFactory {
 

@@ -20,20 +20,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
-import org.eclipse.ui.ISaveablePart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipsetrader.core.Script;
 import org.eclipsetrader.core.repositories.IRepositoryChangeListener;
 import org.eclipsetrader.core.repositories.IRepositoryRunnable;
@@ -41,20 +34,18 @@ import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.RepositoryChangeEvent;
 import org.eclipsetrader.core.repositories.RepositoryResourceDelta;
 import org.eclipsetrader.ui.internal.UIActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
-public class ScriptEditor extends ViewPart implements ISaveablePart {
+public class ScriptEditor extends BaseJavaScriptEditor {
 
     public static final String VIEW_ID = "org.eclipsetrader.ui.editors.script";
     public static final String K_VIEWS = "Views";
     public static final String K_URI = "uri";
 
-    private StyledText text;
-    private Font font;
-
     private URI uri;
     private Script script;
 
-    private boolean dirty;
     IDialogSettings dialogSettings;
     IRepositoryService repositoryService;
 
@@ -93,7 +84,11 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
     public void init(IViewSite site, IMemento memento) throws PartInitException {
         super.init(site, memento);
 
-        repositoryService = UIActivator.getDefault().getRepositoryService();
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
+
+        ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
+        repositoryService = bundleContext.getService(serviceReference);
+
         dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(K_VIEWS).getSection(site.getSecondaryId());
 
         try {
@@ -109,40 +104,16 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void createPartControl(Composite parent) {
-        font = new Font(parent.getDisplay(), "mono", 9, SWT.NORMAL);
-
-        text = new StyledText(parent, SWT.FULL_SELECTION | SWT.WRAP | SWT.V_SCROLL);
-        text.setFont(font);
-        text.setMargins(5, 5, 5, 5);
-        text.addLineStyleListener(new JavaScriptLineStyler());
+        super.createPartControl(parent);
 
         if (script != null) {
             setPartName(script.getName());
             if (script.getText() != null) {
-                text.setText(script.getText());
+                setText(script.getText());
             }
         }
 
-        text.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                if (!dirty) {
-                    dirty = true;
-                    firePropertyChange(PROP_DIRTY);
-                }
-            }
-        });
-
         repositoryService.addRepositoryResourceListener(changeListener);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-     */
-    @Override
-    public void setFocus() {
-        text.getParent().setFocus();
     }
 
     /* (non-Javadoc)
@@ -150,7 +121,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
      */
     @Override
     public void doSave(IProgressMonitor monitor) {
-        script.setText(text.getText());
+        script.setText(getText());
 
         IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
 
@@ -164,8 +135,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         }, monitor);
 
         if (status == Status.OK_STATUS) {
-            dirty = false;
-            firePropertyChange(PROP_DIRTY);
+            setDirty(false);
         }
     }
 
@@ -179,7 +149,7 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
         if (dlg.open() == InputDialog.OK) {
             final Script newScript = new Script(dlg.getValue());
             newScript.setLanguage(script.getLanguage());
-            newScript.setText(text.getText());
+            newScript.setText(getText());
 
             IStatus status = repositoryService.runInService(new IRepositoryRunnable() {
 
@@ -197,21 +167,9 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
                 uri = script.getStore().toURI();
                 dialogSettings.put(K_URI, uri.toString());
                 setPartName(script.getName());
-
-                if (dirty) {
-                    dirty = false;
-                    firePropertyChange(PROP_DIRTY);
-                }
+                setDirty(false);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.ui.ISaveablePart#isDirty()
-     */
-    @Override
-    public boolean isDirty() {
-        return dirty;
     }
 
     /* (non-Javadoc)
@@ -223,22 +181,17 @@ public class ScriptEditor extends ViewPart implements ISaveablePart {
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.ui.ISaveablePart#isSaveOnCloseNeeded()
-     */
-    @Override
-    public boolean isSaveOnCloseNeeded() {
-        return dirty;
-    }
-
-    /* (non-Javadoc)
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
     public void dispose() {
+        BundleContext bundleContext = UIActivator.getDefault().getBundle().getBundleContext();
+
         repositoryService.removeRepositoryResourceListener(changeListener);
 
-        if (font != null) {
-            font.dispose();
+        ServiceReference<IRepositoryService> serviceReference = bundleContext.getServiceReference(IRepositoryService.class);
+        if (serviceReference != null && repositoryService != null) {
+            bundleContext.ungetService(serviceReference);
         }
 
         super.dispose();

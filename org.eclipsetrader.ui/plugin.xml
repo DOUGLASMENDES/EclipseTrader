@@ -159,7 +159,7 @@
       <view
             allowMultiple="true"
             category="org.eclipsetrader.ui.ats"
-            class="org.eclipsetrader.ui.internal.ats.editors.ScriptEditor"
+            class="org.eclipsetrader.ui.internal.editors.ScriptStrategyEditor"
             icon="icons/obj16/page_white_code.png"
             id="org.eclipsetrader.ui.ats.scritpstrategy.editor"
             name="Script Strategy Editor"
@@ -586,7 +586,7 @@
       <handler
             commandId="org.eclipse.ui.file.open">
          <class
-               class="org.eclipsetrader.ui.internal.ats.editors.StrategyScriptEditHandler">
+               class="org.eclipsetrader.ui.internal.editors.StrategyScriptEditHandler">
          </class>
          <activeWhen>
             <and>
@@ -1630,6 +1630,24 @@
             label="Negative Highlight"
             value="224,0,0">
       </colorDefinition>
+      <fontDefinition
+            id="TEXT_EDITOR_FONT"
+            isEditable="false"
+            label="Text Editor Font">
+         <fontValue
+               os="linux"
+               value="Monospace-regular-9"
+               ws="gtk">
+         </fontValue>
+         <fontValue
+               os="win32"
+               value="Courier New-regular-9">
+         </fontValue>
+         <fontValue
+               os="macosx"
+               value="Monaco-regular-9">
+         </fontValue>
+      </fontDefinition>
    </extension>
 
 </plugin>

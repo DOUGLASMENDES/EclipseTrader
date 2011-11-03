@@ -9,7 +9,7 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.ats.editors;
+package org.eclipsetrader.ui.internal.editors;
 
 import java.util.Iterator;
 
@@ -55,7 +55,7 @@ public class StrategyScriptEditHandler extends AbstractHandler {
                     try {
                         IStoreObject storeObject = (IStoreObject) strategy.getAdapter(IStoreObject.class);
                         IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettingsForView(storeObject.getStore().toURI());
-                        site.getPage().showView(ScriptEditor.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
+                        site.getPage().showView(ScriptStrategyEditor.VIEW_ID, dialogSettings.getName(), IWorkbenchPage.VIEW_ACTIVATE);
                     } catch (PartInitException e) {
                         Status status = new Status(IStatus.ERROR, UIActivator.PLUGIN_ID, 0, "Error opening script editor", e); //$NON-NLS-1$
                         UIActivator.log(status);

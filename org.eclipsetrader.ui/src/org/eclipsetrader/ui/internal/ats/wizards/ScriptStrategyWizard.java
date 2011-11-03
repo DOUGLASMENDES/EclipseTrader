@@ -30,7 +30,7 @@ import org.eclipsetrader.core.repositories.IRepositoryRunnable;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.internal.UIActivator;
-import org.eclipsetrader.ui.internal.ats.editors.ScriptEditor;
+import org.eclipsetrader.ui.internal.editors.ScriptEditor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
