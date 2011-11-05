@@ -94,23 +94,20 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
     private static StreamingConnector instance;
 
-    public static final int PREZZO = 0;
-    public static final int VARIAZIONE_PERC = 1;
-    public static final int ORA = 2;
-    public static final int DATA = 3;
-    public static final int VOLUME = 4;
-    public static final int MINIMO = 5;
-    public static final int MASSIMO = 6;
-    public static final int APERTURA = 7;
-    public static final int PRECEDENTE = 8;
-    public static final int INIZIO_BOOK = 9;
-    public static final int BID_QUANTITA = 39;
-    public static final int BID_PREZZO = 40;
-    public static final int ASK_QUANTITA = 41;
-    public static final int ASK_PREZZO = 42;
-    //private static final String DESCRIPTION = "d";
-    private static final String DATI = "t2"; //$NON-NLS-1$
-    //private static final String GRAPH = "g";
+    private static final String INFO = "info"; //$NON-NLS-1$
+
+    private static final String PREZZO = "[L=]"; //$NON-NLS-1$
+    private static final String ORA = "[TLT]"; //$NON-NLS-1$
+    private static final String DATA = "[DATA_ULT]"; //$NON-NLS-1$
+    private static final String VOLUME = "[CV]"; //$NON-NLS-1$
+    private static final String MINIMO = "[LO]"; //$NON-NLS-1$
+    private static final String MASSIMO = "[HI]"; //$NON-NLS-1$
+    private static final String APERTURA = "[OP1]"; //$NON-NLS-1$
+    private static final String PRECEDENTE = "[LIE]"; //$NON-NLS-1$
+    private static final String BID_QUANTITA = "[BS1]"; //$NON-NLS-1$
+    private static final String BID_PREZZO = "[BP1]"; //$NON-NLS-1$
+    private static final String ASK_QUANTITA = "[AS1]"; //$NON-NLS-1$
+    private static final String ASK_PREZZO = "[AP1]"; //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -123,6 +120,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     private TimeZone timeZone;
     private SimpleDateFormat df;
     private SimpleDateFormat df2;
+    private SimpleDateFormat df3;
 
     private Thread thread;
     private Thread notificationThread;
@@ -174,6 +172,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         df.setTimeZone(timeZone);
         df2 = new SimpleDateFormat("dd.MM.yyyy HHmmss"); //$NON-NLS-1$
         df2.setTimeZone(timeZone);
+        df3 = new SimpleDateFormat("yyyyMMdd HH:mm:ss"); //$NON-NLS-1$
+        df3.setTimeZone(timeZone);
     }
 
     public synchronized static StreamingConnector getInstance() {
@@ -550,12 +550,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 else if (h.tipo == Message.TIP_ECHO) {
                     try {
                         os.write(new byte[] {
-                            bHeader[0],
-                            bHeader[1],
-                            bHeader[2],
-                            bHeader[3],
-                            mes[0],
-                            mes[1]
+                            bHeader[0], bHeader[1], bHeader[2], bHeader[3], mes[0], mes[1]
                         });
                         os.flush();
                     } catch (Exception e) {
@@ -792,7 +787,9 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         else if (obj instanceof AstaApertura) {
             AstaApertura ap = (AstaApertura) obj;
 
-            priceData.setLast(ap.val_aper);
+            if (ap.val_aper != 0.0) {
+                priceData.setLast(ap.val_aper);
+            }
             priceData.setVolume(ap.qta_aper);
             priceData.setTime(new Date(ap.ora_aper));
             subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
@@ -812,7 +809,9 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         else if (obj instanceof AstaChiusura) {
             AstaChiusura ac = (AstaChiusura) obj;
 
-            priceData.setLast(ac.val_chiu);
+            if (ac.val_chiu != 0.0) {
+                priceData.setLast(ac.val_chiu);
+            }
             priceData.setTime(new Date(ac.ora_chiu));
             subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 
@@ -903,10 +902,11 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             String s = "[!QUOT]"; //$NON-NLS-1$
             byte byte0 = 43;
 
-            Hashtable<String, String[]> hashtable = new Hashtable<String, String[]>();
+            Hashtable<String, Map<String, String>> hashtable = new Hashtable<String, Map<String, String>>();
             try {
-                HttpMethod method = createMethodOld(sTit, DATI, "213.92.13.41", WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt()); //$NON-NLS-1$
+                HttpMethod method = createSnapshotMethod(sTit, INFO, streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
                 method.setFollowRedirects(true);
+                logger.debug(method.getURI().toString());
 
                 HttpClient client = new HttpClient();
                 setupProxy(client, streamingServer);
@@ -916,15 +916,14 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
 
                 String s5;
                 while ((s5 = bufferedreader.readLine()) != null && !s5.startsWith(s)) {
+                    logger.debug(s5);
                 }
 
                 if (s5 != null) {
                     do {
+                        logger.debug(s5);
                         if (s5.startsWith(s)) {
-                            String as[] = new String[43];
-                            for (int i = 0; i < 43; i++) {
-                                as[i] = "0"; //$NON-NLS-1$
-                            }
+                            Map<String, String> as = new HashMap<String, String>();
 
                             StringTokenizer stringtokenizer = new StringTokenizer(s5, ",\t"); //$NON-NLS-1$
                             String s2 = stringtokenizer.nextToken();
@@ -933,22 +932,14 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                                 String s4;
                                 try {
                                     s4 = stringtokenizer.nextToken().trim();
-                                    if (s4.equals("")) { //$NON-NLS-1$
-                                        s4 = "0"; //$NON-NLS-1$
-                                    }
+                                    int sq = s4.indexOf("]");
+                                    as.put(s4.substring(0, sq + 1), s4.substring(sq + 1));
                                 } catch (NoSuchElementException nosuchelementexception) {
                                     hashtable.put(s2, as);
                                     break;
                                 }
-                                as[j] = s4;
                             }
 
-                            if (as[2].length() == 6) {
-                                as[2] = as[2].substring(0, 2) + ":" + as[2].substring(2, 4) + ":" + as[2].substring(4, 6); //$NON-NLS-1$ //$NON-NLS-2$
-                            }
-                            if (as[3].length() == 8) {
-                                as[3] = as[3].substring(6, 8) + "." + as[3].substring(4, 6) + "." + as[3].substring(0, 4); //$NON-NLS-1$ //$NON-NLS-2$
-                            }
                             hashtable.put(s2, as);
                         }
                     } while ((s5 = bufferedreader.readLine()) != null);
@@ -959,7 +950,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             }
 
             for (String symbol : sTit) {
-                String sVal[] = hashtable.get(symbol);
+                Map<String, String> sVal = hashtable.get(symbol);
                 if (sVal == null) {
                     continue;
                 }
@@ -971,42 +962,35 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 IdentifierType identifierType = subscription.getIdentifierType();
                 PriceDataType priceData = identifierType.getPriceData();
 
-                priceData.setLast(Double.parseDouble(sVal[PREZZO]));
-                priceData.setVolume(Long.parseLong(sVal[VOLUME]));
+                priceData.setLast(Double.parseDouble(sVal.get(PREZZO)));
+                priceData.setBid(Double.parseDouble(sVal.get(BID_PREZZO)));
+                priceData.setBidSize(Long.parseLong(sVal.get(BID_QUANTITA)));
+                priceData.setAsk(Double.parseDouble(sVal.get(ASK_PREZZO)));
+                priceData.setAskSize(Long.parseLong(sVal.get(ASK_QUANTITA)));
+                priceData.setVolume(Long.parseLong(sVal.get(VOLUME)));
+                priceData.setLastClose(Double.parseDouble(sVal.get(PRECEDENTE)));
+                priceData.setOpen(Double.parseDouble(sVal.get(APERTURA)));
+                priceData.setHigh(Double.parseDouble(sVal.get(MASSIMO)));
+                priceData.setLow(Double.parseDouble(sVal.get(MINIMO)));
                 try {
-                    if (sVal[DATA].equals("0")) { //$NON-NLS-1$
-                        sVal[DATA] = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime()); //$NON-NLS-1$
+                    if ("0".equals(sVal.get(DATA))) {
+                        sVal.put(DATA, new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime())); //$NON-NLS-1$
                     }
-
-                    if (sVal[ORA].indexOf(':') == -1) {
-                        if (sVal[ORA].length() < 6) {
-                            sVal[ORA] = "0" + sVal[ORA]; //$NON-NLS-1$
-                        }
-                        priceData.setTime(df2.parse(sVal[DATA] + " " + sVal[ORA])); //$NON-NLS-1$
-                    }
-                    else {
-                        priceData.setTime(df.parse(sVal[DATA] + " " + sVal[ORA])); //$NON-NLS-1$
-                    }
+                    priceData.setTime(df3.parse(sVal.get(DATA) + " " + sVal.get(ORA))); //$NON-NLS-1$
                 } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal[DATA] + "', TIME='" + sVal[ORA] + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal.get(DATA) + "', TIME='" + sVal.get(ORA) + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     Activator.log(status);
                 }
+
+                if (priceData.getLast() == null || priceData.getLast() == 0.0) {
+                    priceData.setLast(priceData.getLastClose());
+                }
+
                 subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
-
-                priceData.setBid(Double.parseDouble(sVal[BID_PREZZO]));
-                priceData.setBidSize(Long.parseLong(sVal[BID_QUANTITA]));
-                priceData.setAsk(Double.parseDouble(sVal[ASK_PREZZO]));
-                priceData.setAskSize(Long.parseLong(sVal[ASK_QUANTITA]));
                 subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
-
-                priceData.setOpen(Double.parseDouble(sVal[APERTURA]));
-                priceData.setHigh(Double.parseDouble(sVal[MASSIMO]));
-                priceData.setLow(Double.parseDouble(sVal[MINIMO]));
                 if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
                     subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
                 }
-
-                priceData.setLastClose(Double.parseDouble(sVal[PRECEDENTE]));
                 subscription.setLastClose(new LastClose(priceData.getLastClose(), null));
             }
 
@@ -1045,21 +1029,22 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         return method;
     }
 
-    private HttpMethod createMethodOld(String as[], String mode, String host, String urt, String prt) throws MalformedURLException {
-        GetMethod method = new GetMethod("http://" + host + "/cgi-bin/preqa.fcgi"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        StringBuffer s = new StringBuffer();
+    private HttpMethod createSnapshotMethod(String as[], String mode, String host, String urt, String prt) throws Exception {
+        StringBuilder s = new StringBuilder();
+        s.append("/mpush.php?"); //$NON-NLS-1$
+        s.append("modo=" + mode); //$NON-NLS-1$
+        s.append("&cod=A"); //$NON-NLS-1$
+        s.append("&stcmd="); //$NON-NLS-1$
         for (int i = 0; i < as.length; i++) {
+            s.append("+"); //$NON-NLS-1$
             s.append(as[i]);
             s.append("|"); //$NON-NLS-1$
         }
+        s.append("&u=" + urt); //$NON-NLS-1$
+        s.append("&p=" + prt); //$NON-NLS-1$
 
-        method.setQueryString(new NameValuePair[] {
-            new NameValuePair("modo", mode), //$NON-NLS-1$
-            new NameValuePair("stcmd", s.toString()), //$NON-NLS-1$
-            new NameValuePair("u", urt), //$NON-NLS-1$
-            new NameValuePair("p", prt), //$NON-NLS-1$
-        });
+        GetMethod method = new GetMethod();
+        method.setURI(new org.apache.commons.httpclient.URI("http://" + host + s.toString(), false));
 
         return method;
     }
