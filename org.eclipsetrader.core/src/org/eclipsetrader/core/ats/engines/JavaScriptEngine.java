@@ -17,6 +17,7 @@ import java.util.Observable;
 
 import org.eclipsetrader.core.ats.IScriptStrategy;
 import org.eclipsetrader.core.ats.ITradingSystem;
+import org.eclipsetrader.core.ats.ITradingSystemContext;
 import org.eclipsetrader.core.ats.ITradingSystemInstrument;
 import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.feed.IBar;
@@ -45,6 +46,7 @@ public class JavaScriptEngine extends Observable {
     public static final String PROPERTY_BARSIZE = "barSize"; //$NON-NLS-1$
 
     private final ITradingSystem tradingSystem;
+    private final ITradingSystemContext context;
     private final IScriptStrategy strategy;
     private final IPricingEnvironment pricingEnvironment;
     private final IAccount account;
@@ -102,12 +104,13 @@ public class JavaScriptEngine extends Observable {
         }
     };
 
-    public JavaScriptEngine(ITradingSystem tradingSystem, IPricingEnvironment pricingEnvironment, IAccount account, IBroker broker) {
+    public JavaScriptEngine(ITradingSystem tradingSystem, ITradingSystemContext context) {
         this.tradingSystem = tradingSystem;
+        this.context = context;
         this.strategy = (IScriptStrategy) tradingSystem.getStrategy();
-        this.pricingEnvironment = pricingEnvironment;
-        this.account = account;
-        this.broker = broker;
+        this.pricingEnvironment = context.getPricingEnvironment();
+        this.account = context.getAccount();
+        this.broker = context.getBroker();
     }
 
     public void start() throws Exception {
@@ -136,9 +139,14 @@ public class JavaScriptEngine extends Observable {
             updateInstrumentsMap();
             updatePositionsMap();
 
+            int backfillSize = context.getInitialBackfillSize();
+
             for (ITradingSystemInstrument instrument : tradingSystem.getInstruments()) {
                 ISecurity security = instrument.getInstrument();
                 JavaScriptEngineInstrument engineInstrument = new JavaScriptEngineInstrument(scope, security, strategy);
+                if (backfillSize != 0) {
+                    engineInstrument.backfill(backfillSize);
+                }
                 engineInstrument.setPosition(positionsMap.get(security));
                 engineInstrument.onStrategyStart();
                 contextsMap.put(instrument.getInstrument(), engineInstrument);

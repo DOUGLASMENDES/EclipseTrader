@@ -47,4 +47,11 @@ public interface ITradingSystemContext {
      * Disposes the context and all associated resources.
      */
     public void dispose();
+
+    /**
+     * Returns the number of bars to backfill before the strategy starts.
+     * 
+     * @return the number of bars.
+     */
+    public int getInitialBackfillSize();
 }

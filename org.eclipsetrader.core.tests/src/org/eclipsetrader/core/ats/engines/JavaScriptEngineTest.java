@@ -13,6 +13,8 @@ package org.eclipsetrader.core.ats.engines;
 
 import junit.framework.TestCase;
 
+import org.easymock.EasyMock;
+import org.eclipsetrader.core.ats.ITradingSystemContext;
 import org.eclipsetrader.core.ats.ScriptStrategy;
 import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.feed.PricingEnvironment;
@@ -32,6 +34,7 @@ public class JavaScriptEngineTest extends TestCase {
     PricingEnvironment pricingEnvironment;
     AccountMock account;
     BrokerMock broker;
+    ITradingSystemContext context;
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -49,6 +52,12 @@ public class JavaScriptEngineTest extends TestCase {
         account = new AccountMock();
         broker = new BrokerMock();
 
+        context = EasyMock.createNiceMock(ITradingSystemContext.class);
+        EasyMock.expect(context.getPricingEnvironment()).andStubReturn(pricingEnvironment);
+        EasyMock.expect(context.getBroker()).andStubReturn(broker);
+        EasyMock.expect(context.getAccount()).andStubReturn(account);
+        EasyMock.replay(context);
+
         cx = Context.enter();
     }
 
@@ -61,7 +70,7 @@ public class JavaScriptEngineTest extends TestCase {
     }
 
     public void testContextInheritsSettings() throws Exception {
-        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), pricingEnvironment, account, broker);
+        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), context);
 
         runner.start();
 
@@ -75,7 +84,7 @@ public class JavaScriptEngineTest extends TestCase {
     }
 
     public void testSetInstrumentsMap() throws Exception {
-        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), pricingEnvironment, account, broker);
+        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), context);
 
         runner.start();
 
@@ -87,7 +96,7 @@ public class JavaScriptEngineTest extends TestCase {
     }
 
     public void testContextInheritsInstrumentsMap() throws Exception {
-        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), pricingEnvironment, account, broker);
+        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), context);
 
         runner.start();
 
@@ -105,7 +114,7 @@ public class JavaScriptEngineTest extends TestCase {
             new PositionMock(instrument2, 1000L, 25.75)
         });
 
-        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), pricingEnvironment, account, broker);
+        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), context);
 
         runner.start();
 
@@ -123,7 +132,7 @@ public class JavaScriptEngineTest extends TestCase {
             new PositionMock(instrument2, 1000L, 25.75)
         });
 
-        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), pricingEnvironment, account, broker);
+        JavaScriptEngine runner = new JavaScriptEngine(new TradingSystem(strategy), context);
 
         runner.start();
 

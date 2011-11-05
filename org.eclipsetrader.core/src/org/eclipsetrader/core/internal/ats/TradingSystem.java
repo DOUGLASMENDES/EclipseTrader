@@ -176,7 +176,7 @@ public class TradingSystem implements ITradingSystem {
                 instrument.setPosition(position);
             }
         }
-        engine = new JavaScriptEngine(this, context.getPricingEnvironment(), context.getAccount(), context.getBroker());
+        engine = new JavaScriptEngine(this, context);
         engine.addObserver(observer);
         engine.start();
     }

@@ -23,17 +23,24 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipsetrader.core.IScript;
 import org.eclipsetrader.core.ats.IScriptStrategy;
+import org.eclipsetrader.core.feed.Bar;
 import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.core.feed.IBarOpen;
+import org.eclipsetrader.core.feed.IHistory;
+import org.eclipsetrader.core.feed.IOHLC;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.TimeSpan;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.internal.CoreActivator;
+import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.trading.IPosition;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class JavaScriptEngineInstrument {
 
@@ -54,6 +61,7 @@ public class JavaScriptEngineInstrument {
 
     private final Scriptable scope;
     private final ISecurity instrument;
+    private final IScriptStrategy strategy;
     private Function onQuote;
     private Function onTrade;
     private Function onBarOpen;
@@ -68,6 +76,7 @@ public class JavaScriptEngineInstrument {
 
     public JavaScriptEngineInstrument(Scriptable sharedScope, ISecurity instrument, IScriptStrategy strategy) throws Exception {
         this.instrument = instrument;
+        this.strategy = strategy;
 
         Context cx = Context.enter();
         try {
@@ -82,7 +91,6 @@ public class JavaScriptEngineInstrument {
             ScriptableObject.defineClass(scope, LimitOrderFunction.class);
             ScriptableObject.defineClass(scope, MarketOrderFunction.class);
             ScriptableObject.defineClass(scope, HasPositionFunction.class);
-            ScriptableObject.defineClass(scope, BackfillFunction.class);
             defineClasses();
 
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
@@ -292,5 +300,38 @@ public class JavaScriptEngineInstrument {
 
     public IBar[] getBars() {
         return bars.toArray(new IBar[bars.size()]);
+    }
+
+    public void backfill(int backfillBars) {
+        BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
+        ServiceReference<IRepositoryService> serviceReference = context.getServiceReference(IRepositoryService.class);
+        if (serviceReference != null) {
+            IRepositoryService repositoryService = context.getService(serviceReference);
+
+            IHistory history = repositoryService.getHistoryFor(instrument);
+            IOHLC[] ohlc = history.getOHLC();
+
+            TimeSpan[] timeSpan = strategy.getBarsTimeSpan();
+            for (int i = 0; i < timeSpan.length; i++) {
+                if (timeSpan[i].equals(TimeSpan.days(1))) {
+                    for (int index = ohlc.length - backfillBars; index < ohlc.length; index++) {
+                        bars.add(new Bar(ohlc[index].getDate(), timeSpan[i], ohlc[index].getOpen(), ohlc[index].getHigh(), ohlc[index].getLow(), ohlc[index].getClose(), ohlc[index].getVolume()));
+                    }
+                }
+                else {
+                    int filled = 0;
+                    for (int index = ohlc.length - 1; index >= 0 && filled < backfillBars; index--) {
+                        IHistory subHistory = history.getSubset(ohlc[index].getDate(), ohlc[index].getDate(), timeSpan[i]);
+                        IOHLC[] subOhlc = subHistory.getOHLC();
+                        for (int ii = subOhlc.length - 1; ii >= 0 && filled < backfillBars; ii--) {
+                            bars.add(0, new Bar(subOhlc[ii].getDate(), timeSpan[i], subOhlc[ii].getOpen(), subOhlc[ii].getHigh(), subOhlc[ii].getLow(), subOhlc[ii].getClose(), subOhlc[ii].getVolume()));
+                            filled++;
+                        }
+                    }
+                }
+            }
+
+            context.ungetService(serviceReference);
+        }
     }
 }

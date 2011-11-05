@@ -155,6 +155,7 @@ public class TradingSystemService implements ITradingSystemService {
                 TradingSystemProperties properties = ((TradingSystem) system).getProperties();
 
                 TradingSystemContext context = new TradingSystemContext(marketService, system.getStrategy(), properties.getBroker(), properties.getAccount());
+                context.setInitialBackfillSize(properties.getBackfill());
                 try {
                     system.start(context);
                     ((TradingSystem) system).setStatus(ITradingSystem.STATUS_STARTED);

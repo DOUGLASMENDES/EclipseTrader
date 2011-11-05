@@ -60,4 +60,11 @@ public class SimulationContext implements ITradingSystemContext {
     public void dispose() {
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradingSystemContext#getInitialBackfillSize()
+     */
+    @Override
+    public int getInitialBackfillSize() {
+        return 0;
+    }
 }

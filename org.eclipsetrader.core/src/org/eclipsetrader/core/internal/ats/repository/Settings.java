@@ -39,6 +39,9 @@ public class Settings {
     @XmlElement(name = "account")
     private String account;
 
+    @XmlElement(name = "backfill")
+    private int backfill;
+
     public Settings() {
     }
 
@@ -47,6 +50,7 @@ public class Settings {
         this.autostart = properties.isAutostart();
         this.broker = properties.getBroker();
         this.account = properties.getAccount() != null ? properties.getAccount().getId() : null;
+        this.backfill = properties.getBackfill();
     }
 
     @XmlTransient
@@ -91,6 +95,7 @@ public class Settings {
         properties.setAutostart(autostart);
         properties.setBroker(broker);
         properties.setAccount(getAccount());
+        properties.setBackfill(backfill);
         return properties;
     }
 }

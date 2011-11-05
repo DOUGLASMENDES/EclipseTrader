@@ -19,6 +19,7 @@ public class TradingSystemProperties {
     private boolean autostart;
     private IBroker broker;
     private IAccount account;
+    private int backfill;
 
     public TradingSystemProperties() {
     }
@@ -45,5 +46,13 @@ public class TradingSystemProperties {
 
     public void setAccount(IAccount account) {
         this.account = account;
+    }
+
+    public int getBackfill() {
+        return backfill;
+    }
+
+    public void setBackfill(int backfill) {
+        this.backfill = backfill;
     }
 }

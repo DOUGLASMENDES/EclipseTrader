@@ -47,6 +47,8 @@ public class TradingSystemContext implements ITradingSystemContext {
     private final IAccount account;
     private final PricingEnvironment pricingEnvironment;
 
+    private Integer backfillSize;
+
     private final MarketPricingEnvironment marketPricingEnvironment;
     private final BarFactory barFactory;
     private boolean needsDailyBars;
@@ -173,5 +175,17 @@ public class TradingSystemContext implements ITradingSystemContext {
     public void dispose() {
         barFactory.dispose();
         marketPricingEnvironment.dispose();
+    }
+
+    public void setInitialBackfillSize(Integer backfillSize) {
+        this.backfillSize = backfillSize;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.ITradingSystemContext#getInitialBackfillSize()
+     */
+    @Override
+    public int getInitialBackfillSize() {
+        return backfillSize != null ? backfillSize.intValue() : 0;
     }
 }

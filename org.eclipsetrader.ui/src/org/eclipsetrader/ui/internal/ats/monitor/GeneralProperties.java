@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipsetrader.core.internal.ats.TradingSystem;
@@ -42,6 +43,7 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
 
     private ComboViewer broker;
     private ComboViewer account;
+    private Spinner backfill;
     private Button autostart;
 
     private final ISelectionChangedListener changeListener = new ISelectionChangedListener() {
@@ -100,11 +102,19 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
         account.getControl().setEnabled(false);
 
         label = new Label(content, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
         label = new Label(content, SWT.NONE);
+        label.setText("Initial Backfill Size");
+        backfill = new Spinner(content, SWT.BORDER);
+        backfill.setValues(0, 0, 99999, 0, 1, 1);
+
+        label = new Label(content, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
         autostart = new Button(content, SWT.CHECK);
         autostart.setText("Start Automatically");
+        autostart.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
 
         performDefaults();
 
@@ -143,6 +153,8 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
             account.setSelection(StructuredSelection.EMPTY);
         }
 
+        backfill.setSelection(properties.getBackfill());
+
         bundleContext.ungetService(serviceReference);
 
         super.performDefaults();
@@ -158,6 +170,8 @@ public class GeneralProperties extends PropertyPage implements IWorkbenchPropert
         properties.setBroker((IBroker) selection.getFirstElement());
         selection = (IStructuredSelection) account.getSelection();
         properties.setAccount((IAccount) selection.getFirstElement());
+
+        properties.setBackfill(backfill.getSelection());
     }
 
     /* (non-Javadoc)
