@@ -11,18 +11,16 @@
 
 package org.eclipsetrader.ui.internal.providers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.NumberFormat;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
-public class LastTradeDateTimeFactory extends AbstractProviderFactory {
+public class PriceFactory extends AbstractProviderFactory {
 
-    protected DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
+    private NumberFormat formatter = NumberFormat.getInstance();
 
     public class DataProvider implements IDataProvider {
 
@@ -41,7 +39,7 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
          */
         @Override
         public IDataProviderFactory getFactory() {
-            return LastTradeDateTimeFactory.this;
+            return PriceFactory.this;
         }
 
         /* (non-Javadoc)
@@ -49,10 +47,9 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
          */
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (trade != null && trade.getTime() != null) {
-                Date value = trade.getTime();
-                return new DateValue(value, formatter.format(value));
+            IPrice price = (IPrice) adaptable.getAdapter(IPrice.class);
+            if (price != null && price.getPrice() != null) {
+                return new NumberValue(price.getPrice(), formatter.format(price.getPrice()));
             }
             return null;
         }
@@ -65,11 +62,11 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
         }
     }
 
-    public LastTradeDateTimeFactory() {
-    }
-
-    protected LastTradeDateTimeFactory(DateFormat formatter) {
-        this.formatter = formatter;
+    public PriceFactory() {
+        formatter.setGroupingUsed(true);
+        formatter.setMinimumIntegerDigits(1);
+        formatter.setMinimumFractionDigits(2);
+        formatter.setMaximumFractionDigits(4);
     }
 
     /* (non-Javadoc)
@@ -87,7 +84,7 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
     @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return new Class[] {
-            Date.class, String.class,
+            Double.class, String.class,
         };
     }
 }

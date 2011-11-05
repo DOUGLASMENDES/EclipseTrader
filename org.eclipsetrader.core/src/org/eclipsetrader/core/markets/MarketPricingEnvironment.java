@@ -38,6 +38,7 @@ import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription;
 import org.eclipsetrader.core.feed.IFeedSubscription2;
 import org.eclipsetrader.core.feed.ILastClose;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.feed.IPricingListener;
 import org.eclipsetrader.core.feed.IQuote;
@@ -516,55 +517,42 @@ public class MarketPricingEnvironment implements IPricingEnvironment {
             for (ISecurity security : subscriptionStatus.securities) {
                 PricingStatus pricingStatus = securitiesMap.get(security);
                 if (pricingStatus != null) {
-                    for (QuoteDelta d : delta) {
-                        if (d.getNewValue() instanceof ITrade) {
+                    for (int i = 0; i < delta.length; i++) {
+                        if (delta[i].getNewValue() instanceof ITrade) {
                             Object oldValue = pricingStatus.trade;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.trade = (ITrade) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-                            }
+                            pricingStatus.trade = (ITrade) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(oldValue, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof IQuote) {
+                        if (delta[i].getNewValue() instanceof IQuote) {
                             Object oldValue = pricingStatus.quote;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.quote = (IQuote) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-                            }
+                            pricingStatus.quote = (IQuote) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(oldValue, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof ITodayOHL) {
+                        if (delta[i].getNewValue() instanceof ITodayOHL) {
                             Object oldValue = pricingStatus.todayOHL;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.todayOHL = (ITodayOHL) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-                            }
+                            pricingStatus.todayOHL = (ITodayOHL) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(oldValue, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof ILastClose) {
+                        if (delta[i].getNewValue() instanceof ILastClose) {
                             Object oldValue = pricingStatus.lastClose;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.lastClose = (ILastClose) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-                            }
+                            pricingStatus.lastClose = (ILastClose) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(oldValue, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof IBook) {
+                        if (delta[i].getNewValue() instanceof IBook) {
                             Object oldValue = pricingStatus.book;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.book = (IBook) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(oldValue, d.getNewValue()));
-                            }
+                            pricingStatus.book = (IBook) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(oldValue, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof IBarOpen) {
-                            Object oldValue = pricingStatus.todayBarOpen;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.todayBarOpen = (IBarOpen) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
-                            }
+                        if (delta[i].getNewValue() instanceof IBarOpen) {
+                            pricingStatus.todayBarOpen = (IBarOpen) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(null, delta[i].getNewValue()));
                         }
-                        if (d.getNewValue() instanceof IBar) {
-                            Object oldValue = pricingStatus.todayBar;
-                            if (oldValue == null && d.getNewValue() != null || oldValue != null && !oldValue.equals(d.getNewValue())) {
-                                pricingStatus.todayBar = (IBar) d.getNewValue();
-                                pricingStatus.deltas.add(new PricingDelta(null, d.getNewValue()));
-                            }
+                        if (delta[i].getNewValue() instanceof IBar) {
+                            pricingStatus.todayBar = (IBar) delta[i].getNewValue();
+                            pricingStatus.deltas.add(new PricingDelta(null, delta[i].getNewValue()));
+                        }
+                        if (delta[i].getNewValue() instanceof IPrice) {
+                            pricingStatus.deltas.add(new PricingDelta(null, delta[i].getNewValue()));
                         }
                     }
                 }

@@ -11,28 +11,13 @@
 
 package org.eclipsetrader.core.feed;
 
-import java.util.Date;
 
 /**
  * Holds the trade informations.
  *
  * @since 1.0
  */
-public interface ITrade {
-
-    /**
-     * Returns the date and time of the trade.
-     *
-     * @return the date and time
-     */
-    public Date getTime();
-
-    /**
-     * Returns the trade's price.
-     *
-     * @return the price
-     */
-    public Double getPrice();
+public interface ITrade extends IPrice {
 
     /**
      * Returns the size of the trade, if the data source makes this information

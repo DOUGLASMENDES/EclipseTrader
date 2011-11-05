@@ -9,14 +9,28 @@
  *     Marco Maccaferri - initial API and implementation
  */
 
-package org.eclipsetrader.ui.internal.providers;
+package org.eclipsetrader.core.feed;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class LastTradeDateFactory extends LastTradeDateTimeFactory {
+/**
+ * Defines the price informations.
+ *
+ * @since 1.0
+ */
+public interface IPrice {
 
-    public LastTradeDateFactory() {
-        super(DateFormat.getDateInstance(SimpleDateFormat.MEDIUM));
-    }
+    /**
+     * Returns the date and time.
+     *
+     * @return the date and time
+     */
+    public Date getTime();
+
+    /**
+     * Returns the price.
+     *
+     * @return the price
+     */
+    public Double getPrice();
 }

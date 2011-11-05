@@ -16,11 +16,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
-public class LastTradeDateTimeFactory extends AbstractProviderFactory {
+public class PriceDateTimeFactory extends AbstractProviderFactory {
 
     protected DateFormat formatter = DateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.MEDIUM);
 
@@ -41,7 +41,7 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
          */
         @Override
         public IDataProviderFactory getFactory() {
-            return LastTradeDateTimeFactory.this;
+            return PriceDateTimeFactory.this;
         }
 
         /* (non-Javadoc)
@@ -49,9 +49,9 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
          */
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (trade != null && trade.getTime() != null) {
-                Date value = trade.getTime();
+            IPrice price = (IPrice) adaptable.getAdapter(IPrice.class);
+            if (price != null && price.getTime() != null) {
+                Date value = price.getTime();
                 return new DateValue(value, formatter.format(value));
             }
             return null;
@@ -65,10 +65,10 @@ public class LastTradeDateTimeFactory extends AbstractProviderFactory {
         }
     }
 
-    public LastTradeDateTimeFactory() {
+    public PriceDateTimeFactory() {
     }
 
-    protected LastTradeDateTimeFactory(DateFormat formatter) {
+    protected PriceDateTimeFactory(DateFormat formatter) {
         this.formatter = formatter;
     }
 

@@ -327,6 +327,26 @@
             id="org.eclipsetrader.ui.providers.BidAskSpread"
             name="Bid/Ask Spread">
       </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.PriceFactory"
+            id="org.eclipsetrader.ui.providers.Price"
+            name="Price">
+      </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.PriceDateTimeFactory"
+            id="org.eclipsetrader.ui.providers.PriceDateTime"
+            name="Price Date / Time">
+      </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.PriceDateFactory"
+            id="org.eclipsetrader.ui.providers.PriceDate"
+            name="Price Date">
+      </provider>
+      <provider
+            class="org.eclipsetrader.ui.internal.providers.PriceTimeFactory"
+            id="org.eclipsetrader.ui.providers.PriceTime"
+            name="Price Time">
+      </provider>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">

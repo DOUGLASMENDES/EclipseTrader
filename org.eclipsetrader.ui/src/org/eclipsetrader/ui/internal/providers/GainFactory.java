@@ -56,7 +56,7 @@ public class GainFactory extends AbstractProviderFactory {
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
             final ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (trade == null || trade.getPrice() == null) {
+            if (trade == null || trade.getPrice() == null || trade.getPrice() == 0.0) {
                 return null;
             }
             IHolding holding = (IHolding) adaptable.getAdapter(IHolding.class);

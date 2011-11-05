@@ -26,13 +26,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.eclipsetrader.core.feed.IBook;
-import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IPricingEnvironment;
 import org.eclipsetrader.core.feed.IPricingListener;
-import org.eclipsetrader.core.feed.IQuote;
-import org.eclipsetrader.core.feed.ITodayOHL;
-import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.feed.PricingDelta;
 import org.eclipsetrader.core.feed.PricingEvent;
 import org.eclipsetrader.core.instruments.ISecurity;
@@ -308,21 +303,7 @@ public class WatchListViewModel {
         for (WatchListViewItem viewItem : items) {
             if (viewItem.getSecurity() == event.getSecurity()) {
                 for (int i = 0; i < delta.length; i++) {
-                    if (delta[i].getNewValue() instanceof ITrade) {
-                        viewItem.setTrade((ITrade) delta[i].getNewValue());
-                    }
-                    if (delta[i].getNewValue() instanceof IQuote) {
-                        viewItem.setQuote((IQuote) delta[i].getNewValue());
-                    }
-                    if (delta[i].getNewValue() instanceof ILastClose) {
-                        viewItem.setLastClose((ILastClose) delta[i].getNewValue());
-                    }
-                    if (delta[i].getNewValue() instanceof ITodayOHL) {
-                        viewItem.setTodayOHL((ITodayOHL) delta[i].getNewValue());
-                    }
-                    if (delta[i].getNewValue() instanceof IBook) {
-                        viewItem.setBook((IBook) delta[i].getNewValue());
-                    }
+                    viewItem.setPriceData(delta[i].getNewValue());
                 }
                 updateValues(viewItem);
             }

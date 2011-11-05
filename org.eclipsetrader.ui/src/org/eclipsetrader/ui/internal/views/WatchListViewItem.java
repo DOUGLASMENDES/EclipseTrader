@@ -18,6 +18,7 @@ import org.eclipse.core.databinding.observable.list.ObservableList;
 import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.ILastClose;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ITodayOHL;
 import org.eclipsetrader.core.feed.ITrade;
@@ -36,6 +37,7 @@ public class WatchListViewItem implements ViewItem {
 
     private final ISecurity security;
 
+    private IPrice price;
     private ITrade trade;
     private IQuote quote;
     private ITodayOHL todayOHL;
@@ -123,6 +125,35 @@ public class WatchListViewItem implements ViewItem {
 
     public ISecurity getSecurity() {
         return security;
+    }
+
+    public void setPriceData(Object obj) {
+        if (obj instanceof IPrice) {
+            price = (IPrice) obj;
+        }
+        if (obj instanceof ITrade) {
+            trade = (ITrade) obj;
+        }
+        if (obj instanceof IQuote) {
+            quote = (IQuote) obj;
+        }
+        if (obj instanceof ILastClose) {
+            lastClose = (ILastClose) obj;
+        }
+        if (obj instanceof ITodayOHL) {
+            todayOHL = (ITodayOHL) obj;
+        }
+        if (obj instanceof IBook) {
+            book = (IBook) obj;
+        }
+    }
+
+    public IPrice getPrice() {
+        return price;
+    }
+
+    public void setPrice(IPrice price) {
+        this.price = price;
     }
 
     public ITrade getTrade() {
@@ -213,6 +244,9 @@ public class WatchListViewItem implements ViewItem {
             };
         }
 
+        if (adapter.isAssignableFrom(IPrice.class)) {
+            return price;
+        }
         if (adapter.isAssignableFrom(ITrade.class)) {
             return trade;
         }

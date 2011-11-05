@@ -14,9 +14,9 @@ package org.eclipsetrader.ui.internal.providers;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-public class LastTradeDateFactory extends LastTradeDateTimeFactory {
+public class PriceTimeFactory extends PriceDateTimeFactory {
 
-    public LastTradeDateFactory() {
-        super(DateFormat.getDateInstance(SimpleDateFormat.MEDIUM));
+    public PriceTimeFactory() {
+        super(DateFormat.getTimeInstance(SimpleDateFormat.MEDIUM));
     }
 }
