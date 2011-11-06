@@ -60,8 +60,12 @@ public class IdentifierTypeTest extends TestCase {
         IdentifierType object = new IdentifierType();
         assertNotNull(object.getTrade());
         assertNotNull(object.getQuote());
-        assertNotNull(object.getTodayOHL());
         assertNotNull(object.getPriceData());
+    }
+
+    public void testDontReturnTodayOHLIfNotSet() throws Exception {
+        IdentifierType object = new IdentifierType();
+        assertNull(object.getTodayOHL());
     }
 
     private String marshal(IdentifierType object) throws Exception {

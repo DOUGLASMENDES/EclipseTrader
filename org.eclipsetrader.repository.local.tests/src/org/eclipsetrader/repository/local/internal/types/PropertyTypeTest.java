@@ -35,11 +35,11 @@ public class PropertyTypeTest extends TestCase {
         PropertyType property = PropertyType.create("strike", 27.5);
         assertEquals("strike", property.getName());
         assertEquals(Double.class.getName(), property.getType());
-        assertEquals("27,5", property.getValue());
+        assertEquals(Double.toString(27.5), property.getValue());
     }
 
     public void testConvertToDouble() throws Exception {
-        PropertyType property = new PropertyType("strike", Double.class.getName(), "27,5");
+        PropertyType property = new PropertyType("strike", Double.class.getName(), Double.toString(27.5));
         assertEquals(new Double(27.5), PropertyType.convert(property));
     }
 

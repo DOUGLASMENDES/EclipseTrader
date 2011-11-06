@@ -48,6 +48,11 @@ public class HeadLineViewerTest extends TestCase {
             protected IHeadLine[] getHeadLines() {
                 return new IHeadLine[0];
             }
+
+            @Override
+            protected void updateTitleImage() {
+                // Do nothing
+            }
         };
         view.createPartControl(shell);
         assertEquals(0, view.getViewer().getTable().getItemCount());
@@ -61,8 +66,13 @@ public class HeadLineViewerTest extends TestCase {
             @Override
             protected IHeadLine[] getHeadLines() {
                 return new IHeadLine[] {
-                        h1, h2,
+                    h1, h2,
                 };
+            }
+
+            @Override
+            protected void updateTitleImage() {
+                // Do nothing
             }
         };
         view.createPartControl(shell);
@@ -81,8 +91,13 @@ public class HeadLineViewerTest extends TestCase {
             @Override
             protected IHeadLine[] getHeadLines() {
                 return new IHeadLine[] {
-                        h1, h2,
+                    h1, h2,
                 };
+            }
+
+            @Override
+            protected void updateTitleImage() {
+                // Do nothing
             }
         };
         view.createPartControl(shell);

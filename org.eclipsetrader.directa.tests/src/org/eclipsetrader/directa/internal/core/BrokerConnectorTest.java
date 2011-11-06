@@ -13,6 +13,7 @@ package org.eclipsetrader.directa.internal.core;
 
 import junit.framework.TestCase;
 
+import org.eclipsetrader.core.feed.FeedIdentifier;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.trading.IOrderSide;
@@ -20,8 +21,19 @@ import org.eclipsetrader.core.trading.IOrderStatus;
 
 public class BrokerConnectorTest extends TestCase {
 
+    class BrokerConnectorMock extends BrokerConnector {
+
+        public BrokerConnectorMock() {
+        }
+
+        @Override
+        public ISecurity getSecurityFromSymbol(String symbol) {
+            return new Security(symbol, new FeedIdentifier(symbol, null));
+        }
+    }
+
     public void testParseToSameOrderMonitor() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
         OrderMonitor monitor1 = c.parseOrderLine("18;8;0;U6812380489237;n ;TIT;I;;100;;;;;1;;100;.7700;;C;20090309;120550;;006;A;M;;;");
         c.orders.add(monitor1);
 
@@ -31,7 +43,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testParseNewBuyOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
 
         OrderMonitor monitor = c.parseOrderLine("18;8;0;U6812380489237;n ;TIT;I;;100;;;;;1;;100;.7700;;C;20090309;120550;;006;A;M;;;");
 
@@ -42,7 +54,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testParseExecutedBuyOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
 
         OrderMonitor monitor = c.parseOrderLine("18;8;0;U6812380489237;n ;TIT;I;;100;;;;;1;;100;.7700;;C;20090309;120550;;006;A;M;;;");
         c.orders.add(monitor);
@@ -58,7 +70,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testParsePendingCanceledBuyOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
         OrderMonitor monitor = c.parseOrderLine("24;8;0;U7010412397817;n ;TRN;I;;50;;;;;1;;50;2.2700;;C;20090311;104123;;006;A;M;;;");
         c.orders.add(monitor);
 
@@ -71,7 +83,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testParseCanceledBuyOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
         OrderMonitor monitor = c.parseOrderLine("24;8;0;U7010412397817;n ;TRN;I;;50;;;;;1;;50;2.2700;;C;20090311;104123;;006;A;M;;;");
         c.orders.add(monitor);
 
@@ -84,7 +96,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testNewSellOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
 
         OrderMonitor monitor = c.parseOrderLine("18;8;0;U6909100824299;n ;TIT;I;;-100;100;.7715;;;;1;100;.7920;;V;20090310;91009;;006;A;M;;;");
 
@@ -95,7 +107,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testExecutedSellOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
         OrderMonitor monitor = c.parseOrderLine("18;8;0;U6909100824299;n ;TIT;I;;-100;100;.7715;;;;1;100;.7920;;V;20090310;91009;;006;A;M;;;");
         c.orders.add(monitor);
 
@@ -110,7 +122,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testExecutedSellOrderHistory() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
 
         OrderMonitor monitor = c.parseOrderLine("10;6;5;U6909100824299;e ;TIT;I;;;;;;;;;;.7920;;V;20090310;91014;;019;A;M;100;;");
 
@@ -123,7 +135,7 @@ public class BrokerConnectorTest extends TestCase {
     }
 
     public void testParseCanceledSellOrder() throws Exception {
-        BrokerConnector c = new BrokerConnector();
+        BrokerConnector c = new BrokerConnectorMock();
         OrderMonitor monitor = c.parseOrderLine("24;8;0;U7010412397817;n ;TRN;I;;50;;;;;1;;50;2.2700;;V;20090311;104123;;006;A;M;;;");
         c.orders.add(monitor);
 
