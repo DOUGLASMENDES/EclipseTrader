@@ -97,6 +97,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
     private static final String INFO = "info"; //$NON-NLS-1$
 
     private static final String PREZZO = "[L=]"; //$NON-NLS-1$
+    private static final String TRADE = "[LC=]"; //$NON-NLS-1$
     private static final String ORA = "[TLT]"; //$NON-NLS-1$
     private static final String DATA = "[DATA_ULT]"; //$NON-NLS-1$
     private static final String VOLUME = "[CV]"; //$NON-NLS-1$
@@ -788,11 +789,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             AstaApertura ap = (AstaApertura) obj;
 
             if (ap.val_aper != 0.0) {
-                priceData.setLast(ap.val_aper);
+                subscription.setPrice(new org.eclipsetrader.core.feed.Price(new Date(ap.ora_aper), ap.val_aper));
             }
-            priceData.setVolume(ap.qta_aper);
-            priceData.setTime(new Date(ap.ora_aper));
-            subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
 
             if (priceData.getClose() != null) {
                 priceData.setLastClose(priceData.getClose());
@@ -809,14 +807,8 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         else if (obj instanceof AstaChiusura) {
             AstaChiusura ac = (AstaChiusura) obj;
 
-            if (ac.val_chiu != 0.0) {
-                priceData.setLast(ac.val_chiu);
-            }
-            priceData.setTime(new Date(ac.ora_chiu));
-            subscription.setOTCTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
-
-            if (priceData.getClose() == null) {
-                priceData.setClose(ac.val_chiu);
+            if (priceData.getClose() == null && priceData.getLast() != null) {
+                priceData.setClose(priceData.getLast());
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(priceData.getTime());
@@ -826,6 +818,10 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 c.set(Calendar.MILLISECOND, 0);
                 Bar bar = new Bar(c.getTime(), TimeSpan.days(1), priceData.getOpen(), priceData.getHigh(), priceData.getLow(), priceData.getClose(), priceData.getVolume());
                 subscription.addDelta(new QuoteDelta(subscription.getIdentifier(), null, bar));
+            }
+
+            if (ac.val_chiu != 0.0) {
+                subscription.setPrice(new org.eclipsetrader.core.feed.Price(new Date(ac.ora_chiu), ac.val_chiu));
             }
         }
 
@@ -902,7 +898,7 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
             String s = "[!QUOT]"; //$NON-NLS-1$
             byte byte0 = 43;
 
-            Hashtable<String, Map<String, String>> hashtable = new Hashtable<String, Map<String, String>>();
+            Hashtable<String, Map<String, String>> hashTable = new Hashtable<String, Map<String, String>>();
             try {
                 HttpMethod method = createSnapshotMethod(sTit, INFO, streamingServer, WebConnector.getInstance().getUrt(), WebConnector.getInstance().getPrt());
                 method.setFollowRedirects(true);
@@ -935,12 +931,12 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                                     int sq = s4.indexOf("]");
                                     as.put(s4.substring(0, sq + 1), s4.substring(sq + 1));
                                 } catch (NoSuchElementException nosuchelementexception) {
-                                    hashtable.put(s2, as);
+                                    hashTable.put(s2, as);
                                     break;
                                 }
                             }
 
-                            hashtable.put(s2, as);
+                            hashTable.put(s2, as);
                         }
                     } while ((s5 = bufferedreader.readLine()) != null);
                 }
@@ -949,54 +945,66 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
                 Activator.log(status);
             }
 
-            for (String symbol : sTit) {
-                Map<String, String> sVal = hashtable.get(symbol);
-                if (sVal == null) {
-                    continue;
-                }
-                FeedSubscription subscription = symbolSubscriptions.get(symbol);
-                if (subscription == null) {
-                    continue;
-                }
-
-                IdentifierType identifierType = subscription.getIdentifierType();
-                PriceDataType priceData = identifierType.getPriceData();
-
-                priceData.setLast(Double.parseDouble(sVal.get(PREZZO)));
-                priceData.setBid(Double.parseDouble(sVal.get(BID_PREZZO)));
-                priceData.setBidSize(Long.parseLong(sVal.get(BID_QUANTITA)));
-                priceData.setAsk(Double.parseDouble(sVal.get(ASK_PREZZO)));
-                priceData.setAskSize(Long.parseLong(sVal.get(ASK_QUANTITA)));
-                priceData.setVolume(Long.parseLong(sVal.get(VOLUME)));
-                priceData.setLastClose(Double.parseDouble(sVal.get(PRECEDENTE)));
-                priceData.setOpen(Double.parseDouble(sVal.get(APERTURA)));
-                priceData.setHigh(Double.parseDouble(sVal.get(MASSIMO)));
-                priceData.setLow(Double.parseDouble(sVal.get(MINIMO)));
-                try {
-                    if ("0".equals(sVal.get(DATA))) {
-                        sVal.put(DATA, new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime())); //$NON-NLS-1$
-                    }
-                    priceData.setTime(df3.parse(sVal.get(DATA) + " " + sVal.get(ORA))); //$NON-NLS-1$
-                } catch (Exception e) {
-                    Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal.get(DATA) + "', TIME='" + sVal.get(ORA) + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    Activator.log(status);
-                }
-
-                if (priceData.getLast() == null || priceData.getLast() == 0.0) {
-                    priceData.setLast(priceData.getLastClose());
-                }
-
-                subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
-                subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
-                if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
-                    subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
-                }
-                subscription.setLastClose(new LastClose(priceData.getLastClose(), null));
-            }
+            processSnapshotData(sTit, hashTable);
 
             wakeupNotifyThread();
         } catch (Exception e) {
             Activator.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error reading snapshot data", e)); //$NON-NLS-1$
+        }
+    }
+
+    void processSnapshotData(String[] sTit, Hashtable<String, Map<String, String>> hashTable) {
+        for (int i = 0; i < sTit.length; i++) {
+            Map<String, String> sVal = hashTable.get(sTit[i]);
+            if (sVal == null) {
+                continue;
+            }
+            FeedSubscription subscription = symbolSubscriptions.get(sTit[i]);
+            if (subscription == null) {
+                continue;
+            }
+
+            IdentifierType identifierType = subscription.getIdentifierType();
+            PriceDataType priceData = identifierType.getPriceData();
+
+            try {
+                if ("0".equals(sVal.get(DATA))) {
+                    sVal.put(DATA, new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime())); //$NON-NLS-1$
+                }
+                priceData.setTime(df3.parse(sVal.get(DATA) + " " + sVal.get(ORA))); //$NON-NLS-1$
+            } catch (Exception e) {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, "Error parsing date: " + " (DATE='" + sVal.get(DATA) + "', TIME='" + sVal.get(ORA) + "')", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                Activator.log(status);
+            }
+
+            priceData.setBid(Double.parseDouble(sVal.get(BID_PREZZO)));
+            priceData.setBidSize(Long.parseLong(sVal.get(BID_QUANTITA)));
+            priceData.setAsk(Double.parseDouble(sVal.get(ASK_PREZZO)));
+            priceData.setAskSize(Long.parseLong(sVal.get(ASK_QUANTITA)));
+            priceData.setVolume(Long.parseLong(sVal.get(VOLUME)));
+            priceData.setLastClose(Double.parseDouble(sVal.get(PRECEDENTE)));
+            priceData.setOpen(Double.parseDouble(sVal.get(APERTURA)));
+            priceData.setHigh(Double.parseDouble(sVal.get(MASSIMO)));
+            priceData.setLow(Double.parseDouble(sVal.get(MINIMO)));
+
+            double tradePrice = Double.parseDouble(sVal.get(TRADE));
+            if (tradePrice != 0.0) {
+                priceData.setLast(tradePrice);
+                subscription.setTrade(new Trade(priceData.getTime(), priceData.getLast(), priceData.getLastSize(), priceData.getVolume()));
+            }
+            else {
+                subscription.setPrice(new org.eclipsetrader.core.feed.Price(priceData.getTime(), Double.parseDouble(sVal.get(PREZZO))));
+            }
+
+            if (priceData.getLast() == null || priceData.getLast() == 0.0) {
+                priceData.setLast(priceData.getLastClose());
+            }
+
+            subscription.setQuote(new Quote(priceData.getBid(), priceData.getAsk(), priceData.getBidSize(), priceData.getAskSize()));
+            if (priceData.getOpen() != 0.0 && priceData.getHigh() != 0.0 && priceData.getLow() != 0.0) {
+                subscription.setTodayOHL(new TodayOHL(priceData.getOpen(), priceData.getHigh(), priceData.getLow()));
+            }
+            subscription.setLastClose(new LastClose(priceData.getLastClose(), null));
         }
     }
 

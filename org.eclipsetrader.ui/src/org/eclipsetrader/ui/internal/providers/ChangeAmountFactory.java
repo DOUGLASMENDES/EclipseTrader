@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
@@ -54,9 +54,9 @@ public class ChangeAmountFactory extends AbstractProviderFactory {
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
             ILastClose close = (ILastClose) adaptable.getAdapter(ILastClose.class);
-            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (close != null && close.getPrice() != null && trade != null && trade.getPrice() != null) {
-                Double value = trade.getPrice() - close.getPrice();
+            IPrice price = (IPrice) adaptable.getAdapter(IPrice.class);
+            if (close != null && close.getPrice() != null && price != null && price.getPrice() != null) {
+                Double value = price.getPrice() - close.getPrice();
                 Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
                 return new NumberValue(value, (value > 0 ? "+" : "") + formatter.format(value), color);
             }

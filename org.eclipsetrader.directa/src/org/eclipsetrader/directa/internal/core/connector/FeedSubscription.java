@@ -21,6 +21,7 @@ import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.IFeedIdentifier;
 import org.eclipsetrader.core.feed.IFeedSubscription2;
 import org.eclipsetrader.core.feed.ILastClose;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.feed.IQuote;
 import org.eclipsetrader.core.feed.ISubscriptionListener;
 import org.eclipsetrader.core.feed.ITodayOHL;
@@ -33,6 +34,7 @@ import org.eclipsetrader.directa.internal.core.repository.IdentifierType;
 public class FeedSubscription implements IFeedSubscription2 {
 
     private StreamingConnector connector;
+    private IPrice price;
     private ITrade trade;
     private IQuote quote;
     private ITodayOHL todayOHL;
@@ -177,12 +179,13 @@ public class FeedSubscription implements IFeedSubscription2 {
         }
     }
 
-    public void setOTCTrade(ITrade trade) {
-        if (!trade.equals(this.trade)) {
-            addDelta(new QuoteDelta(identifierType.getIdentifier(), this.trade, trade));
-            this.trade = trade;
-            this.identifierType.setTrade(trade);
-        }
+    public IPrice getPrice() {
+        return price;
+    }
+
+    public void setPrice(IPrice price) {
+        this.price = price;
+        addDelta(new QuoteDelta(identifierType.getIdentifier(), null, price));
     }
 
     /* (non-Javadoc)

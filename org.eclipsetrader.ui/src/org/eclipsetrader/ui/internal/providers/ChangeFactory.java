@@ -18,7 +18,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipsetrader.core.feed.ILastClose;
-import org.eclipsetrader.core.feed.ITrade;
+import org.eclipsetrader.core.feed.IPrice;
 import org.eclipsetrader.core.views.IDataProvider;
 import org.eclipsetrader.core.views.IDataProviderFactory;
 
@@ -55,10 +55,10 @@ public class ChangeFactory extends AbstractProviderFactory {
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
             ILastClose close = (ILastClose) adaptable.getAdapter(ILastClose.class);
-            ITrade trade = (ITrade) adaptable.getAdapter(ITrade.class);
-            if (close != null && close.getPrice() != null && trade != null && trade.getPrice() != null) {
-                Double value = trade.getPrice() - close.getPrice();
-                Double percentage = (trade.getPrice() - close.getPrice()) / close.getPrice() * 100.0;
+            IPrice price = (IPrice) adaptable.getAdapter(IPrice.class);
+            if (close != null && close.getPrice() != null && price != null && price.getPrice() != null) {
+                Double value = price.getPrice() - close.getPrice();
+                Double percentage = (price.getPrice() - close.getPrice()) / close.getPrice() * 100.0;
                 String text = (value > 0 ? "+" : "") + formatter.format(value) + " (" + (value > 0 ? "+" : "") + percentageFormatter.format(percentage) + "%)";
                 Color color = value != 0 ? value > 0 ? positiveColor : negativeColor : null;
                 return new NumberValue(value, text, color);
