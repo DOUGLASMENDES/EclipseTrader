@@ -34,10 +34,8 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -87,8 +85,6 @@ import org.osgi.framework.ServiceReference;
 public class Level2View extends ViewPart {
 
     public static final String VIEW_ID = "org.eclipsetrader.ui.views.level2";
-    private static final String K_FADE_LEVELS = "fade-levels";
-    private static final int FADE_TIMER = 500;
     private static final String VIEW_TITLE_TOOLTIP = "Level II - {0}";
 
     private IMarketService marketService;
@@ -111,8 +107,6 @@ public class Level2View extends ViewPart {
     private NumberFormat numberFormatter = NumberFormat.getInstance();
     private NumberFormat priceFormatter = NumberFormat.getInstance();
     private NumberFormat percentageFormatter = NumberFormat.getInstance();
-    private Color tickBackgroundColor = Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
-    private Color[] tickFade = new Color[3];
 
     private IMemento memento;
     private IFeedConnector2 connector;
@@ -140,27 +134,6 @@ public class Level2View extends ViewPart {
             if (e.widget.getData() instanceof IFeedConnector2) {
                 IFeedConnector2 newConnector = (IFeedConnector2) e.widget.getData();
                 onChangeConnector(newConnector);
-            }
-        }
-    };
-
-    private Runnable fadeUpdateRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (!table.isDisposed()) {
-                for (TableItem tableItem : table.getItems()) {
-                    int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
-                    if (timers != null) {
-                        for (int i = 0; i < timers.length; i++) {
-                            if (timers[i] > 0) {
-                                timers[i]--;
-                                updateBackground(tableItem, i);
-                            }
-                        }
-                    }
-                }
-                table.getDisplay().timerExec(FADE_TIMER, fadeUpdateRunnable);
             }
         }
     };
@@ -386,9 +359,6 @@ public class Level2View extends ViewPart {
             }
         }
 
-        setTickBackground(Display.getDefault().getSystemColor(SWT.COLOR_TITLE_BACKGROUND).getRGB());
-
-        Display.getDefault().timerExec(FADE_TIMER, fadeUpdateRunnable);
         Display.getDefault().timerExec(100, bookUpdateRunnable);
     }
 
@@ -423,10 +393,6 @@ public class Level2View extends ViewPart {
         if (subscription != null) {
             subscription.removeSubscriptionListener(subscriptionListener);
             subscription.dispose();
-        }
-
-        for (int i = 0; i < tickFade.length; i++) {
-            tickFade[i].dispose();
         }
 
         BundleContext context = CoreActivator.getDefault().getBundle().getBundleContext();
@@ -564,94 +530,49 @@ public class Level2View extends ViewPart {
         return content;
     }
 
-    protected void updateBackground(TableItem tableItem, int columnIndex) {
-        tableItem.setBackground(columnIndex, null);
-
-        int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
-        if (timers[columnIndex] > 0) {
-            switch (timers[columnIndex]) {
-                case 4:
-                    tableItem.setBackground(columnIndex, tickFade[0]);
-                    break;
-                case 3:
-                    tableItem.setBackground(columnIndex, tickFade[1]);
-                    break;
-                case 2:
-                    tableItem.setBackground(columnIndex, tickFade[2]);
-                    break;
-                case 1:
-                    break;
-                default:
-                    tableItem.setBackground(columnIndex, tickBackgroundColor);
-                    break;
-            }
-        }
-    }
-
     protected void updateBid(TableItem tableItem, IBookEntry entry) {
         int columnIndex = 0;
-        int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
 
         if (entry != null) {
             if (showMarketMakerAction.isChecked()) {
                 String s = entry.getMarketMaker() != null ? entry.getMarketMaker() : "";
                 if (!s.equals(tableItem.getText(columnIndex))) {
-                    if (!"".equals(tableItem.getText(columnIndex))) {
-                        timers[columnIndex] = 6;
-                    }
                     tableItem.setText(columnIndex, s);
-                    updateBackground(tableItem, columnIndex);
                 }
                 columnIndex++;
             }
 
             String s = numberFormatter.format(entry.getProposals());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex++;
 
             s = numberFormatter.format(entry.getQuantity());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex++;
 
             s = priceFormatter.format(entry.getPrice());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex++;
         }
         else {
             if (showMarketMakerAction.isChecked()) {
                 tableItem.setText(columnIndex, "");
-                timers[columnIndex] = 0;
                 tableItem.setBackground(columnIndex++, null);
             }
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex++, null);
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex++, null);
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex++, null);
         }
 
@@ -660,68 +581,47 @@ public class Level2View extends ViewPart {
 
     protected void updateAsk(TableItem tableItem, IBookEntry entry) {
         int columnIndex = tableItem.getParent().getColumnCount() - 1;
-        int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
 
         if (entry != null) {
             if (showMarketMakerAction.isChecked()) {
                 String s = entry.getMarketMaker() != null ? entry.getMarketMaker() : "";
                 if (!s.equals(tableItem.getText(columnIndex))) {
-                    if (!"".equals(tableItem.getText(columnIndex))) {
-                        timers[columnIndex] = 6;
-                    }
                     tableItem.setText(columnIndex, s);
-                    updateBackground(tableItem, columnIndex);
                 }
                 columnIndex--;
             }
 
             String s = numberFormatter.format(entry.getProposals());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex--;
 
             s = numberFormatter.format(entry.getQuantity());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex--;
 
             s = priceFormatter.format(entry.getPrice());
             if (!s.equals(tableItem.getText(columnIndex))) {
-                if (!"".equals(tableItem.getText(columnIndex))) {
-                    timers[columnIndex] = 6;
-                }
                 tableItem.setText(columnIndex, s);
-                updateBackground(tableItem, columnIndex);
             }
             columnIndex--;
         }
         else {
             if (showMarketMakerAction.isChecked()) {
                 tableItem.setText(columnIndex, "");
-                timers[columnIndex] = 0;
                 tableItem.setBackground(columnIndex--, null);
             }
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex--, null);
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex--, null);
 
             tableItem.setText(columnIndex, "");
-            timers[columnIndex] = 0;
             tableItem.setBackground(columnIndex--, null);
         }
 
@@ -738,16 +638,6 @@ public class Level2View extends ViewPart {
         try {
             for (int rowIndex = 0; rowIndex < rows; rowIndex++) {
                 TableItem tableItem = rowIndex < table.getItemCount() ? table.getItem(rowIndex) : new TableItem(table, SWT.NONE);
-
-                int[] timers = (int[]) tableItem.getData(K_FADE_LEVELS);
-                if (timers == null || timers.length != table.getColumnCount()) {
-                    timers = new int[table.getColumnCount()];
-                    for (int i = 0; i < timers.length; i++) {
-                        timers[i] = 0;
-                    }
-                    tableItem.setData(K_FADE_LEVELS, timers);
-                }
-
                 updateBid(tableItem, rowIndex < bidEntries.length ? bidEntries[rowIndex] : null);
                 updateAsk(tableItem, rowIndex < askEntries.length ? askEntries[rowIndex] : null);
             }
@@ -945,25 +835,6 @@ public class Level2View extends ViewPart {
     protected void update(ITodayOHL todayOHL) {
         high.setText(todayOHL != null && todayOHL.getHigh() != null ? priceFormatter.format(todayOHL.getHigh()) : "");
         low.setText(todayOHL != null && todayOHL.getLow() != null ? priceFormatter.format(todayOHL.getLow()) : "");
-    }
-
-    public void setTickBackground(RGB color) {
-        int steps = 100 / (tickFade.length + 1);
-        for (int i = 0, ratio = 100 - steps; i < tickFade.length; i++, ratio -= steps) {
-            RGB rgb = blend(tickBackgroundColor.getRGB(), table.getBackground().getRGB(), ratio);
-            tickFade[i] = new Color(Display.getDefault(), rgb);
-        }
-    }
-
-    private RGB blend(RGB c1, RGB c2, int ratio) {
-        int r = blend(c1.red, c2.red, ratio);
-        int g = blend(c1.green, c2.green, ratio);
-        int b = blend(c1.blue, c2.blue, ratio);
-        return new RGB(r, g, b);
-    }
-
-    private int blend(int v1, int v2, int ratio) {
-        return (ratio * v1 + (100 - ratio) * v2) / 100;
     }
 
     protected ISecurity getSecurityFromSymbol(String symbol) {
