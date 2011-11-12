@@ -18,6 +18,11 @@
             id="org.eclipsetrader.directa.connector"
             name="Directa">
       </connector>
+      <backfill
+            class="org.eclipsetrader.directa.internal.core.connector.BackfillConnector"
+            id="org.eclipsetrader.directa.backfill"
+            name="Directa">
+      </backfill>
    </extension>
    <extension
          name="Borsa Italiana"
@@ -298,6 +303,19 @@
                visible="false">
          </view>
       </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <wizard
+            category="org.eclipsetrader.ui.import.data"
+            class="org.eclipsetrader.directa.internal.ui.wizards.DataImportWizard"
+            icon="icons/d-small.gif"
+            id="org.eclipsetrader.directa.data"
+            name="Directa">
+         <description>
+            Import historical data from Directa.
+         </description>
+      </wizard>
    </extension>
 
 </plugin>

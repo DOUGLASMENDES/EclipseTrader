@@ -5,12 +5,14 @@ Bundle-SymbolicName: org.eclipsetrader.directa;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipsetrader.directa.internal.Activator
 Bundle-Vendor: EclipseTrader.org
-Require-Bundle: org.eclipse.core.net,
+Require-Bundle: org.eclipse.core.expressions,
+ org.eclipse.core.net,
  org.eclipse.core.runtime,
+ org.eclipse.equinox.security,
  org.eclipse.ui,
+ org.eclipse.nebula.widgets.cdatetime,
  org.eclipsetrader.core,
- org.eclipse.core.expressions,
- org.eclipse.equinox.security
+ org.eclipsetrader.ui
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: javax.xml.bind;version="[2.0.0,2.2.0)",
