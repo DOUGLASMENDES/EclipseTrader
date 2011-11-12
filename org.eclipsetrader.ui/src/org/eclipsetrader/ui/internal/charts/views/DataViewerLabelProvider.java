@@ -12,6 +12,7 @@
 package org.eclipsetrader.ui.internal.charts.views;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.Date;
 
 import org.eclipse.core.databinding.observable.map.IObservableMap;
@@ -20,13 +21,27 @@ import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 public class DataViewerLabelProvider extends ObservableMapLabelProvider {
 
     private DateFormat dateFormat;
+    private NumberFormat decimalNumberFormat = NumberFormat.getInstance();
+    private NumberFormat integerNumberFormat = NumberFormat.getInstance();
 
     public DataViewerLabelProvider(IObservableMap attributeMap) {
-        super(attributeMap);
+        this(new IObservableMap[] {
+            attributeMap
+        });
     }
 
     public DataViewerLabelProvider(IObservableMap[] attributeMaps) {
         super(attributeMaps);
+
+        decimalNumberFormat.setGroupingUsed(true);
+        decimalNumberFormat.setMinimumIntegerDigits(1);
+        decimalNumberFormat.setMinimumFractionDigits(1);
+        decimalNumberFormat.setMaximumFractionDigits(4);
+
+        integerNumberFormat.setGroupingUsed(true);
+        integerNumberFormat.setMinimumIntegerDigits(1);
+        integerNumberFormat.setMinimumFractionDigits(0);
+        integerNumberFormat.setMaximumFractionDigits(0);
     }
 
     public void setDateFormat(DateFormat dateFormat) {
@@ -38,13 +53,22 @@ public class DataViewerLabelProvider extends ObservableMapLabelProvider {
      */
     @Override
     public String getColumnText(Object element, int columnIndex) {
+        String text = "";
         if (columnIndex < attributeMaps.length) {
             Object result = attributeMaps[columnIndex].get(element);
             if (result instanceof Date) {
-                return result == null ? "" : dateFormat.format(result);
+                text = dateFormat.format(result);
             }
-            return result == null ? "" : result.toString(); //$NON-NLS-1$
+            else if ((result instanceof Long) || (result instanceof Integer)) {
+                text = integerNumberFormat.format(result);
+            }
+            else if (result instanceof Number) {
+                text = decimalNumberFormat.format(result);
+            }
+            else if (result != null) {
+                text = result.toString();
+            }
         }
-        return null;
+        return text;
     }
 }
