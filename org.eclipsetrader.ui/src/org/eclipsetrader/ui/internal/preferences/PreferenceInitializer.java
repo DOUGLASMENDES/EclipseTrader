@@ -56,6 +56,16 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(TimeSpan.days(1)).append(",");
+        sb.append(TimeSpan.minutes(1)).append(",");
+        sb.append(TimeSpan.minutes(5)).append(",");
+        sb.append(TimeSpan.minutes(10)).append(",");
+        sb.append(TimeSpan.minutes(15)).append(",");
+        sb.append(TimeSpan.minutes(30)).append(",");
+        sb.append(TimeSpan.minutes(60));
+        preferences.setDefault(UIActivator.PREFS_CHART_BARS, sb.toString());
     }
 
     private String marshal(PeriodList object) throws Exception {

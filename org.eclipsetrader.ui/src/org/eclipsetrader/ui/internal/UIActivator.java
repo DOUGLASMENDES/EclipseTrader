@@ -74,6 +74,7 @@ public class UIActivator extends AbstractUIPlugin {
     public static final String PREFS_WATCHLIST_FADE_TO_BACKGROUND = "WATCHLIST_FADE_TO_BACKGROUND"; //$NON-NLS-1$
     public static final String PREFS_TEXT_EDITOR_FONT = "TEXT_EDITOR_FONT"; //$NON-NLS-1$
     public static final String PREFS_CHART_PERIODS = "CHART_PERIODS"; //$NON-NLS-1$
+    public static final String PREFS_CHART_BARS = "CHART_BARS"; //$NON-NLS-1$
 
     public static final String ALERT_NOTIFICATION_IMAGE = "alert_notification_image"; //$NON-NLS-1$
     public static final String ALERT_ADD_IMAGE = "alert_add_image"; //$NON-NLS-1$

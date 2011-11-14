@@ -63,6 +63,11 @@
             id="org.eclipsetrader.ui.charts.periods"
             name="Periods">
       </page>
+      <page
+            class="org.eclipsetrader.ui.internal.preferences.BarsPreferencePage"
+            id="org.eclipsetrader.ui.charts.bars"
+            name="Import">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.views">

@@ -14,8 +14,12 @@ package org.eclipsetrader.borsaitalia.internal.ui.wizards;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -44,6 +48,7 @@ import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.repositories.IRepositoryService;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.ui.Util;
+import org.eclipsetrader.ui.internal.UIActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -133,23 +138,14 @@ public class ImportDataPage extends WizardPage {
             public String getText(Object element) {
                 TimeSpan timeSpan = (TimeSpan) element;
                 return NLS.bind("{0} {1}", new Object[] { //$NON-NLS-1$
-                        String.valueOf(timeSpan.getLength()),
-                        timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_Minutes : Messages.ImportDataPage_Days,
+                    String.valueOf(timeSpan.getLength()),
+                    timeSpan.getUnits() == Units.Minutes ? Messages.ImportDataPage_Minutes : Messages.ImportDataPage_Days,
                 });
             }
         });
-        aggregation.setInput(new TimeSpan[] {
-                TimeSpan.days(1),
-                TimeSpan.minutes(1),
-                TimeSpan.minutes(2),
-                TimeSpan.minutes(3),
-                TimeSpan.minutes(5),
-                TimeSpan.minutes(10),
-                TimeSpan.minutes(15),
-                TimeSpan.minutes(30),
-                TimeSpan.minutes(60),
-        });
-        aggregation.setChecked(((Object[]) aggregation.getInput())[0], true);
+        TimeSpan[] availableSizes = getAvailableAggregations();
+        aggregation.setInput(availableSizes);
+        aggregation.setChecked(availableSizes[0], true);
 
         label = new Label(content, SWT.NONE);
         label.setText(Messages.ImportDataPage_Import);
@@ -353,5 +349,31 @@ public class ImportDataPage extends WizardPage {
                 return DataImportJob.FULL_INCREMENTAL;
         }
         return DataImportJob.FULL;
+    }
+
+    protected TimeSpan[] getAvailableAggregations() {
+        List<TimeSpan> list = new ArrayList<TimeSpan>();
+
+        String value = UIActivator.getDefault().getPreferenceStore().getString(UIActivator.PREFS_CHART_BARS);
+        String[] s = value.split(",");
+        for (int i = 0; i < s.length; i++) {
+            TimeSpan timeSpan = TimeSpan.fromString(s[i]);
+            if (timeSpan != null) {
+                list.add(timeSpan);
+            }
+        }
+
+        Collections.sort(list, new Comparator<TimeSpan>() {
+
+            @Override
+            public int compare(TimeSpan o1, TimeSpan o2) {
+                if (o1.getUnits() != o2.getUnits()) {
+                    return o2.getUnits().ordinal() - o1.getUnits().ordinal();
+                }
+                return o1.getLength() - o2.getLength();
+            }
+        });
+
+        return list.toArray(new TimeSpan[list.size()]);
     }
 }
