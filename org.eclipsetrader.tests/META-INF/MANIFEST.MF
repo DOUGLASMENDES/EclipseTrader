@@ -19,6 +19,7 @@ Export-Package: org.easymock,
  org.easymock.classextension.internal.objenesis.strategy,
  org.easymock.internal,
  org.easymock.internal.matchers,
+ org.eclipsetrader.tests,
  org.eclipsetrader.tests.core
 Bundle-ClassPath: plugin.jar,
  easymock.jar,

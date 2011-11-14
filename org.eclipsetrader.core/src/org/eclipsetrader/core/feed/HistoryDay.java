@@ -158,7 +158,11 @@ public class HistoryDay implements IHistory {
     }
 
     public void setOHLC(IOHLC[] bars) {
-        Object oldValue = this.bars;
+        if (Arrays.equals(this.bars, bars)) {
+            return;
+        }
+
+        IOHLC[] oldBars = this.bars;
 
         List<IOHLC> l = new ArrayList<IOHLC>(Arrays.asList(bars));
         Collections.sort(l, new Comparator<IOHLC>() {
@@ -173,7 +177,7 @@ public class HistoryDay implements IHistory {
         updateStoreObjects();
         updateRange();
 
-        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldBars, this.bars);
     }
 
     protected IStoreObject[] updateStoreObjects() {
@@ -320,7 +324,9 @@ public class HistoryDay implements IHistory {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     public Object getAdapter(Class adapter) {
         if (adapter.isAssignableFrom(getClass())) {
             return this;
@@ -346,8 +352,6 @@ public class HistoryDay implements IHistory {
         if (storeProperties.length != 0) {
             this.security = (ISecurity) storeProperties[0].getProperty(IPropertyConstants.SECURITY);
         }
-
-        Object oldValue = this.bars;
 
         List<IOHLC> l1 = new ArrayList<IOHLC>(2048);
 
@@ -409,11 +413,18 @@ public class HistoryDay implements IHistory {
                 return o1.getDate().compareTo(o2.getDate());
             }
         });
-        this.bars = l1.toArray(new IOHLC[l1.size()]);
+
+        IOHLC[] newBars = l1.toArray(new IOHLC[l1.size()]);
+        if (Arrays.equals(this.bars, newBars)) {
+            return;
+        }
+
+        IOHLC[] oldBars = this.bars;
+        this.bars = newBars;
 
         updateRange();
 
-        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldBars, this.bars);
     }
 
     IOHLC[] getLowestTimespanBars(IStoreProperties storeProperties) {

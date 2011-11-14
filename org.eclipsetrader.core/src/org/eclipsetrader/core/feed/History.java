@@ -186,7 +186,11 @@ public class History implements IHistory, IStoreObject {
     }
 
     public void setOHLC(IOHLC[] bars) {
-        Object oldValue = this.bars;
+        if (Arrays.equals(this.bars, bars)) {
+            return;
+        }
+
+        IOHLC[] oldBars = this.bars;
 
         List<IOHLC> l = new ArrayList<IOHLC>(Arrays.asList(bars));
         Collections.sort(l, new Comparator<IOHLC>() {
@@ -201,7 +205,7 @@ public class History implements IHistory, IStoreObject {
         updateRange();
         updateSubsets();
 
-        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldValue, this.bars);
+        propertyChangeSupport.firePropertyChange(IPropertyConstants.BARS, oldBars, this.bars);
     }
 
     /* (non-Javadoc)
@@ -301,14 +305,14 @@ public class History implements IHistory, IStoreObject {
                 Entry<Key, WeakReference<HistoryDay>>[] entry = set.toArray(new Entry[set.size()]);
 
                 Set<Key> updatedElements = new HashSet<Key>();
+                TimeSpan skipTimeSpan = TimeSpan.days(1);
 
                 for (int ii = 0; ii < storeObject.length; ii++) {
-                    TimeSpan timeSpan = (TimeSpan) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.TIME_SPAN);
                     Date barsDate = (Date) storeObject[ii].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE);
                     for (int i = 0; i < entry.length; i++) {
                         HistoryDay element = entry[i].getValue().get();
                         Key key = entry[i].getKey();
-                        if (element != null && element != this && element.getTimeSpan().equals(timeSpan)) {
+                        if (element != null && element != this && !element.getTimeSpan().equals(skipTimeSpan)) {
                             if (!entry[i].getKey().isInRange(barsDate)) {
                                 continue;
                             }
@@ -520,7 +524,10 @@ public class History implements IHistory, IStoreObject {
     }
 
     public void setSplits(ISplit[] splits) {
-        Object oldValue = this.splits;
+        if (Arrays.equals(this.splits, splits)) {
+            return;
+        }
+        ISplit[] oldValue = this.splits;
         this.splits = splits;
         propertyChangeSupport.firePropertyChange(IPropertyConstants.SPLITS, oldValue, this.splits);
     }

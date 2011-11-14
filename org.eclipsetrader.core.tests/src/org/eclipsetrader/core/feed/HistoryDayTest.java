@@ -12,7 +12,6 @@
 package org.eclipsetrader.core.feed;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -20,13 +19,14 @@ import org.eclipsetrader.core.instruments.Security;
 import org.eclipsetrader.core.repositories.IPropertyConstants;
 import org.eclipsetrader.core.repositories.IStoreObject;
 import org.eclipsetrader.core.repositories.StoreProperties;
+import org.eclipsetrader.tests.Helper;
 
 public class HistoryDayTest extends TestCase {
 
     public void testCreateStoreObjects() throws Exception {
         IOHLC[] bars = new IOHLC[] {
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
-                new OHLC(getTime(2008, Calendar.MAY, 23, 9, 3), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 23, 9, 3), 26.55, 26.6, 26.51, 26.52, 35083L),
         };
 
         HistoryDay history = new HistoryDay(null, TimeSpan.minutes(1));
@@ -41,8 +41,8 @@ public class HistoryDayTest extends TestCase {
 
     public void testFillStoreObjects() throws Exception {
         IOHLC[] bars = new IOHLC[] {
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
-                new OHLC(getTime(2008, Calendar.MAY, 23, 9, 3), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 23, 9, 3), 26.55, 26.6, 26.51, 26.52, 35083L),
         };
 
         Security security = new Security("Test", null);
@@ -52,13 +52,13 @@ public class HistoryDayTest extends TestCase {
         IStoreObject[] storeObjects = (IStoreObject[]) history.getAdapter(IStoreObject[].class);
 
         assertSame(security, storeObjects[0].getStoreProperties().getProperty(IPropertyConstants.SECURITY));
-        assertEquals(getTime(2008, Calendar.MAY, 22, 0, 0), storeObjects[0].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE));
+        assertEquals(Helper.getTime(2008, Calendar.MAY, 22, 0, 0), storeObjects[0].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE));
         IOHLC[] propBars1 = (IOHLC[]) storeObjects[0].getStoreProperties().getProperty(TimeSpan.minutes(1).toString());
         assertEquals(1, propBars1.length);
         assertSame(bars[0], propBars1[0]);
 
         assertSame(security, storeObjects[1].getStoreProperties().getProperty(IPropertyConstants.SECURITY));
-        assertEquals(getTime(2008, Calendar.MAY, 23, 0, 0), storeObjects[1].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE));
+        assertEquals(Helper.getTime(2008, Calendar.MAY, 23, 0, 0), storeObjects[1].getStoreProperties().getProperty(IPropertyConstants.BARS_DATE));
         IOHLC[] propBars2 = (IOHLC[]) storeObjects[1].getStoreProperties().getProperty(TimeSpan.minutes(1).toString());
         assertEquals(1, propBars2.length);
         assertSame(bars[1], propBars2[0]);
@@ -66,13 +66,13 @@ public class HistoryDayTest extends TestCase {
 
     public void testGetLowestTimespanBars() throws Exception {
         IOHLC[] bars1min = new IOHLC[] {
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 4), 26.55, 26.6, 26.51, 26.52, 35083L),
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 4), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 5), 26.55, 26.6, 26.51, 26.52, 35083L),
         };
         IOHLC[] bars5min = new IOHLC[] {
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
         };
 
         StoreProperties properties = new StoreProperties();
@@ -88,8 +88,8 @@ public class HistoryDayTest extends TestCase {
 
     public void testNoLowestTimespanBars() throws Exception {
         IOHLC[] bars5min = new IOHLC[] {
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
-                new OHLC(getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 3), 26.56, 26.56, 26.56, 26.56, 3043159L),
+            new OHLC(Helper.getTime(2008, Calendar.MAY, 22, 9, 8), 26.55, 26.6, 26.51, 26.52, 35083L),
         };
 
         StoreProperties properties = new StoreProperties();
@@ -100,12 +100,5 @@ public class HistoryDayTest extends TestCase {
 
         IOHLC[] bars = history.getLowestTimespanBars(properties);
         assertNull(bars);
-    }
-
-    private Date getTime(int year, int month, int day, int hour, int minute) {
-        Calendar date = Calendar.getInstance();
-        date.set(year, month, day, hour, minute, 0);
-        date.set(Calendar.MILLISECOND, 0);
-        return date.getTime();
     }
 }
