@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -32,6 +34,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -93,6 +96,9 @@ import org.eclipsetrader.ui.charts.IChartEditorListener;
 import org.eclipsetrader.ui.charts.IChartObject;
 import org.eclipsetrader.ui.internal.UIActivator;
 import org.eclipsetrader.ui.internal.charts.DataImportJob;
+import org.eclipsetrader.ui.internal.charts.ImportDataPage;
+import org.eclipsetrader.ui.internal.charts.Period;
+import org.eclipsetrader.ui.internal.charts.PeriodList;
 
 public class ChartViewPart extends ViewPart implements ISaveablePart {
 
@@ -131,8 +137,8 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
     private Action zoomInAction;
     private Action zoomResetAction;
     private Action updateAction;
-    private PeriodAction periodAllAction;
-    private PeriodAction[] periodAction;
+    private Action periodAllAction;
+    private ContributionItem[] periodActions;
 
     private Action currentPriceLineAction;
     private CurrentPriceLineFactory currentPriceLineFactory;
@@ -141,6 +147,26 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
     IMemento memento;
     IPreferenceStore preferenceStore;
+
+    private class ContributionItem extends ActionContributionItem {
+
+        private final Period period;
+
+        public ContributionItem(final Period period) {
+            super(new Action(period.getDescription(), Action.AS_RADIO_BUTTON) {
+
+                @Override
+                public void run() {
+                    setPeriod(period.getPeriod(), period.getResolution());
+                }
+            });
+            this.period = period;
+        }
+
+        public Period getPeriod() {
+            return period;
+        }
+    }
 
     private PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 
@@ -187,6 +213,9 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
             }
             if (UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP.equals(event.getProperty())) {
                 viewer.setDecoratorSummaryTooltips(preferences.getBoolean(UIActivator.PREFS_CROSSHAIR_SUMMARY_TOOLTIP));
+            }
+            if (UIActivator.PREFS_CHART_PERIODS.equals(event.getProperty())) {
+                updatePeriodActions();
             }
         }
     };
@@ -266,6 +295,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         site.setSelectionProvider(new SelectionProvider());
 
         createActions();
+        createPeriodActions();
 
         IActionBars actionBars = site.getActionBars();
 
@@ -277,13 +307,19 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         menuManager.add(currentBookAction);
 
         menuManager.appendToGroup("periods.top", periodAllAction); //$NON-NLS-1$
-        for (int i = 0; i < periodAction.length; i++) {
-            menuManager.appendToGroup("periods", periodAction[i]); //$NON-NLS-1$
+        if (periodActions != null) {
+            for (int i = 0; i < periodActions.length; i++) {
+                menuManager.appendToGroup("periods", periodActions[i]);
+            }
         }
 
         IToolBarManager toolBarManager = actionBars.getToolBarManager();
         toolBarManager.add(new Separator("additions")); //$NON-NLS-1$
         toolBarManager.add(updateAction);
+
+        TimeSpan periodTimeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
+        TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+        setPeriodActionSelection(periodTimeSpan, resolutionTimeSpan);
 
         actionBars.setGlobalActionHandler(cutAction.getId(), cutAction);
         actionBars.setGlobalActionHandler(copyAction.getId(), copyAction);
@@ -376,22 +412,13 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         zoomOutAction.setEnabled(false);
         zoomResetAction.setEnabled(false);
 
-        periodAllAction = new PeriodAction(this, Messages.ChartViewPart_AllPeriodAction, null, null);
-        periodAction = new PeriodAction[] {
-            new PeriodAction(this, TimeSpan.years(2), null),
-            new PeriodAction(this, TimeSpan.years(1), null),
-            new PeriodAction(this, TimeSpan.months(6), null),
-            new PeriodAction(this, TimeSpan.months(3), TimeSpan.minutes(30)),
-            new PeriodAction(this, TimeSpan.months(1), TimeSpan.minutes(15)),
-            new PeriodAction(this, TimeSpan.days(5), TimeSpan.minutes(5)),
-            new PeriodAction(this, TimeSpan.days(1), TimeSpan.minutes(1)),
-        };
+        periodAllAction = new Action(Messages.ChartViewPart_AllPeriodAction, IAction.AS_RADIO_BUTTON) {
 
-        TimeSpan timeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
-        periodAllAction.setChecked(timeSpan == null);
-        for (int i = 0; i < periodAction.length; i++) {
-            periodAction[i].setChecked(periodAction[i].getPeriod().equals(timeSpan));
-        }
+            @Override
+            public void run() {
+                setPeriod(null, TimeSpan.days(1));
+            }
+        };
 
         cutAction = new Action(Messages.ChartViewPart_CutAction) {
 
@@ -458,18 +485,7 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
 
             @Override
             public void run() {
-                DataImportJob job = new DataImportJob(security, DataImportJob.INCREMENTAL, null, null, new TimeSpan[] {
-                    TimeSpan.days(1),
-                    TimeSpan.minutes(1),
-                    TimeSpan.minutes(2),
-                    TimeSpan.minutes(3),
-                    TimeSpan.minutes(5),
-                    TimeSpan.minutes(10),
-                    TimeSpan.minutes(15),
-                    TimeSpan.minutes(30),
-                });
-                job.setUser(true);
-                job.schedule();
+                doUpdate();
             }
         };
         updateAction.setId("update"); //$NON-NLS-1$
@@ -876,10 +892,95 @@ public class ChartViewPart extends ViewPart implements ISaveablePart {
         dialogSettings.put(K_RESOLUTION, resolution != null ? resolution.toString() : (String) null);
 
         periodAllAction.setChecked(period == null);
-        for (int i = 0; i < periodAction.length; i++) {
-            periodAction[i].setChecked(period == periodAction[i].getPeriod());
-        }
+        setPeriodActionSelection(period, resolution);
 
         scheduleLoadJob();
+    }
+
+    protected void doUpdate() {
+        TimeSpan[] aggregation = new TimeSpan[] {
+            TimeSpan.days(1),
+            TimeSpan.minutes(1),
+        };
+
+        IDialogSettings dialogSettings = UIActivator.getDefault().getDialogSettings().getSection(ImportDataPage.class.getName());
+        if (dialogSettings != null) {
+            String[] s = dialogSettings.getArray("AGGREGATION");
+            if (s != null && s.length != 0) {
+                aggregation = new TimeSpan[s.length];
+                for (int i = 0; i < aggregation.length; i++) {
+                    aggregation[i] = TimeSpan.fromString(s[i]);
+                }
+            }
+        }
+
+        DataImportJob job = new DataImportJob(security, DataImportJob.INCREMENTAL, null, null, aggregation);
+        job.setUser(true);
+        job.schedule();
+    }
+
+    protected void updatePeriodActions() {
+        IActionBars actionBars = getViewSite().getActionBars();
+
+        IMenuManager menuManager = actionBars.getMenuManager();
+        if (periodActions != null) {
+            for (int i = 0; i < periodActions.length; i++) {
+                menuManager.remove(periodActions[i]);
+                periodActions[i].dispose();
+            }
+            periodActions = null;
+        }
+
+        createPeriodActions();
+
+        if (periodActions != null) {
+            for (int i = 0; i < periodActions.length; i++) {
+                menuManager.appendToGroup("periods", periodActions[i]);
+            }
+        }
+
+        TimeSpan periodTimeSpan = TimeSpan.fromString(dialogSettings.get(K_PERIOD));
+        TimeSpan resolutionTimeSpan = TimeSpan.fromString(dialogSettings.get(K_RESOLUTION));
+        setPeriodActionSelection(periodTimeSpan, resolutionTimeSpan);
+
+        actionBars.updateActionBars();
+    }
+
+    public void createPeriodActions() {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(PeriodList.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader stream = new StringReader(UIActivator.getDefault().getPreferenceStore().getString(UIActivator.PREFS_CHART_PERIODS));
+
+            PeriodList list = (PeriodList) unmarshaller.unmarshal(stream);
+            Collections.sort(list, new Comparator<Period>() {
+
+                @Override
+                public int compare(Period o1, Period o2) {
+                    if (o1.getPeriod().higherThan(o2.getPeriod())) {
+                        return -1;
+                    }
+                    if (o2.getPeriod().higherThan(o1.getPeriod())) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
+
+            periodActions = new ContributionItem[list.size()];
+            for (int i = 0; i < periodActions.length; i++) {
+                periodActions[i] = new ContributionItem(list.get(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setPeriodActionSelection(TimeSpan period, TimeSpan resolution) {
+        if (periodActions != null) {
+            for (int i = 0; i < periodActions.length; i++) {
+                periodActions[i].getAction().setChecked(periodActions[i].getPeriod().equalsTo(period, resolution));
+            }
+        }
     }
 }

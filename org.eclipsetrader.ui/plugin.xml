@@ -57,6 +57,12 @@
             id="org.eclipsetrader.ui.preferences.watchlist"
             name="WatchLists">
       </page>
+      <page
+            category="org.eclipsetrader.ui.charts.general"
+            class="org.eclipsetrader.ui.internal.charts.ChartPeriodsPreferencePage"
+            id="org.eclipsetrader.ui.charts.periods"
+            name="Periods">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.views">
