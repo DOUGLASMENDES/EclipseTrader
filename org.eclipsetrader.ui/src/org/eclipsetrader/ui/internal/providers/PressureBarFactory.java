@@ -11,6 +11,9 @@
 
 package org.eclipsetrader.ui.internal.providers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -28,20 +31,28 @@ import org.eclipsetrader.core.views.IDataProviderFactory;
 
 public class PressureBarFactory extends AbstractProviderFactory {
 
+    private static final int IMAGE_WIDTH = 128;
+    private static final int IMAGE_HEIGHT = 16;
+    private static final int IMAGE_HALF_WIDTH = IMAGE_WIDTH / 2;
+
     private Color bidColor = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     private Color bidFillColor = new Color(Display.getDefault(), blend(bidColor.getRGB(), new RGB(0, 0, 0), 75));
     private Color askColor = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
     private Color askFillColor = new Color(Display.getDefault(), blend(askColor.getRGB(), new RGB(0, 0, 0), 75));
     private Color backgroundColor = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
 
-    private Image image = new Image(Display.getDefault(), 128, 15);
+    private class Data {
+
+        IBook book;
+        Image image;
+        ImageDataValue value;
+    }
 
     public class DataProvider implements IDataProvider {
 
-        private ISecurity security;
         private MarketPricingEnvironment pricingEnvironment;
-        private ImageValue value;
-        private IBook book;
+
+        private Map<ISecurity, Data> map = new HashMap<ISecurity, Data>();
 
         public DataProvider() {
         }
@@ -51,11 +62,15 @@ public class PressureBarFactory extends AbstractProviderFactory {
          */
         @Override
         public void init(IAdaptable adaptable) {
-            security = (ISecurity) adaptable.getAdapter(ISecurity.class);
-
-            pricingEnvironment = (MarketPricingEnvironment) adaptable.getAdapter(MarketPricingEnvironment.class);
-            if (pricingEnvironment != null) {
-                pricingEnvironment.addLevel2Security(security);
+            ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
+            if (!map.containsKey(security)) {
+                pricingEnvironment = (MarketPricingEnvironment) adaptable.getAdapter(MarketPricingEnvironment.class);
+                if (pricingEnvironment != null) {
+                    pricingEnvironment.addLevel2Security(security);
+                }
+                Data data = new Data();
+                data.image = new Image(Display.getDefault(), IMAGE_WIDTH, IMAGE_HEIGHT);
+                map.put(security, data);
             }
         }
 
@@ -64,15 +79,10 @@ public class PressureBarFactory extends AbstractProviderFactory {
          */
         @Override
         public void dispose() {
-            if (security != null) {
-                if (pricingEnvironment != null) {
-                    pricingEnvironment.removeLevel2Security(security);
-                }
-
-                if (value != null) {
-                    value.dispose();
-                }
+            for (Data data : map.values()) {
+                data.image.dispose();
             }
+            map.clear();
         }
 
         /* (non-Javadoc)
@@ -88,44 +98,29 @@ public class PressureBarFactory extends AbstractProviderFactory {
          */
         @Override
         public IAdaptable getValue(IAdaptable adaptable) {
-            IBook newBook = (IBook) adaptable.getAdapter(IBook.class);
-            if (newBook != null && (book == null || book != null && !book.equals(newBook))) {
-                if (value != null) {
-                    value.dispose();
-                }
-                value = buildValue(newBook);
-                book = newBook;
+            ISecurity security = (ISecurity) adaptable.getAdapter(ISecurity.class);
+            Data data = map.get(security);
+            if (data == null) {
+                return null;
             }
-            return value;
+
+            IBook newBook = (IBook) adaptable.getAdapter(IBook.class);
+            if (newBook != null && !newBook.equals(data.book)) {
+                buildValue(newBook, data.image);
+                data.book = newBook;
+                data.value = new ImageDataValue(data.image.getImageData());
+            }
+
+            return data.value;
         }
     }
 
-    public static class ImageValue implements IAdaptable {
+    public static class ImageDataValue implements IAdaptable {
 
-        private final Image value;
+        private final ImageData value;
 
-        public ImageValue(Image value) {
+        public ImageDataValue(ImageData value) {
             this.value = value;
-        }
-
-        public void dispose() {
-            value.dispose();
-        }
-
-        public boolean isDisposed() {
-            return value.isDisposed();
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof IAdaptable)) {
-                return false;
-            }
-            Image s = (Image) ((IAdaptable) obj).getAdapter(Image.class);
-            return s == value;
         }
 
         /* (non-Javadoc)
@@ -136,7 +131,7 @@ public class PressureBarFactory extends AbstractProviderFactory {
             "unchecked", "rawtypes"
         })
         public Object getAdapter(Class adapter) {
-            if (adapter.isAssignableFrom(Image.class)) {
+            if (adapter.isAssignableFrom(ImageData.class)) {
                 return value;
             }
             return null;
@@ -165,7 +160,7 @@ public class PressureBarFactory extends AbstractProviderFactory {
         };
     }
 
-    protected ImageValue buildValue(IBook book) {
+    protected void buildValue(IBook book, Image image) {
         int level = 0;
         double currentPrice = 0.0;
 
@@ -196,38 +191,34 @@ public class PressureBarFactory extends AbstractProviderFactory {
             askPressure += entry.getQuantity();
         }
 
-        int bidPixels = (int) (bidPressure / (bidPressure + askPressure) * 64);
-        int askPixels = (int) (askPressure / (bidPressure + askPressure) * 64);
+        int bidPixels = (int) (bidPressure / (bidPressure + askPressure) * IMAGE_HALF_WIDTH);
+        int askPixels = (int) (askPressure / (bidPressure + askPressure) * IMAGE_HALF_WIDTH);
 
         GC gc = new GC(image);
         try {
             gc.setBackground(backgroundColor);
-            gc.fillRectangle(0, 0, 128, 15);
+            gc.fillRectangle(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
 
             gc.setBackground(bidFillColor);
-            gc.fillRectangle(64 - bidPixels, 0, bidPixels, 15);
+            gc.fillRectangle(IMAGE_HALF_WIDTH - bidPixels, 0, bidPixels, IMAGE_HEIGHT);
             gc.setBackground(askFillColor);
-            gc.fillRectangle(64, 0, askPixels, 15);
+            gc.fillRectangle(IMAGE_HALF_WIDTH, 0, askPixels, IMAGE_HEIGHT);
 
             gc.setLineWidth(2);
 
             gc.setForeground(bidColor);
-            gc.drawLine(64 - bidPixels - 1, 1, 64, 1);
-            gc.drawLine(64 - bidPixels - 1, 0, 64 - bidPixels, 15 - 1);
-            gc.drawLine(64 - bidPixels - 1, 15 - 1, 64, 15 - 1);
+            gc.drawLine(IMAGE_HALF_WIDTH - bidPixels - 1, 1, IMAGE_HALF_WIDTH, 1);
+            gc.drawLine(IMAGE_HALF_WIDTH - bidPixels - 1, 0, IMAGE_HALF_WIDTH - bidPixels, IMAGE_HEIGHT - 1);
+            gc.drawLine(IMAGE_HALF_WIDTH - bidPixels - 1, IMAGE_HEIGHT - 1, IMAGE_HALF_WIDTH, IMAGE_HEIGHT - 1);
 
             gc.setForeground(askColor);
-            gc.drawLine(64, 1, 64 + askPixels, 1);
-            gc.drawLine(64 + askPixels - 1, 0, 64 + askPixels - 1, 15 - 1);
-            gc.drawLine(64, 15 - 1, 64 + askPixels, 15 - 1);
+            gc.drawLine(IMAGE_HALF_WIDTH, 1, IMAGE_HALF_WIDTH + askPixels, 1);
+            gc.drawLine(IMAGE_HALF_WIDTH + askPixels - 1, 0, IMAGE_HALF_WIDTH + askPixels - 1, IMAGE_HEIGHT - 1);
+            gc.drawLine(IMAGE_HALF_WIDTH, IMAGE_HEIGHT - 1, IMAGE_HALF_WIDTH + askPixels, IMAGE_HEIGHT - 1);
 
         } finally {
             gc.dispose();
         }
-
-        ImageData imageData = image.getImageData();
-        imageData.transparentPixel = imageData.palette.getPixel(backgroundColor.getRGB());
-        return new ImageValue(new Image(image.getDevice(), imageData));
     }
 
     private RGB blend(RGB c1, RGB c2, int ratio) {

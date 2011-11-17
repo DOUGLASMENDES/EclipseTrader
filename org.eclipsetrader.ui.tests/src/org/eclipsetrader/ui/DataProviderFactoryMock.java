@@ -33,7 +33,7 @@ public class DataProviderFactoryMock implements IDataProviderFactory {
      */
     @Override
     public IDataProvider createProvider() {
-        return null;
+        return new DataProviderMock();
     }
 
     /* (non-Javadoc)
@@ -56,7 +56,7 @@ public class DataProviderFactoryMock implements IDataProviderFactory {
      * @see org.eclipsetrader.core.views.IDataProviderFactory#getType()
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public Class[] getType() {
         return null;
     }

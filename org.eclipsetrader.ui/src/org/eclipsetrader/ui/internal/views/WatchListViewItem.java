@@ -13,9 +13,10 @@ package org.eclipsetrader.ui.internal.views;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.databinding.observable.list.ObservableList;
-import org.eclipse.core.databinding.observable.map.WritableMap;
 import org.eclipsetrader.core.feed.IBook;
 import org.eclipsetrader.core.feed.ILastClose;
 import org.eclipsetrader.core.feed.IPrice;
@@ -25,7 +26,6 @@ import org.eclipsetrader.core.feed.ITrade;
 import org.eclipsetrader.core.instruments.ISecurity;
 import org.eclipsetrader.core.views.Holding;
 import org.eclipsetrader.core.views.IWatchListElement;
-import org.eclipsetrader.ui.NullRealm;
 import org.eclipsetrader.ui.internal.ats.ViewItem;
 
 public class WatchListViewItem implements ViewItem {
@@ -33,6 +33,7 @@ public class WatchListViewItem implements ViewItem {
     public static final String PROP_QUANTITY = "position";
     public static final String PROP_PRICE = "purchasePrice";
 
+    private final WatchListViewModel parent;
     private final IWatchListElement element;
 
     private final ISecurity security;
@@ -47,10 +48,11 @@ public class WatchListViewItem implements ViewItem {
     private Long position;
     private Double purchasePrice;
 
-    private final WritableMap observableValues = new WritableMap(NullRealm.getInstance(), String.class, Object.class);
+    private final Map<String, Object> values = new HashMap<String, Object>();
     private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
-    public WatchListViewItem(IWatchListElement element) {
+    public WatchListViewItem(WatchListViewModel parent, IWatchListElement element) {
+        this.parent = parent;
         this.element = element;
         this.security = element.getSecurity();
         this.position = element.getPosition();
@@ -82,7 +84,7 @@ public class WatchListViewItem implements ViewItem {
      */
     @Override
     public Object getValue(String name) {
-        return observableValues.get(name);
+        return values.get(name);
     }
 
     /* (non-Javadoc)
@@ -90,12 +92,7 @@ public class WatchListViewItem implements ViewItem {
      */
     @Override
     public void putValue(final String name, final Object value) {
-        final Object oldValue = observableValues.get(name);
-        if (oldValue != null && value != null && oldValue.equals(value)) {
-            return;
-        }
-
-        observableValues.put(name, value);
+        Object oldValue = values.put(name, value);
         changeSupport.firePropertyChange(name, oldValue, value);
     }
 
@@ -268,6 +265,11 @@ public class WatchListViewItem implements ViewItem {
         }
 
         Object result = element.getAdapter(adapter);
+        if (result != null) {
+            return result;
+        }
+
+        result = parent.getAdapter(adapter);
         if (result != null) {
             return result;
         }

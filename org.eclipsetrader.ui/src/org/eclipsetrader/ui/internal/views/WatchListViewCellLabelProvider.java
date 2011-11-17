@@ -21,7 +21,10 @@ import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -85,6 +88,7 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
         if (attributeMaps.length == 1 || !ownerDrawEnabled) {
             return;
         }
+
         WatchListViewCellAttribute attribute = (WatchListViewCellAttribute) attributeMaps[1].get(element);
         if (attribute == null) {
             return;
@@ -136,7 +140,21 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
 
         cell.setForeground((Color) adaptableValue.getAdapter(Color.class));
         cell.setFont((Font) adaptableValue.getAdapter(Font.class));
-        cell.setImage((Image) adaptableValue.getAdapter(Image.class));
+
+        ImageData imageData = (ImageData) adaptableValue.getAdapter(ImageData.class);
+        if (imageData != null) {
+            imageData.transparentPixel = imageData.palette.getPixel(new RGB(255, 255, 255));
+            Image newImage = new Image(Display.getDefault(), imageData);
+            Image oldImage = cell.getImage();
+            cell.setImage(newImage);
+            if (oldImage != null) {
+                oldImage.dispose();
+            }
+        }
+        else {
+            Image image = (Image) adaptableValue.getAdapter(Image.class);
+            cell.setImage(image != null && image.isDisposed() ? null : image);
+        }
 
         if (ownerDrawEnabled) {
             cell.setBackground(null);

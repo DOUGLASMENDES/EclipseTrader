@@ -58,6 +58,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -393,6 +394,9 @@ public class WatchListView extends ViewPart implements ISaveablePart {
                     list.add(element.getSecurity());
                 }
                 pricingEnvironment.addSecurities(list.toArray(new ISecurity[list.size()]));
+
+                model.init();
+
                 return Status.OK_STATUS;
             }
         };
@@ -512,7 +516,7 @@ public class WatchListView extends ViewPart implements ISaveablePart {
             if (type[0] == Long.class || type[0] == Double.class || type[0] == Date.class) {
                 alignment = SWT.RIGHT;
             }
-            if (type[0] == Image.class) {
+            if (type[0] == Image.class || type[0] == ImageData.class) {
                 alignment = SWT.CENTER;
             }
         }

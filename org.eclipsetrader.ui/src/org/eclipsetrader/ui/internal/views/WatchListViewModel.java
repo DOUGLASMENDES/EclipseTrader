@@ -39,7 +39,7 @@ import org.eclipsetrader.core.views.WatchListColumn;
 import org.eclipsetrader.core.views.WatchListElement;
 import org.eclipsetrader.ui.internal.providers.GainValue;
 
-public class WatchListViewModel {
+public class WatchListViewModel implements IAdaptable {
 
     public static final String PROP_NAME = "name";
     public static final String PROP_DIRTY = "dirty";
@@ -103,37 +103,16 @@ public class WatchListViewModel {
             observableColumns.add(new WatchListViewColumn(columns[i]));
         }
 
-        observableItems.addListChangeListener(new IListChangeListener() {
-
-            @Override
-            public void handleListChange(ListChangeEvent event) {
-                event.diff.accept(new ListDiffVisitor() {
-
-                    @Override
-                    public void handleAdd(int index, Object element) {
-                        WatchListViewItem viewItem = (WatchListViewItem) element;
-                        viewItem.addPropertyChangeListener(WatchListViewItem.PROP_QUANTITY, holdingChangeListener);
-                        viewItem.addPropertyChangeListener(WatchListViewItem.PROP_PRICE, holdingChangeListener);
-                    }
-
-                    @Override
-                    public void handleRemove(int index, Object element) {
-                        WatchListViewItem viewItem = (WatchListViewItem) element;
-                        viewItem.removePropertyChangeListener(WatchListViewItem.PROP_QUANTITY, holdingChangeListener);
-                        viewItem.removePropertyChangeListener(WatchListViewItem.PROP_PRICE, holdingChangeListener);
-                    }
-                });
-            }
-        });
-
         IWatchListElement[] elements = watchList.getItems();
         for (int i = 0; i < elements.length; i++) {
-            WatchListViewItem viewItem = new WatchListViewItem(elements[i]);
+            WatchListViewItem viewItem = new WatchListViewItem(this, elements[i]);
             viewItem.setTrade(pricingEnvironment.getTrade(elements[i].getSecurity()));
             viewItem.setQuote(pricingEnvironment.getQuote(elements[i].getSecurity()));
             viewItem.setLastClose(pricingEnvironment.getLastClose(elements[i].getSecurity()));
             viewItem.setTodayOHL(pricingEnvironment.getTodayOHL(elements[i].getSecurity()));
             viewItem.setBook(pricingEnvironment.getBook(elements[i].getSecurity()));
+            viewItem.addPropertyChangeListener(WatchListViewItem.PROP_QUANTITY, holdingChangeListener);
+            viewItem.addPropertyChangeListener(WatchListViewItem.PROP_PRICE, holdingChangeListener);
             observableItems.add(viewItem);
         }
 
@@ -149,16 +128,24 @@ public class WatchListViewModel {
 
                     @Override
                     public void handleAdd(int index, Object element) {
+                        WatchListViewItem viewItem = (WatchListViewItem) element;
+                        init(viewItem);
+                        viewItem.addPropertyChangeListener(WatchListViewItem.PROP_QUANTITY, holdingChangeListener);
+                        viewItem.addPropertyChangeListener(WatchListViewItem.PROP_PRICE, holdingChangeListener);
                         changeSupport.firePropertyChange(PROP_DIRTY, dirty, dirty = true);
                     }
 
                     @Override
                     public void handleRemove(int index, Object element) {
+                        WatchListViewItem viewItem = (WatchListViewItem) element;
+                        viewItem.removePropertyChangeListener(WatchListViewItem.PROP_QUANTITY, holdingChangeListener);
+                        viewItem.removePropertyChangeListener(WatchListViewItem.PROP_PRICE, holdingChangeListener);
                         changeSupport.firePropertyChange(PROP_DIRTY, dirty, dirty = true);
                     }
                 });
             }
         });
+
         observableColumns.addListChangeListener(new IListChangeListener() {
 
             @Override
@@ -167,11 +154,17 @@ public class WatchListViewModel {
 
                     @Override
                     public void handleAdd(int index, Object element) {
+                        WatchListViewColumn column = (WatchListViewColumn) element;
+                        for (WatchListViewItem viewItem : items) {
+                            column.getDataProvider().init(viewItem);
+                        }
                         changeSupport.firePropertyChange(PROP_DIRTY, dirty, dirty = true);
                     }
 
                     @Override
                     public void handleRemove(int index, Object element) {
+                        WatchListViewColumn column = (WatchListViewColumn) element;
+                        column.getDataProvider().dispose();
                         changeSupport.firePropertyChange(PROP_DIRTY, dirty, dirty = true);
                     }
                 });
@@ -179,6 +172,22 @@ public class WatchListViewModel {
         });
 
         pricingEnvironment.addPricingListener(pricingListener);
+    }
+
+    public void init() {
+        WatchListViewColumn[] column = columns.toArray(new WatchListViewColumn[columns.size()]);
+        for (int i = 0; i < column.length; i++) {
+            for (WatchListViewItem viewItem : items) {
+                column[i].getDataProvider().init(viewItem);
+            }
+        }
+    }
+
+    private void init(WatchListViewItem viewItem) {
+        WatchListViewColumn[] column = columns.toArray(new WatchListViewColumn[columns.size()]);
+        for (int i = 0; i < column.length; i++) {
+            column[i].getDataProvider().init(viewItem);
+        }
     }
 
     public String getName() {
@@ -210,7 +219,7 @@ public class WatchListViewModel {
     }
 
     public void add(ISecurity security) {
-        WatchListViewItem viewItem = new WatchListViewItem(new WatchListElement(security, null, null, null));
+        WatchListViewItem viewItem = new WatchListViewItem(this, new WatchListElement(security, null, null, null));
 
         viewItem.setLastClose(pricingEnvironment.getLastClose(security));
         viewItem.setQuote(pricingEnvironment.getQuote(security));
@@ -335,5 +344,19 @@ public class WatchListViewModel {
             IAdaptable value = column[i].getDataProvider().getValue(item);
             item.putValue(column[i].getId(), value);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    @Override
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
+    public Object getAdapter(Class adapter) {
+        if (adapter.isAssignableFrom(pricingEnvironment.getClass())) {
+            return pricingEnvironment;
+        }
+        return null;
     }
 }
