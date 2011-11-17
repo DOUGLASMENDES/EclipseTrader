@@ -739,33 +739,32 @@ public class StreamingConnector implements Runnable, IFeedConnector2, IExecutabl
         else if (obj instanceof Book) {
             Book bm = (Book) obj;
 
-            IBookEntry[] bidEntry = new IBookEntry[0];
-            IBookEntry[] askEntry = new IBookEntry[0];
-
             IBook oldValue = subscription.getBook();
-            if (oldValue != null) {
-                if (oldValue.getBidProposals() != null) {
-                    bidEntry = oldValue.getBidProposals();
-                }
-                if (oldValue.getAskProposals() != null) {
-                    askEntry = oldValue.getAskProposals();
-                }
-            }
 
             int levels = bm.offset + 5;
-            if (bidEntry.length < levels) {
-                IBookEntry[] newEntry = new IBookEntry[levels];
-                for (int i = 0; i < bidEntry.length; i++) {
-                    newEntry[i] = bidEntry[i];
+            if (oldValue != null) {
+                IBookEntry[] oldEntry = oldValue.getBidProposals();
+                if (oldEntry != null) {
+                    levels = Math.max(levels, oldEntry.length);
                 }
-                bidEntry = newEntry;
+                oldEntry = oldValue.getAskProposals();
+                if (oldEntry != null) {
+                    levels = Math.max(levels, oldEntry.length);
+                }
             }
-            if (askEntry.length < levels) {
-                IBookEntry[] newEntry = new IBookEntry[levels];
-                for (int i = 0; i < askEntry.length; i++) {
-                    newEntry[i] = askEntry[i];
+
+            IBookEntry[] bidEntry = new IBookEntry[levels];
+            IBookEntry[] askEntry = new IBookEntry[levels];
+
+            if (oldValue != null) {
+                IBookEntry[] oldEntry = oldValue.getBidProposals();
+                if (oldEntry != null) {
+                    System.arraycopy(oldEntry, 0, bidEntry, 0, oldEntry.length);
                 }
-                askEntry = newEntry;
+                oldEntry = oldValue.getAskProposals();
+                if (oldEntry != null) {
+                    System.arraycopy(oldEntry, 0, askEntry, 0, oldEntry.length);
+                }
             }
 
             int index = bm.offset;

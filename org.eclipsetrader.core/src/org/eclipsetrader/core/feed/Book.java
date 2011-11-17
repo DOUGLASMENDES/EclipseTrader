@@ -12,6 +12,7 @@
 package org.eclipsetrader.core.feed;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Default implementation of the the <code>IBook</code> interface.
@@ -57,23 +58,12 @@ public class Book implements IBook, Serializable {
         if (!(obj instanceof IBook)) {
             return false;
         }
-        return equals(((IBook) obj).getBidProposals(), bid) && equals(((IBook) obj).getAskProposals(), ask);
-    }
-
-    protected boolean equals(IBookEntry[] oldEntries, IBookEntry[] newEntries) {
-        if (oldEntries == newEntries) {
-            return true;
-        }
-        if (oldEntries == null && newEntries != null || oldEntries != null && newEntries == null) {
+        IBook other = (IBook) obj;
+        if (!Arrays.equals(bid, other.getBidProposals())) {
             return false;
         }
-        if (oldEntries.length != newEntries.length) {
+        if (!Arrays.equals(ask, other.getAskProposals())) {
             return false;
-        }
-        for (int i = 0; i < oldEntries.length; i++) {
-            if (!oldEntries[i].equals(newEntries[i])) {
-                return false;
-            }
         }
         return true;
     }
