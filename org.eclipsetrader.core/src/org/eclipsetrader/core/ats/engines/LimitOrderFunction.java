@@ -31,7 +31,7 @@ public class LimitOrderFunction extends BaseOrderFunction {
         super(broker, account, instrument);
     }
 
-    public static Scriptable jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) {
+    public static Scriptable jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) throws Exception {
         IBroker broker = (IBroker) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_BROKER);
         IAccount account = (IAccount) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_ACCOUNT);
         ISecurity instrument = (ISecurity) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_INSTRUMENT);
@@ -55,6 +55,11 @@ public class LimitOrderFunction extends BaseOrderFunction {
         if (args.length >= index + 1) {
             result.jsSet_text(args[index]);
             index++;
+        }
+
+        if (!inNewExpr) {
+            result.jsFunction_send();
+            return null;
         }
 
         return result;

@@ -11,9 +11,6 @@
 
 package org.eclipsetrader.core.ats.engines;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -70,7 +67,7 @@ public class JavaScriptEngineInstrument {
     private Function onPositionChanged;
     private Function onPositionClosed;
 
-    private final List<IBar> bars = new ArrayList<IBar>();
+    private BarsDataSeriesFunction bars;
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -88,12 +85,15 @@ public class JavaScriptEngineInstrument {
             }
             scope.setParentScope(null);
 
+            ScriptableObject.defineClass(scope, BarsDataSeriesFunction.class);
             ScriptableObject.defineClass(scope, LimitOrderFunction.class);
             ScriptableObject.defineClass(scope, MarketOrderFunction.class);
             ScriptableObject.defineClass(scope, HasPositionFunction.class);
             defineClasses();
 
             ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+
+            bars = (BarsDataSeriesFunction) cx.newObject(scope, BarsDataSeriesFunction.FUNCTION_NAME);
             ScriptableObject.putProperty(scope, PROPERTY_BARS, bars);
 
             cx.evaluateString(scope, "importPackage(org.eclipsetrader.core.feed);", strategy.getName(), 0, null); //$NON-NLS-1$
@@ -224,7 +224,7 @@ public class JavaScriptEngineInstrument {
     public void onBar(IBar bar) {
         Context cx = Context.enter();
         try {
-            bars.add(bar);
+            bars.append(bar);
             if (onBar != null) {
                 onBar.call(cx, scope, scope, new Object[] {
                     bar
@@ -299,7 +299,7 @@ public class JavaScriptEngineInstrument {
     }
 
     public IBar[] getBars() {
-        return bars.toArray(new IBar[bars.size()]);
+        return bars.toArray();
     }
 
     public void backfill(int backfillBars) {
@@ -315,7 +315,7 @@ public class JavaScriptEngineInstrument {
             for (int i = 0; i < timeSpan.length; i++) {
                 if (timeSpan[i].equals(TimeSpan.days(1))) {
                     for (int index = ohlc.length - backfillBars; index < ohlc.length; index++) {
-                        bars.add(new Bar(ohlc[index].getDate(), timeSpan[i], ohlc[index].getOpen(), ohlc[index].getHigh(), ohlc[index].getLow(), ohlc[index].getClose(), ohlc[index].getVolume()));
+                        bars.append(new Bar(ohlc[index].getDate(), timeSpan[i], ohlc[index].getOpen(), ohlc[index].getHigh(), ohlc[index].getLow(), ohlc[index].getClose(), ohlc[index].getVolume()));
                     }
                 }
                 else {
@@ -324,7 +324,7 @@ public class JavaScriptEngineInstrument {
                         IHistory subHistory = history.getSubset(ohlc[index].getDate(), ohlc[index].getDate(), timeSpan[i]);
                         IOHLC[] subOhlc = subHistory.getOHLC();
                         for (int ii = subOhlc.length - 1; ii >= 0 && filled < backfillBars; ii--) {
-                            bars.add(0, new Bar(subOhlc[ii].getDate(), timeSpan[i], subOhlc[ii].getOpen(), subOhlc[ii].getHigh(), subOhlc[ii].getLow(), subOhlc[ii].getClose(), subOhlc[ii].getVolume()));
+                            bars.prepend(new Bar(subOhlc[ii].getDate(), timeSpan[i], subOhlc[ii].getOpen(), subOhlc[ii].getHigh(), subOhlc[ii].getLow(), subOhlc[ii].getClose(), subOhlc[ii].getVolume()));
                             filled++;
                         }
                     }

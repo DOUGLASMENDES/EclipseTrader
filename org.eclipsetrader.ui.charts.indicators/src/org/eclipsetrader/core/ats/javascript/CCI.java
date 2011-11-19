@@ -11,51 +11,40 @@
 
 package org.eclipsetrader.core.ats.javascript;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipsetrader.core.ats.engines.BarsDataSeriesFunction;
+import org.eclipsetrader.core.ats.engines.IndicatorFunction;
 import org.eclipsetrader.core.ats.engines.JavaScriptEngineInstrument;
-import org.eclipsetrader.core.charts.BarsDataSeries;
-import org.eclipsetrader.core.charts.IDataSeries;
 import org.eclipsetrader.core.charts.NumericDataSeries;
-import org.eclipsetrader.core.feed.IBar;
 import org.eclipsetrader.ui.charts.OHLCField;
 import org.eclipsetrader.ui.internal.charts.Util;
 import org.eclipsetrader.ui.internal.charts.indicators.Activator;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.tictactec.ta.lib.Core;
 import com.tictactec.ta.lib.MInteger;
 
-public class CCI extends ScriptableObject {
+public class CCI extends IndicatorFunction {
 
     private static final long serialVersionUID = -9191442400382251716L;
 
-    private BarsDataSeries source;
-
     private int period;
-
-    private int lastSourceSize = -1;
-    private IDataSeries series;
 
     public CCI() {
     }
 
-    public CCI(List<IBar> bars, int period) {
-        this.source = new BarsDataSeries("BARS", bars); //$NON-NLS-1$
+    public CCI(BarsDataSeriesFunction bars, int period) {
+        super(bars);
         this.period = period;
+        calculate();
     }
 
-    @SuppressWarnings("unchecked")
     public static Object jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) {
-        List<IBar> bars = (List<IBar>) ScriptableObject.getProperty(getTopLevelScope(ctorObj), JavaScriptEngineInstrument.PROPERTY_BARS);
-
-        if (args.length < 1) {
-            return null;
-        }
+        BarsDataSeriesFunction bars = (BarsDataSeriesFunction) ScriptableObject.getProperty(
+            getTopLevelScope(ctorObj),
+            JavaScriptEngineInstrument.PROPERTY_BARS);
 
         int period = (int) Context.toNumber(args[0]);
 
@@ -64,13 +53,12 @@ public class CCI extends ScriptableObject {
         return result;
     }
 
-    private void checkCalculate() {
-        if (source == null || lastSourceSize == source.size()) {
-            return;
-        }
-
+    /* (non-Javadoc)
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#calculate()
+     */
+    @Override
+    protected void calculate() {
         IAdaptable[] values = source.getValues();
-        lastSourceSize = source.size();
 
         Core core = Activator.getDefault() != null ? Activator.getDefault().getCore() : new Core();
 
@@ -96,98 +84,42 @@ public class CCI extends ScriptableObject {
     }
 
     /* (non-Javadoc)
-     * @see org.mozilla.javascript.ScriptableObject#getClassName()
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#jsFunction_crosses(org.eclipsetrader.core.ats.javascript.IndicatorFunction, java.lang.Object)
      */
     @Override
-    public String getClassName() {
-        return getClass().getSimpleName();
+    public Object jsFunction_crosses(IndicatorFunction other, Object bar) {
+        return super.jsFunction_crosses(other, bar);
     }
 
     /* (non-Javadoc)
-     * @see org.mozilla.javascript.ScriptableObject#get(java.lang.String, org.mozilla.javascript.Scriptable)
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#jsFunction_first()
      */
     @Override
-    public Object get(String name, Scriptable start) {
-        checkCalculate();
-        if (name.equals("length")) { //$NON-NLS-1$
-            return series != null ? series.size() : 0;
-        }
-        return super.get(name, start);
+    public Object jsFunction_first() {
+        return super.jsFunction_first();
     }
 
     /* (non-Javadoc)
-     * @see org.mozilla.javascript.ScriptableObject#get(int, org.mozilla.javascript.Scriptable)
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#jsFunction_last()
      */
     @Override
-    public Object get(int index, Scriptable start) {
-        checkCalculate();
-        if (series == null) {
-            return Context.getUndefinedValue();
-        }
-        try {
-            int s = series.size();
-            if (index >= 0 && index < s) {
-                return series.getValues()[index];
-            }
-            else {
-                return Context.getUndefinedValue();
-            }
-        } catch (RuntimeException e) {
-            throw Context.throwAsScriptRuntimeEx(e);
-        }
+    public Object jsFunction_last() {
+        return super.jsFunction_last();
     }
 
     /* (non-Javadoc)
-     * @see org.mozilla.javascript.ScriptableObject#getIds()
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#jsFunction_highest()
      */
     @Override
-    public Object[] getIds() {
-        checkCalculate();
-        int size = series.size();
-        Integer[] ids = new Integer[size];
-        for (int i = 0; i < size; ++i) {
-            ids[i] = i;
-        }
-        return ids;
+    public Object jsFunction_highest() {
+        return super.jsFunction_highest();
     }
 
     /* (non-Javadoc)
-     * @see org.mozilla.javascript.ScriptableObject#has(int, org.mozilla.javascript.Scriptable)
+     * @see org.eclipsetrader.core.ats.javascript.IndicatorFunction#jsFunction_lowest()
      */
     @Override
-    public boolean has(int index, Scriptable start) {
-        checkCalculate();
-        return index >= 0 && index < series.size();
-    }
-
-    public Object jsFunction_crosses(CCI other, Object bar) throws Exception {
-        checkCalculate();
-        other.checkCalculate();
-        return series.cross(other.series, (IAdaptable) bar);
-    }
-
-    public Object jsFunction_first() throws Exception {
-        checkCalculate();
-        return series.getFirst();
-    }
-
-    public Object jsFunction_last() throws Exception {
-        checkCalculate();
-        return series.getLast();
-    }
-
-    public Object jsFunction_highest() throws Exception {
-        checkCalculate();
-        return series.getHighest();
-    }
-
-    public Object jsFunction_lowest() throws Exception {
-        checkCalculate();
-        return series.getLowest();
-    }
-
-    public Object jsFunction_size() throws Exception {
-        checkCalculate();
-        return series.size();
+    public Object jsFunction_lowest() {
+        return super.jsFunction_lowest();
     }
 }
