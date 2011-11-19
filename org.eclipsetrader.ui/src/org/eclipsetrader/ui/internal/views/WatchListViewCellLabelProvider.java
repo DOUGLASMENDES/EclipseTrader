@@ -11,6 +11,9 @@
 
 package org.eclipsetrader.ui.internal.views;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
@@ -35,6 +38,9 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
 
     private ColumnViewer viewer;
     private ViewerColumn column;
+
+    private Map<Object, Object> valueMap = new HashMap<Object, Object>();
+    private Map<Object, Object> decoratorMap = new HashMap<Object, Object>();
 
     private boolean ownerDrawEnabled;
     private boolean win32 = Platform.isRunning() && Platform.WS_WIN32.equals(Platform.getWS());
@@ -119,67 +125,77 @@ public class WatchListViewCellLabelProvider extends ObservableMapOwnerDrawCellLa
     public void update(ViewerCell cell) {
         WatchListViewItem element = (WatchListViewItem) cell.getElement();
 
-        Object value = attributeMaps[0].get(element);
-        if (!(value instanceof IAdaptable)) {
-            String text = value == null ? "" : value.toString(); //$NON-NLS-1$
-            if (!text.equals(cell.getText())) {
-                cell.setText(text);
-            }
+        IAdaptable adaptableValue = (IAdaptable) attributeMaps[0].get(element);
+        WatchListViewCellAttribute attribute = (WatchListViewCellAttribute) attributeMaps[1].get(element);
+        if (adaptableValue == null) {
             return;
         }
 
-        IAdaptable adaptableValue = (IAdaptable) value;
-
-        String text = (String) adaptableValue.getAdapter(String.class);
-        if (text == null) {
-            text = ""; //$NON-NLS-1$
-        }
-        if (!text.equals(cell.getText())) {
-            cell.setText(text);
-        }
-
-        cell.setForeground((Color) adaptableValue.getAdapter(Color.class));
-        cell.setFont((Font) adaptableValue.getAdapter(Font.class));
-
-        ImageData imageData = (ImageData) adaptableValue.getAdapter(ImageData.class);
-        if (imageData != null) {
-            imageData.transparentPixel = imageData.palette.getPixel(new RGB(255, 255, 255));
-            Image newImage = new Image(Display.getDefault(), imageData);
-            Image oldImage = cell.getImage();
-            cell.setImage(newImage);
-            if (oldImage != null) {
-                oldImage.dispose();
+        if (!objectEquals(adaptableValue, valueMap.get(element))) {
+            String text = (String) adaptableValue.getAdapter(String.class);
+            if (text == null) {
+                text = ""; //$NON-NLS-1$
             }
-        }
-        else {
-            Image image = (Image) adaptableValue.getAdapter(Image.class);
-            cell.setImage(image != null && image.isDisposed() ? null : image);
+            if (!text.equals(cell.getText())) {
+                cell.setText(text);
+            }
+
+            cell.setForeground((Color) adaptableValue.getAdapter(Color.class));
+            cell.setFont((Font) adaptableValue.getAdapter(Font.class));
+
+            ImageData imageData = (ImageData) adaptableValue.getAdapter(ImageData.class);
+            if (imageData != null) {
+                imageData.transparentPixel = imageData.palette.getPixel(new RGB(255, 255, 255));
+                Image newImage = new Image(Display.getDefault(), imageData);
+                Image oldImage = cell.getImage();
+                cell.setImage(newImage);
+                if (oldImage != null) {
+                    oldImage.dispose();
+                }
+            }
+            else {
+                Image image = (Image) adaptableValue.getAdapter(Image.class);
+                cell.setImage(image != null && image.isDisposed() ? null : image);
+            }
+            valueMap.put(element, adaptableValue);
         }
 
-        if (ownerDrawEnabled) {
-            cell.setBackground(null);
-            Rectangle rect = cell.getBounds();
-            cell.getControl().redraw(rect.x, rect.y, rect.width, rect.height, false);
-        }
-        else {
-            if (attributeMaps.length == 1) {
-                return;
-            }
-            WatchListViewCellAttribute attribute = (WatchListViewCellAttribute) attributeMaps[1].get(element);
-            if (attribute == null) {
+        if (!objectEquals(attribute, decoratorMap.get(element))) {
+            if (ownerDrawEnabled) {
                 cell.setBackground(null);
-                return;
+                Rectangle rect = cell.getBounds();
+                cell.getControl().redraw(rect.x, rect.y, rect.width, rect.height, false);
             }
-            if (attribute.oddBackground != null && attribute.oddBackground.isDisposed()) {
-                return;
+            else {
+                if (attribute == null) {
+                    cell.setBackground(null);
+                }
+                else {
+                    TableItem tableItem = (TableItem) cell.getViewerRow().getItem();
+                    int rowIndex = tableItem.getParent().indexOf(tableItem);
+                    if ((rowIndex & 1) != 0) {
+                        if (attribute.oddBackground == null || !attribute.oddBackground.isDisposed()) {
+                            cell.setBackground(attribute.oddBackground);
+                        }
+                    }
+                    else {
+                        if (attribute.evenBackground == null || !attribute.evenBackground.isDisposed()) {
+                            cell.setBackground(attribute.evenBackground);
+                        }
+                    }
+                }
             }
-            if (attribute.evenBackground != null && attribute.evenBackground.isDisposed()) {
-                return;
-            }
-
-            TableItem tableItem = (TableItem) cell.getViewerRow().getItem();
-            int rowIndex = tableItem.getParent().indexOf(tableItem);
-            cell.setBackground((rowIndex & 1) != 0 ? attribute.oddBackground : attribute.evenBackground);
+            decoratorMap.put(element, attribute);
         }
+    }
+
+    boolean objectEquals(Object oldValue, Object newValue) {
+        if (oldValue == newValue) {
+            return true;
+        }
+        if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
+            return true;
+        }
+        return false;
     }
 }
