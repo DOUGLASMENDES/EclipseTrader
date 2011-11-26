@@ -128,8 +128,8 @@ public class JavaScriptEngine extends Observable {
             scope.putConst("Below", scope, IDataSeries.BELOW);
             scope.putConst("None", scope, IDataSeries.NONE);
 
-            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
-            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
+            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
+            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, Context.javaToJS(broker, scope));
             ScriptableObject.putProperty(scope, PROPERTY_INSTRUMENTS, instrumentsMap);
             ScriptableObject.putProperty(scope, PROPERTY_POSITIONS, positionsMap);
             ScriptableObject.putProperty(scope, PROPERTY_BARSIZE, tradingSystem.getStrategy().getBarsTimeSpan());

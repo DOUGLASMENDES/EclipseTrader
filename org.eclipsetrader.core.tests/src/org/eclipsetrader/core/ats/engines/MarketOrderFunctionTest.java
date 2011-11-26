@@ -59,9 +59,9 @@ public class MarketOrderFunctionTest extends TestCase {
         ScriptableObject.defineClass(scope, MarketOrderFunction.class);
         scope.putConst("Buy", scope, BaseOrderFunction.Buy);
 
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, Context.javaToJS(broker, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, Context.javaToJS(instrument, scope));
 
         Object result = cx.evaluateString(scope, "order = new MarketOrder(Buy, 35);", "Test", 0, null);
         assertEquals(MarketOrderFunction.class, result.getClass());
@@ -80,9 +80,9 @@ public class MarketOrderFunctionTest extends TestCase {
         ScriptableObject.defineClass(scope, MarketOrderFunction.class);
         scope.putConst("Buy", scope, BaseOrderFunction.Buy);
 
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, Context.javaToJS(broker, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, Context.javaToJS(instrument, scope));
 
         cx.evaluateString(scope, "order = new MarketOrder(Buy, 35);", "Test", 0, null);
         cx.evaluateString(scope, "order.send();", "Test", 0, null);
@@ -101,9 +101,9 @@ public class MarketOrderFunctionTest extends TestCase {
         ScriptableObject.defineClass(scope, MarketOrderFunction.class);
         scope.putConst("Buy", scope, BaseOrderFunction.Buy);
 
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, broker);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_BROKER, Context.javaToJS(broker, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, Context.javaToJS(instrument, scope));
 
         Object result = cx.evaluateString(scope, "MarketOrder(Buy, 35);", "Test", 0, null);
         assertNull(result);

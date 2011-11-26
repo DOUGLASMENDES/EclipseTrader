@@ -91,7 +91,7 @@ public class JavaScriptEngineInstrument {
             ScriptableObject.defineClass(scope, HasPositionFunction.class);
             defineClasses();
 
-            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+            ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, Context.javaToJS(instrument, scope));
 
             bars = (BarsDataSeriesFunction) cx.newObject(scope, BarsDataSeriesFunction.FUNCTION_NAME);
             ScriptableObject.putProperty(scope, PROPERTY_BARS, bars);

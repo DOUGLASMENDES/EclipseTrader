@@ -32,9 +32,14 @@ public class MarketOrderFunction extends BaseOrderFunction {
     }
 
     public static Scriptable jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) throws Exception {
-        IBroker broker = (IBroker) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_BROKER);
-        IAccount account = (IAccount) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_ACCOUNT);
-        ISecurity instrument = (ISecurity) ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_INSTRUMENT);
+        Object property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_BROKER);
+        IBroker broker = (IBroker) Context.jsToJava(property, IBroker.class);
+
+        property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_ACCOUNT);
+        IAccount account = (IAccount) Context.jsToJava(property, IAccount.class);
+
+        property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), PROPERTY_INSTRUMENT);
+        ISecurity instrument = (ISecurity) Context.jsToJava(property, ISecurity.class);
 
         MarketOrderFunction result = new MarketOrderFunction(broker, account, instrument);
         result.type = IOrderType.Market;

@@ -52,8 +52,8 @@ public class HasPositionFunctionTest extends TestCase {
         ScriptableObject scope = new ImporterTopLevel(cx);
         ScriptableObject.defineClass(scope, HasPositionFunction.class);
 
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, instrument);
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_INSTRUMENT, Context.javaToJS(instrument, scope));
 
         Object result = cx.evaluateString(scope, "hasPosition();", "Test", 0, null);
         assertEquals(Boolean.FALSE, result);
@@ -76,7 +76,7 @@ public class HasPositionFunctionTest extends TestCase {
         Map<String, ISecurity> map = new HashMap<String, ISecurity>();
         map.put(instrument.getIdentifier().getSymbol(), instrument);
 
-        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, account);
+        ScriptableObject.putProperty(scope, BaseOrderFunction.PROPERTY_ACCOUNT, Context.javaToJS(account, scope));
         ScriptableObject.putProperty(scope, "instruments", map);
 
         Object result = cx.evaluateString(scope, "hasPosition(instruments['MSFT']);", "Test", 0, null);

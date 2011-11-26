@@ -26,18 +26,21 @@ public class HasPositionFunction extends ScriptableObject {
     }
 
     public static Object jsConstructor(Context cx, Object[] args, Function ctorObj, boolean inNewExpr) {
-        IAccount account = (IAccount) ScriptableObject.getProperty(getTopLevelScope(ctorObj), BaseOrderFunction.PROPERTY_ACCOUNT);
+        Object property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), BaseOrderFunction.PROPERTY_ACCOUNT);
+        IAccount account = (IAccount) Context.jsToJava(property, IAccount.class);
 
-        ISecurity security;
+        ISecurity security = null;
         if (args.length >= 1) {
-            security = (ISecurity) args[0];
+            security = (ISecurity) Context.jsToJava(args[0], ISecurity.class);
         }
         else {
-            Object property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), BaseOrderFunction.PROPERTY_INSTRUMENT);
-            if (!(property instanceof ISecurity)) {
-                return new Boolean(false);
+            property = ScriptableObject.getProperty(getTopLevelScope(ctorObj), BaseOrderFunction.PROPERTY_INSTRUMENT);
+            if (property != ScriptableObject.NOT_FOUND) {
+                security = (ISecurity) Context.jsToJava(property, ISecurity.class);
             }
-            security = (ISecurity) property;
+        }
+        if (security == null) {
+            return new Boolean(false);
         }
 
         for (IPosition position : account.getPositions()) {

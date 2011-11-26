@@ -64,10 +64,10 @@ public class JavaScriptEngineInstrumentTest extends TestCase {
         JavaScriptEngineInstrument context2 = new JavaScriptEngineInstrument(sharedScope, instrument2, strategy);
 
         Object result1 = context1.get(BaseOrderFunction.PROPERTY_INSTRUMENT);
-        assertEquals(instrument1, result1);
+        assertEquals(instrument1, Context.jsToJava(result1, ISecurity.class));
 
         Object result2 = context2.get(BaseOrderFunction.PROPERTY_INSTRUMENT);
-        assertEquals(instrument2, result2);
+        assertEquals(instrument2, Context.jsToJava(result2, ISecurity.class));
     }
 
     public void testOnQuoteSetsQuoteProperty() throws Exception {
