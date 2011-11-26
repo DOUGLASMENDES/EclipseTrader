@@ -540,7 +540,12 @@ public class WatchListView extends ViewPart implements ISaveablePart {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                viewerColumn.getColumn().setText((String) evt.getNewValue());
+                String text = (String) evt.getNewValue();
+                if (text == null) {
+                    WatchListViewColumn source = (WatchListViewColumn) evt.getSource();
+                    text = source.getDataProviderFactory().getName();
+                }
+                viewerColumn.getColumn().setText(text);
             }
         };
         column.addPropertyChangeListener(ViewColumn.PROP_NAME, propertyChangeListener);

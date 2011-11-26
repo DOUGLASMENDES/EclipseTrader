@@ -58,6 +58,8 @@ public class WatchListViewTest extends DatabindingTestCase {
         TableViewer viewer = view.createViewer(shell);
 
         assertEquals(2, viewer.getTable().getColumnCount());
+        assertEquals("Col1", viewer.getTable().getColumn(0).getText());
+        assertEquals("Col2", viewer.getTable().getColumn(1).getText());
     }
 
     public void testAddNewColumns() throws Exception {
@@ -195,6 +197,75 @@ public class WatchListViewTest extends DatabindingTestCase {
 
         assertEquals(2, viewer.getTable().getColumnCount());
         assertEquals(newColumns[0].getName(), viewer.getTable().getColumn(0).getText());
+        assertEquals(newColumns[1].getName(), viewer.getTable().getColumn(1).getText());
+    }
+
+    public void testCreateViewerWithDefaultNames() throws Exception {
+        WatchList watchList = new WatchList("Test", new IWatchListColumn[] {
+            new WatchListColumn(null, new DataProviderFactoryMock("id1")),
+            new WatchListColumn(null, new DataProviderFactoryMock("id2")),
+        });
+
+        WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
+        view.watchList = watchList;
+        view.model = new WatchListViewModel(watchList, new PricingEnvironment());
+
+        TableViewer viewer = view.createViewer(shell);
+
+        assertEquals(2, viewer.getTable().getColumnCount());
+        assertEquals("id1", viewer.getTable().getColumn(0).getText());
+        assertEquals("id2", viewer.getTable().getColumn(1).getText());
+    }
+
+    public void testAddNewColumnWithDefaultName() throws Exception {
+        WatchList watchList = new WatchList("Test", new IWatchListColumn[] {
+            new WatchListColumn("Col1", new DataProviderFactoryMock("id1")),
+        });
+
+        WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
+        view.watchList = watchList;
+        view.model = new WatchListViewModel(watchList, new PricingEnvironment());
+
+        TableViewer viewer = view.createViewer(shell);
+
+        assertEquals(1, viewer.getTable().getColumnCount());
+
+        WatchListViewColumn[] newColumns = new WatchListViewColumn[] {
+            new WatchListViewColumn(new WatchListColumn("Col1", new DataProviderFactoryMock("id1"))),
+            new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactoryMock("id2"))),
+        };
+        view.model.setColumns(Arrays.asList(newColumns));
+
+        assertEquals(2, viewer.getTable().getColumnCount());
+        assertEquals(newColumns[0].getName(), viewer.getTable().getColumn(0).getText());
+        assertEquals(newColumns[1].getDataProviderFactory().getName(), viewer.getTable().getColumn(1).getText());
+    }
+
+    public void testReorderColumnsWithDefaultName() throws Exception {
+        WatchList watchList = new WatchList("Test", new IWatchListColumn[] {
+            new WatchListColumn("Col1", new DataProviderFactoryMock("id1")),
+            new WatchListColumn(null, new DataProviderFactoryMock("id2")),
+        });
+
+        WatchListView view = new WatchListView();
+        view.preferenceStore = new PreferenceStore();
+        view.watchList = watchList;
+        view.model = new WatchListViewModel(watchList, new PricingEnvironment());
+
+        TableViewer viewer = view.createViewer(shell);
+
+        assertEquals(2, viewer.getTable().getColumnCount());
+
+        WatchListViewColumn[] newColumns = new WatchListViewColumn[] {
+            new WatchListViewColumn(new WatchListColumn(null, new DataProviderFactoryMock("id2"))),
+            new WatchListViewColumn(new WatchListColumn("Col1", new DataProviderFactoryMock("id1"))),
+        };
+        view.model.setColumns(Arrays.asList(newColumns));
+
+        assertEquals(2, viewer.getTable().getColumnCount());
+        assertEquals(newColumns[0].getDataProviderFactory().getName(), viewer.getTable().getColumn(0).getText());
         assertEquals(newColumns[1].getName(), viewer.getTable().getColumn(1).getText());
     }
 }
